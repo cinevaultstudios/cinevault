@@ -294,3 +294,295 @@ select:focus-visible {
     transition-duration: .01ms !important;
   }
 }
+
+/* =========================================
+   CINEVAULT — AVENGERS DOOMSDAY HERO
+   PREMIUM CINEMATIC DESIGN
+========================================= */
+
+.hero-featured {
+  position: relative;
+  min-height: 680px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background: #090b10;
+  border-radius: 18px;
+  margin-top: 18px;
+}
+
+.hero-featured .hero-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  opacity: 1 !important;
+  background-image:
+    linear-gradient(
+      90deg,
+      #090b10 0%,
+      rgba(9,11,16,.96) 24%,
+      rgba(9,11,16,.75) 48%,
+      rgba(9,11,16,.18) 100%
+    ),
+    url("https://lumiere-a.akamaihd.net/v1/images/doomsday_latest_d357314b.jpeg?region=0%2C0%2C540%2C800") !important;
+  background-size: cover, auto 100% !important;
+  background-position: center, right center !important;
+  background-repeat: no-repeat !important;
+  transform: scale(1.015);
+}
+
+.hero-featured::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(0deg, #090b10 0%, transparent 27%),
+    linear-gradient(180deg, rgba(9,11,16,.25), transparent 25%);
+}
+
+.hero-featured .hero-content {
+  position: relative;
+  z-index: 2;
+  width: min(680px, 70%);
+  padding: 90px 0 105px 7%;
+}
+
+.hero-featured .eyebrow {
+  color: var(--gold2);
+  letter-spacing: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+.featured-label {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(214,179,106,.55);
+  color: var(--gold2);
+  padding: 7px 12px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+  background: rgba(9,11,16,.45);
+}
+
+.hero-featured h1 {
+  color: #fff;
+  font-family: 'Manrope', sans-serif;
+  font-size: clamp(42px, 6.2vw, 82px);
+  font-weight: 800;
+  line-height: .99;
+  letter-spacing: -3px;
+  margin: 0 0 22px;
+  text-shadow: 0 5px 35px rgba(0,0,0,.4);
+}
+
+.hero-featured h1 em {
+  color: var(--gold2);
+  font-style: normal;
+}
+
+.hero-featured .featured-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 11px;
+  color: #e1e1e1;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.hero-featured .meta-dot {
+  color: var(--gold);
+}
+
+.hero-featured .hero-copy {
+  max-width: 480px;
+  color: #c3c5cb;
+  font-size: 15px;
+  line-height: 1.85;
+  margin-bottom: 27px;
+}
+
+.hero-featured .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 13px;
+}
+
+.hero-featured .button {
+  min-height: 48px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  transition: transform .25s ease, background .25s ease;
+}
+
+.hero-featured .button:hover {
+  transform: translateY(-3px);
+}
+
+.hero-featured .button-primary {
+  background: var(--gold);
+  color: #111;
+}
+
+.hero-featured .button-quiet {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.28);
+  background: rgba(255,255,255,.07);
+  backdrop-filter: blur(8px);
+}
+
+.hero-featured .hero-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  color: #a9abb3;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-top: 37px;
+}
+
+.hero-featured .live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 12px var(--gold);
+}
+
+.hero-featured .hero-side-note {
+  position: absolute;
+  z-index: 2;
+  right: 24px;
+  bottom: 35px;
+  color: rgba(255,255,255,.48);
+  font-size: 9px;
+  letter-spacing: 3px;
+  writing-mode: vertical-rl;
+}
+
+.hero-featured .hero-bottom-fade {
+  pointer-events: none;
+}
+
+/* TABLET */
+
+@media (max-width: 900px) {
+  .hero-featured {
+    min-height: 610px;
+  }
+
+  .hero-featured .hero-content {
+    width: 78%;
+    padding-left: 5%;
+  }
+
+  .hero-featured .hero-backdrop {
+    background-position: center, 75% center !important;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .hero-featured {
+    min-height: 620px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+
+  .hero-featured .hero-backdrop {
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(9,11,16,.94) 0%,
+        rgba(9,11,16,.76) 55%,
+        rgba(9,11,16,.42) 100%
+      ),
+      linear-gradient(
+        0deg,
+        #090b10 0%,
+        transparent 70%
+      ),
+      url("https://lumiere-a.akamaihd.net/v1/images/doomsday_latest_d357314b.jpeg?region=0%2C0%2C540%2C800") !important;
+    background-size: cover, cover, auto 78% !important;
+    background-position: center, center, right top !important;
+    background-repeat: no-repeat !important;
+  }
+
+  .hero-featured .hero-content {
+    width: 100%;
+    padding: 85px 22px 85px;
+  }
+
+  .hero-featured .eyebrow {
+    font-size: 9px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .featured-label {
+    font-size: 8px;
+    margin-bottom: 15px;
+  }
+
+  .hero-featured h1 {
+    font-size: clamp(39px, 11vw, 57px);
+    letter-spacing: -2px;
+    margin-bottom: 18px;
+  }
+
+  .hero-featured .featured-meta {
+    gap: 8px;
+    font-size: 10px;
+  }
+
+  .hero-featured .hero-copy {
+    max-width: 340px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .hero-featured .hero-actions {
+    gap: 9px;
+  }
+
+  .hero-featured .button {
+    min-height: 43px;
+    padding: 0 14px;
+    font-size: 10px;
+  }
+
+  .hero-featured .hero-meta {
+    font-size: 8px;
+    letter-spacing: 1px;
+    margin-top: 27px;
+  }
+
+  .hero-featured .hero-side-note {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-featured .button {
+    transition: none;
+  }
+}
