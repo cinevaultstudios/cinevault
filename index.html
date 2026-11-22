@@ -5,19 +5,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#090b10">
-  <meta name="description" content="Discover films worth your time. Explore curated movies by genre, mood, year and rating with CineVault.">
+  <meta name="description" content="Discover films worth your time. Explore movies, collections, genres and world cinema with CineVault.">
+  <meta name="keywords" content="movies, films, cinema, movie discovery, Hollywood, Bollywood, Korean movies, anime">
   <title>CineVault — Discover Films Worth Your Time</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
   <script src="movies.js" defer></script>
   <script src="script.js" defer></script>
 </head>
+
 <body>
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
 
+  <!-- HEADER -->
   <header class="site-header">
     <a class="brand" href="index.html" aria-label="CineVault home">
       <span class="brand-mark">C</span>
@@ -28,7 +33,8 @@
 
     <nav class="main-nav" id="mainNav">
       <a class="nav-link active" href="#home">Home</a>
-      <a class="nav-link" href="#discover">Discover</a>
+      <a class="nav-link" href="#discover">Movies</a>
+      <a class="nav-link" href="#collections">Collections</a>
       <a class="nav-link" href="#trending">Trending</a>
       <a class="nav-link" href="#genres">Genres</a>
       <a class="nav-link" href="#watchlist">My List</a>
@@ -42,33 +48,28 @@
 
   <main>
 
-    <!-- CINEVAULT FEATURED MOVIE: AVENGERS DOOMSDAY -->
+    <!-- PREMIUM HERO -->
     <section class="hero hero-featured" id="home">
-
       <div class="hero-backdrop"
         role="img"
-        aria-label="Avengers Doomsday official promotional poster"
+        aria-label="Avengers Doomsday promotional artwork"
         style="
           background-image:
-          linear-gradient(90deg,
-          rgba(9,11,16,.98) 0%,
-          rgba(9,11,16,.88) 35%,
-          rgba(9,11,16,.48) 70%,
-          rgba(9,11,16,.30) 100%),
+          linear-gradient(90deg,rgba(9,11,16,.98) 0%,rgba(9,11,16,.86) 36%,rgba(9,11,16,.35) 75%,rgba(9,11,16,.25) 100%),
+          linear-gradient(0deg,#090b10 0%,transparent 35%),
           url('https://lumiere-a.akamaihd.net/v1/images/doomsday_latest_d357314b.jpeg?region=0%2C0%2C540%2C800');
-          background-size: cover;
-          background-position: center 35%;
+          background-size:cover;
+          background-position:center 35%;
         ">
       </div>
 
       <div class="hero-content">
-
         <div class="eyebrow">
           <span class="eyebrow-line"></span>
           MARVEL STUDIOS PRESENTS
         </div>
 
-        <div class="featured-label">CINEVAULT FEATURED FILM</div>
+        <div class="featured-label">CINEVAULT ORIGINAL SPOTLIGHT</div>
 
         <h1>AVENGERS:<br><em>DOOMSDAY</em></h1>
 
@@ -89,18 +90,14 @@
         </p>
 
         <div class="hero-actions">
-
           <a class="button button-primary"
              href="https://www.youtube.com/results?search_query=Marvel+Studios+Avengers+Doomsday+official+trailer"
-             target="_blank"
-             rel="noopener noreferrer">
+             target="_blank" rel="noopener noreferrer">
             ▶ Watch Trailer
           </a>
-
           <a class="button button-quiet" href="#discover">
             Explore Movies →
           </a>
-
         </div>
 
         <div class="hero-meta">
@@ -109,18 +106,13 @@
           <span class="meta-divider"></span>
           THE NEXT MARVEL EVENT
         </div>
-
       </div>
 
-      <div class="hero-side-note">
-        ENTER THE NEXT CINEMATIC ERA
-      </div>
-
+      <div class="hero-side-note">ENTER THE NEXT CINEMATIC ERA</div>
       <div class="hero-bottom-fade"></div>
-
     </section>
-    <!-- END FEATURED MOVIE -->
 
+    <!-- SEARCH -->
     <section class="search-drawer" id="searchPanel" aria-hidden="true">
       <div class="search-inner">
         <span class="search-symbol">⌕</span>
@@ -130,6 +122,7 @@
       <p class="search-hint">Try “science fiction”, “drama” or a movie title</p>
     </section>
 
+    <!-- DISCOVER -->
     <section class="section-shell" id="discover">
       <div class="section-heading">
         <div>
@@ -180,12 +173,77 @@
       </div>
     </section>
 
+    <!-- LATEST RELEASES INTRO -->
+    <section class="latest-intro section-shell">
+      <div class="latest-intro-inner">
+        <div>
+          <div class="eyebrow">YOUR NEXT FAVORITE FILM</div>
+          <h2>Find something <em>extraordinary.</em></h2>
+          <p>From timeless classics to modern masterpieces, discover stories that stay with you.</p>
+        </div>
+        <a href="#discover" class="button button-primary">Browse the collection ↗</a>
+      </div>
+    </section>
+
+    <!-- MOVIE COLLECTIONS -->
+    <section class="section-shell collections-section" id="collections">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">CURATED FOR YOU</div>
+          <h2>Movie <em>collections</em></h2>
+          <p class="section-subtitle">Explore unforgettable stories, handpicked for every film lover.</p>
+        </div>
+        <a href="#discover" class="text-button">Explore all films ↗</a>
+      </div>
+
+      <div class="collections-grid">
+
+        <a href="#discover" class="collection-card">
+          <img src="https://image.tmdb.org/t/p/w780/gEU2QniE6E77NI6lCU6MXLH0R9Z.jpg"
+               alt="Interstellar movie poster" loading="lazy">
+          <div class="collection-overlay">
+            <span>01 / SCI-FI COLLECTION</span>
+            <h3>Beyond the<br>Universe</h3>
+            <p>Stories beyond imagination ↗</p>
+          </div>
+        </a>
+
+        <a href="#discover" class="collection-card">
+          <img src="https://image.tmdb.org/t/p/w780/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg"
+               alt="Parasite movie poster" loading="lazy">
+          <div class="collection-overlay">
+            <span>02 / WORLD CINEMA</span>
+            <h3>Stories Without<br>B
+               alt="Parasite movie poster" loading="lazy">
+          <div class="collection-overlay">
+            <span>02 / WORLD CINEMA</span>
+            <h3>Stories Without<br>Borders</h3>
+            <p>Discover world-class cinema ↗</p>
+          </div>
+        </a>
+
+        <a href="#discover" class="collection-card">
+          <img src="https://image.tmdb.org/t/p/w780/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg"
+               alt="Spirited Away movie poster" loading="lazy">
+          <div class="collection-overlay">
+            <span>03 / ANIMATION</span>
+            <h3>Worlds of<br>Wonder</h3>
+            <p>Enter magical worlds ↗</p>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- TRENDING -->
     <section class="trending-section" id="trending">
       <div class="trending-copy">
         <div class="eyebrow">A LITTLE BUZZ</div>
         <h2>Stories everyone<br>is <em>talking about.</em></h2>
-        <p>Explore a selection of standout titles that have captured the imagination of film lovers.</p>
-        <a href="#discover" class="button button-primary" id="trendingExplore">Explore trending <span>↗</span></a>
+        <p>Explore standout titles that have captured the imagination of film lovers around the world.</p>
+        <a href="#discover" class="button button-primary" id="trendingExplore">
+          Explore trending <span>↗</span>
+        </a>
       </div>
 
       <div class="trending-art" aria-label="Abstract cinematic artwork">
@@ -200,6 +258,51 @@
       </div>
     </section>
 
+    <!-- COUNTRY CATEGORIES -->
+    <section class="section-shell country-section" id="countries">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">CINEMA WITHOUT BORDERS</div>
+          <h2>Explore <em>world cinema</em></h2>
+          <p class="section-subtitle">Discover films from different cultures and industries.</p>
+        </div>
+      </div>
+
+      <div class="country-grid">
+        <a href="#discover" class="country-card">
+          <span>01</span>
+          <strong>Hollywood</strong>
+          <small>AMERICAN CINEMA ↗</small>
+        </a>
+        <a href="#discover" class="country-card">
+          <span>02</span>
+          <strong>Bollywood</strong>
+          <small>INDIAN CINEMA ↗</small>
+        </a>
+        <a href="#discover" class="country-card">
+          <span>03</span>
+          <strong>Korean</strong>
+          <small>KOREAN CINEMA ↗</small>
+        </a>
+        <a href="#discover" class="country-card">
+          <span>04</span>
+          <strong>Bangla</strong>
+          <small>BANGLADESHI CINEMA ↗</small>
+        </a>
+        <a href="#discover" class="country-card">
+          <span>05</span>
+          <strong>Anime</strong>
+          <small>JAPANESE ANIMATION ↗</small>
+        </a>
+        <a href="#discover" class="country-card">
+          <span>06</span>
+          <strong>South Indian</strong>
+          <small>SOUTH INDIAN CINEMA ↗</small>
+        </a>
+      </div>
+    </section>
+
+    <!-- GENRES -->
     <section class="section-shell genre-section" id="genres">
       <div class="section-heading">
         <div>
@@ -243,6 +346,7 @@
       </div>
     </section>
 
+    <!-- WATCHLIST -->
     <section class="watchlist-section section-shell" id="watchlist">
       <div class="section-heading">
         <div>
@@ -262,6 +366,7 @@
 
   </main>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="footer-top">
       <a class="brand" href="#home">
@@ -283,6 +388,7 @@
     </div>
   </footer>
 
+  <!-- MOVIE DETAILS MODAL -->
   <div class="modal-backdrop" id="movieModal" aria-hidden="true">
     <section class="movie-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="modal-close" id="modalClose" aria-label="Close details">✕</button>
@@ -298,10 +404,15 @@
 
         <div class="modal-actions">
           <button class="button button-primary" id="modalWatchlist">＋ Add to my list</button>
-          <a class="button button-quiet" id="officialInfoLink" href="https://www.imdb.com/" target="_blank" rel="noopener noreferrer">Find official info ↗</a>
+          <a class="button button-quiet" id="officialInfoLink"
+             href="https://www.imdb.com/" target="_blank" rel="noopener noreferrer">
+            Find official info ↗
+          </a>
         </div>
 
-        <small class="modal-disclaimer">CineVault is a discovery guide. It does not host or provide movie streams or downloads.</small>
+        <small class="modal-disclaimer">
+          CineVault is a discovery guide. It does not host or provide movie streams or downloads.
+        </small>
       </div>
     </section>
   </div>
