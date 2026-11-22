@@ -1,129 +1,240 @@
-/* ========================================
+/* =========================================
    CINEVAULT — INTERACTIVE FEATURES
-======================================== */
+========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const movieGrid = document.getElementById("movie-grid");
-  const searchButton = document.querySelector(".search-toggle");
-  const menuButton = document.querySelector(".menu-toggle");
-  const navigation = document.querySelector(".main-nav");
+  // ELEMENTS
+  const menuToggle = document.getElementById("menuToggle");
+  const mainNav = document.getElementById("mainNav");
 
-  // 1. MOBILE NAVIGATION MENU
-  if (menuButton && navigation) {
-    menuButton.addEventListener("click", () => {
-      const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+  const searchToggle = document.getElementById("searchToggle");
+  const searchPanel = document.getElementById("searchPanel");
+  const closeSearch = document.getElementById("closeSearch");
+  const movieSearch = document.getElementById("movieSearch");
 
-      menuButton.setAttribute("aria-expanded", String(!isOpen));
+  const filterBar = document.getElementById("filterBar");
+  const movieGrid = document.getElementById("movieGrid");
+  const noResults = document.getElementById("noResults");
 
-      if (!isOpen) {
-        navigation.style.display = "flex";
-        navigation.style.flexDirection = "column";
-        navigation.style.position = "absolute";
-        navigation.style.top = "68px";
-        navigation.style.left = "0";
-        navigation.style.right = "0";
-        navigation.style.padding = "22px 5%";
-        navigation.style.background = "#111";
-        navigation.style.borderBottom = "1px solid rgba(214,180,106,.3)";
-        navigation.style.alignItems = "flex-start";
-        navigation.style.zIndex = "200";
-      } else {
-        navigation.removeAttribute("style");
-      }
+  const movieCards = [...document.querySelectorAll(".movie-card")];
+  const filterButtons = [...document.querySelectorAll(".filter-button")];
+  const genreLinks = [...document.querySelectorAll("[data-genre-link]")];
+
+  let activeFilter = "all";
+  let searchQuery = "";
+
+
+  // MOBILE NAVIGATION
+  if (menuToggle && mainNav) {
+
+    menuToggle.addEventListener("click", () => {
+
+      const isOpen = mainNav.classList.toggle("open");
+
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+
     });
+
+    mainNav.querySelectorAll("a").forEach(link => {
+
+      link.addEventListener("click", () => {
+
+        mainNav.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+
+      });
+
+    });
+
+    document.addEventListener("click", event => {
+
+      if (
+        !mainNav.contains(event.target) &&
+        !menuToggle.contains(event.target)
+      ) {
+
+        mainNav.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+
+      }
+
+    });
+
   }
 
-  // 2. MOVIE SEARCH PANEL
-  if (searchButton && movieGrid) {
 
-    const searchPanel = document.createElement("div");
+  // SEARCH PANEL
+  if (searchToggle && searchPanel) {
 
-    searchPanel.className = "search-panel";
+    searchToggle.addEventListener("click", () => {
 
-    searchPanel.innerHTML = `
-      <div class="container search-inner">
-        <input
-          type="search"
-          id="movie-search"
-          placeholder="Search for a movie..."
-          aria-label="Search movies"
-        >
-        <button type="button" id="close-search" aria-label="Close search">
-          ✕
-        </button>
-      </div>
-    `;
+      const isOpen = searchPanel.classList.toggle("open");
 
-    searchPanel.style.display = "none";
-    searchPanel.style.padding = "20px 0";
-    searchPanel.style.background = "#151515";
-    searchPanel.style.borderBottom = "1px solid rgba(214,180,106,.2)";
+      if (isOpen && movieSearch) {
+        movieSearch.focus();
+      }
 
-    document.querySelector(".site-header").after(searchPanel);
+    });
 
-    const searchInput = searchPanel.querySelector("#movie-search");
-    const closeButton = searchPanel.querySelector("#close-search");
+  }
 
-    function filterMovies() {
-      const query = searchInput.value.trim().toLowerCase();
-      const cards = movieGrid.querySelectorAll(".movie-card");
+  if (closeSearch && searchPanel) {
 
-      cards.forEach((card) => {
-        const movieName = card.textContent.toLowerCase();
+    closeSearch.addEventListener("click", () => {
 
-        card.style.display = movieName.includes(query) ? "" : "none";
-      });
+      searchPanel.classList.remove("open");
+
+      if (movieSearch) {
+        movieSearch.value = "";
+        searchQuery = "";
+        updateMovies();
+      }
+
+    });
+
+  }
+
+
+  // MOVIE SEARCH AND FILTER
+  function updateMovies() {
+
+    let visibleCount = 0;
+
+    movieCards.forEach(card => {
+
+      const title = (card.dataset.title || "").toLowerCase();
+      const genre = (card.dataset.genre || "").toLowerCase();
+
+      const matchesSearch =
+        title.includes(searchQuery) ||
+        genre.includes(searchQuery);
+
+      const matchesFilter =
+        activeFilter === "all" ||
+        genre.split(/\s+/).includes(activeFilter);
+
+      const visible = matchesSearch && matchesFilter;
+
+      card.hidden = !visible;
+
+      if (visible) {
+        visibleCount++;
+      }
+
+    });
+
+    if (noResults) {
+      noResults.hidden = visibleCount !== 0;
     }
 
-    searchButton.addEventListener("click", () => {
-      const isVisible = searchPanel.style.display !== "none";
+  }
 
-      searchPanel.style.display = isVisible ? "none" : "block";
 
-      if (!isVisible) {
-        searchInput.focus();
-      } else {
-        searchInput.value = "";
-        filterMovies();
-      }
+  // SEARCH INPUT
+  if (movieSearch) {
+
+    movieSearch.addEventListener("input", event => {
+
+      searchQuery = event.target.value.trim().toLowerCase();
+
+      updateMovies();
+
     });
 
-    searchInput.addEventListener("input", filterMovies);
+    movieSearch.addEventListener("keydown", event => {
 
-    closeButton.addEventListener("click", () => {
-      searchPanel.style.display = "none";
-      searchInput.value = "";
-      filterMovies();
-    });
-
-    searchInput.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
-        closeButton.click();
+
+        movieSearch.value = "";
+        searchQuery = "";
+
+        updateMovies();
+
+        searchPanel.classList.remove("open");
+
       }
+
     });
+
   }
 
-  // 3. CLOSE MOBILE MENU AFTER NAVIGATION
-  if (navigation && menuButton) {
-    navigation.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        if (window.innerWidth <= 600) {
-          navigation.removeAttribute("style");
-          menuButton.setAttribute("aria-expanded", "false");
-        }
+
+  // FILTER BUTTONS
+  function setActiveFilter(filter) {
+
+    activeFilter = filter;
+
+    filterButtons.forEach(button => {
+
+      const isActive = button.dataset.filter === filter;
+
+      button.classList.toggle("active", isActive);
+
+      button.setAttribute("aria-pressed", String(isActive));
+
+    });
+
+    updateMovies();
+
+  }
+
+  if (filterBar) {
+
+    filterButtons.forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        setActiveFilter(button.dataset.filter);
+
       });
+
     });
+
   }
 
-  // 4. CURRENT YEAR IN FOOTER
-  const footerText = document.querySelector(".footer-inner p");
 
-  if (footerText) {
-    footerText.textContent =
-      `© ${new Date().getFullYear()} CineVault. All rights reserved.`;
+  // GENRE CARDS
+  genreLinks.forEach(link => {
+
+    link.addEventListener("click", () => {
+
+      const genre = link.dataset.genreLink;
+
+      setActiveFilter(genre);
+
+    });
+
+  });
+
+
+  // NAVIGATION ACTIVE STATE
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  navLinks.forEach(link => {
+
+    link.addEventListener("click", () => {
+
+      navLinks.forEach(item => item.classList.remove("active"));
+
+      link.classList.add("active");
+
+    });
+
+  });
+
+
+  // CURRENT YEAR
+  const currentYear = document.getElementById("currentYear");
+
+  if (currentYear) {
+
+    currentYear.textContent = new Date().getFullYear();
+
   }
 
-  console.log("CineVault is ready!");
+
+  // INITIALIZE
+  updateMovies();
 
 });
