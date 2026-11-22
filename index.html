@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +15,17 @@
   <script src="script.js" defer></script>
 </head>
 <body>
-  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
   <header class="site-header">
-    <a class="brand" href="index.html" aria-label="CineVault home"><span class="brand-mark">C</span><span>CINE<span>VAULT</span></span></a>
+    <a class="brand" href="index.html" aria-label="CineVault home">
+      <span class="brand-mark">C</span>
+      <span>CINE<span>VAULT</span></span>
+    </a>
+
     <button class="icon-button menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">☰</button>
+
     <nav class="main-nav" id="mainNav">
       <a class="nav-link active" href="#home">Home</a>
       <a class="nav-link" href="#discover">Discover</a>
@@ -25,6 +33,7 @@
       <a class="nav-link" href="#genres">Genres</a>
       <a class="nav-link" href="#watchlist">My List</a>
     </nav>
+
     <div class="header-actions">
       <button class="icon-button" id="searchToggle" aria-label="Open search">⌕</button>
       <a class="header-cta" href="#discover">Explore films <span>↗</span></a>
@@ -32,21 +41,85 @@
   </header>
 
   <main>
-    <section class="hero" id="home">
-      <div class="hero-backdrop"></div>
-      <div class="hero-content">
-        <div class="eyebrow"><span class="eyebrow-line"></span> THE WORLD OF CINEMA, CURATED</div>
-        <h1>Find your next<br><em>great story.</em></h1>
-        <p class="hero-copy">A thoughtfully curated universe of films. Explore acclaimed favourites, hidden gems and stories from around the world.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#discover">Explore the collection <span>↗</span></a>
-          <a class="button button-quiet" href="#trending">See what's trending</a>
-        </div>
-        <div class="hero-meta"><span class="live-dot"></span> YOUR NEXT MOVIE NIGHT STARTS HERE <span class="meta-divider"></span> UPDATED COLLECTION</div>
+
+    <!-- CINEVAULT FEATURED MOVIE: AVENGERS DOOMSDAY -->
+    <section class="hero hero-featured" id="home">
+
+      <div class="hero-backdrop"
+        role="img"
+        aria-label="Avengers Doomsday official promotional poster"
+        style="
+          background-image:
+          linear-gradient(90deg,
+          rgba(9,11,16,.98) 0%,
+          rgba(9,11,16,.88) 35%,
+          rgba(9,11,16,.48) 70%,
+          rgba(9,11,16,.30) 100%),
+          url('https://lumiere-a.akamaihd.net/v1/images/doomsday_latest_d357314b.jpeg?region=0%2C0%2C540%2C800');
+          background-size: cover;
+          background-position: center 35%;
+        ">
       </div>
-      <div class="hero-side-note">CINEMA IS A JOURNEY <span>—</span> ENJOY THE FRAME</div>
+
+      <div class="hero-content">
+
+        <div class="eyebrow">
+          <span class="eyebrow-line"></span>
+          MARVEL STUDIOS PRESENTS
+        </div>
+
+        <div class="featured-label">CINEVAULT FEATURED FILM</div>
+
+        <h1>AVENGERS:<br><em>DOOMSDAY</em></h1>
+
+        <div class="featured-meta">
+          <span>2026</span>
+          <span class="meta-dot">•</span>
+          <span>Action</span>
+          <span class="meta-dot">•</span>
+          <span>Sci-Fi</span>
+          <span class="meta-dot">•</span>
+          <span>Adventure</span>
+        </div>
+
+        <p class="hero-copy">
+          A new era of heroes. An extraordinary threat.
+          The Marvel Cinematic Universe enters its next
+          epic chapter in Avengers: Doomsday.
+        </p>
+
+        <div class="hero-actions">
+
+          <a class="button button-primary"
+             href="https://www.youtube.com/results?search_query=Marvel+Studios+Avengers+Doomsday+official+trailer"
+             target="_blank"
+             rel="noopener noreferrer">
+            ▶ Watch Trailer
+          </a>
+
+          <a class="button button-quiet" href="#discover">
+            Explore Movies →
+          </a>
+
+        </div>
+
+        <div class="hero-meta">
+          <span class="live-dot"></span>
+          ONLY IN THEATERS · DECEMBER 2026
+          <span class="meta-divider"></span>
+          THE NEXT MARVEL EVENT
+        </div>
+
+      </div>
+
+      <div class="hero-side-note">
+        ENTER THE NEXT CINEMATIC ERA
+      </div>
+
       <div class="hero-bottom-fade"></div>
+
     </section>
+    <!-- END FEATURED MOVIE -->
 
     <section class="search-drawer" id="searchPanel" aria-hidden="true">
       <div class="search-inner">
@@ -59,9 +132,17 @@
 
     <section class="section-shell" id="discover">
       <div class="section-heading">
-        <div><div class="eyebrow">THE COLLECTION</div><h2>Discover <em>films</em></h2><p class="section-subtitle">Handpicked stories for every kind of movie lover.</p></div>
-        <div class="collection-count"><strong id="movieCount">00</strong><span>FILMS IN COLLECTION</span></div>
+        <div>
+          <div class="eyebrow">THE COLLECTION</div>
+          <h2>Discover <em>films</em></h2>
+          <p class="section-subtitle">Handpicked stories for every kind of movie lover.</p>
+        </div>
+        <div class="collection-count">
+          <strong id="movieCount">00</strong>
+          <span>FILMS IN COLLECTION</span>
+        </div>
       </div>
+
       <div class="toolbar">
         <div class="filter-bar" id="filterBar">
           <button class="filter-button active" data-filter="all" aria-pressed="true">All films</button>
@@ -71,49 +152,161 @@
           <button class="filter-button" data-filter="thriller">Thriller</button>
           <button class="filter-button" data-filter="animation">Animation</button>
         </div>
-        <label class="sort-wrap"><span>Sort by</span><select id="sortSelect" aria-label="Sort movies"><option value="featured">Featured</option><option value="rating">Top rated</option><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="title">Title A–Z</option></select></label>
+
+        <label class="sort-wrap">
+          <span>Sort by</span>
+          <select id="sortSelect" aria-label="Sort movies">
+            <option value="featured">Featured</option>
+            <option value="rating">Top rated</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="title">Title A–Z</option>
+          </select>
+        </label>
       </div>
-      <div class="active-filter-row"><span id="resultsLabel">Showing all films</span><button id="clearFilters" class="text-button" hidden>Clear filters ×</button></div>
+
+      <div class="active-filter-row">
+        <span id="resultsLabel">Showing all films</span>
+        <button id="clearFilters" class="text-button" hidden>Clear filters ×</button>
+      </div>
+
       <div class="movie-grid" id="movieGrid" aria-live="polite"></div>
-      <div class="empty-state" id="noResults" hidden><div class="empty-icon">⌕</div><h3>No films found</h3><p>Try another title or clear your filters.</p><button class="button button-primary" id="resetSearch">Show all films</button></div>
+
+      <div class="empty-state" id="noResults" hidden>
+        <div class="empty-icon">⌕</div>
+        <h3>No films found</h3>
+        <p>Try another title or clear your filters.</p>
+        <button class="button button-primary" id="resetSearch">Show all films</button>
+      </div>
     </section>
 
     <section class="trending-section" id="trending">
-      <div class="trending-copy"><div class="eyebrow">A LITTLE BUZZ</div><h2>Stories everyone<br>is <em>talking about.</em></h2><p>Explore a selection of standout titles that have captured the imagination of film lovers.</p><a href="#discover" class="button button-primary" id="trendingExplore">Explore trending <span>↗</span></a></div>
-      <div class="trending-art" aria-label="Abstract cinematic artwork"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="art-core"><span>THE</span><strong>POWER<br>OF FILM</strong><small>EVERY FRAME TELLS A STORY</small></div><div class="art-index">CV / 026</div></div>
+      <div class="trending-copy">
+        <div class="eyebrow">A LITTLE BUZZ</div>
+        <h2>Stories everyone<br>is <em>talking about.</em></h2>
+        <p>Explore a selection of standout titles that have captured the imagination of film lovers.</p>
+        <a href="#discover" class="button button-primary" id="trendingExplore">Explore trending <span>↗</span></a>
+      </div>
+
+      <div class="trending-art" aria-label="Abstract cinematic artwork">
+        <div class="orbit orbit-a"></div>
+        <div class="orbit orbit-b"></div>
+        <div class="art-core">
+          <span>THE</span>
+          <strong>POWER<br>OF FILM</strong>
+          <small>EVERY FRAME TELLS A STORY</small>
+        </div>
+        <div class="art-index">CV / 026</div>
+      </div>
     </section>
 
     <section class="section-shell genre-section" id="genres">
-      <div class="section-heading"><div><div class="eyebrow">PICK YOUR MOOD</div><h2>Explore by <em>genre</em></h2><p class="section-subtitle">Whatever you're in the mood for, there's a story waiting.</p></div></div>
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">PICK YOUR MOOD</div>
+          <h2>Explore by <em>genre</em></h2>
+          <p class="section-subtitle">Whatever you're in the mood for, there's a story waiting.</p>
+        </div>
+      </div>
+
       <div class="genre-grid">
-        <button class="genre-tile genre-action" data-genre-link="action"><span class="genre-number">01</span><span class="genre-name">Action</span><span class="genre-arrow">↗</span></button>
-        <button class="genre-tile genre-drama" data-genre-link="drama"><span class="genre-number">02</span><span class="genre-name">Drama</span><span class="genre-arrow">↗</span></button>
-        <button class="genre-tile genre-scifi" data-genre-link="sci-fi"><span class="genre-number">03</span><span class="genre-name">Sci-Fi</span><span class="genre-arrow">↗</span></button>
-        <button class="genre-tile genre-thriller" data-genre-link="thriller"><span class="genre-number">04</span><span class="genre-name">Thriller</span><span class="genre-arrow">↗</span></button>
-        <button class="genre-tile genre-animation" data-genre-link="animation"><span class="genre-number">05</span><span class="genre-name">Animation</span><span class="genre-arrow">↗</span></button>
-        <button class="genre-tile genre-romance" data-genre-link="romance"><span class="genre-number">06</span><span class="genre-name">Romance</span><span class="genre-arrow">↗</span></button>
+        <button class="genre-tile genre-action" data-genre-link="action">
+          <span class="genre-number">01</span>
+          <span class="genre-name">Action</span>
+          <span class="genre-arrow">↗</span>
+        </button>
+        <button class="genre-tile genre-drama" data-genre-link="drama">
+          <span class="genre-number">02</span>
+          <span class="genre-name">Drama</span>
+          <span class="genre-arrow">↗</span>
+        </button>
+        <button class="genre-tile genre-scifi" data-genre-link="sci-fi">
+          <span class="genre-number">03</span>
+          <span class="genre-name">Sci-Fi</span>
+          <span class="genre-arrow">↗</span>
+        </button>
+        <button class="genre-tile genre-thriller" data-genre-link="thriller">
+          <span class="genre-number">04</span>
+          <span class="genre-name">Thriller</span>
+          <span class="genre-arrow">↗</span>
+        </button>
+        <button class="genre-tile genre-animation" data-genre-link="animation">
+          <span class="genre-number">05</span>
+          <span class="genre-name">Animation</span>
+          <span class="genre-arrow">↗</span>
+        </button>
+        <button class="genre-tile genre-romance" data-genre-link="romance">
+          <span class="genre-number">06</span>
+          <span class="genre-name">Romance</span>
+          <span class="genre-arrow">↗</span>
+        </button>
       </div>
     </section>
 
     <section class="watchlist-section section-shell" id="watchlist">
-      <div class="section-heading"><div><div class="eyebrow">SAVED FOR LATER</div><h2>Your <em>watchlist</em></h2><p class="section-subtitle">Keep the films you want to come back to, all in one place.</p></div><span class="watchlist-total" id="watchlistCount">0 SAVED</span></div>
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">SAVED FOR LATER</div>
+          <h2>Your <em>watchlist</em></h2>
+          <p class="section-subtitle">Keep the films you want to come back to, all in one place.</p>
+        </div>
+        <span class="watchlist-total" id="watchlistCount">0 SAVED</span>
+      </div>
+
       <div class="movie-grid" id="watchlistGrid"></div>
-      <div class="watchlist-empty" id="watchlistEmpty"><span>＋</span><p>Your list is waiting for its first film.</p></div>
+      <div class="watchlist-empty" id="watchlistEmpty">
+        <span>＋</span>
+        <p>Your list is waiting for its first film.</p>
+      </div>
     </section>
+
   </main>
 
   <footer class="site-footer">
-    <div class="footer-top"><a class="brand" href="#home"><span class="brand-mark">C</span><span>CINE<span>VAULT</span></span></a><p>Discover films worth your time.</p><a href="#home" class="back-top">BACK TO TOP ↑</a></div>
-    <div class="footer-bottom"><span>© <span id="currentYear"></span> CineVault. All rights reserved.</span><div class="footer-links"><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div><span class="footer-note">An independent film discovery concept.</span></div>
+    <div class="footer-top">
+      <a class="brand" href="#home">
+        <span class="brand-mark">C</span>
+        <span>CINE<span>VAULT</span></span>
+      </a>
+      <p>Discover films worth your time.</p>
+      <a href="#home" class="back-top">BACK TO TOP ↑</a>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span id="currentYear"></span> CineVault. All rights reserved.</span>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+      <span class="footer-note">An independent film discovery concept.</span>
+    </div>
   </footer>
 
   <div class="modal-backdrop" id="movieModal" aria-hidden="true">
     <section class="movie-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="modal-close" id="modalClose" aria-label="Close details">✕</button>
+
       <div class="modal-poster" id="modalPoster"></div>
-      <div class="modal-content"><div class="eyebrow" id="modalEyebrow">CINEVAULT COLLECTION</div><h2 id="modalTitle">Movie title</h2><div class="modal-meta" id="modalMeta"></div><p id="modalDescription"></p><div class="modal-genres" id="modalGenres"></div><div class="modal-actions"><button class="button button-primary" id="modalWatchlist">＋ Add to my list</button><a class="button button-quiet" id="officialInfoLink" href="https://www.imdb.com/" target="_blank" rel="noopener noreferrer">Find official info ↗</a></div><small class="modal-disclaimer">CineVault is a discovery guide. It does not host or provide movie streams or downloads.</small></div>
+
+      <div class="modal-content">
+        <div class="eyebrow" id="modalEyebrow">CINEVAULT COLLECTION</div>
+        <h2 id="modalTitle">Movie title</h2>
+        <div class="modal-meta" id="modalMeta"></div>
+        <p id="modalDescription"></p>
+        <div class="modal-genres" id="modalGenres"></div>
+
+        <div class="modal-actions">
+          <button class="button button-primary" id="modalWatchlist">＋ Add to my list</button>
+          <a class="button button-quiet" id="officialInfoLink" href="https://www.imdb.com/" target="_blank" rel="noopener noreferrer">Find official info ↗</a>
+        </div>
+
+        <small class="modal-disclaimer">CineVault is a discovery guide. It does not host or provide movie streams or downloads.</small>
+      </div>
     </section>
   </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 </body>
 </html>
