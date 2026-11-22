@@ -31,3 +31,266 @@
 .card-overlay {
   pointer-events: none;
 }
+/* =========================================
+   CINEVAULT — PREMIUM DESIGN UPGRADE
+   Version 2.0
+========================================= */
+
+:root {
+  --gold: #d9b875;
+  --gold2: #f4dfad;
+  --bg: #080a0f;
+  --panel: #121722;
+  --panel2: #1a2130;
+}
+
+/* Smooth premium experience */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(75, 83, 110, .10), transparent 38%),
+    var(--bg);
+}
+
+/* Premium header */
+.site-header {
+  background: rgba(8, 10, 15, .92);
+  border-bottom: 1px solid rgba(217, 184, 117, .13);
+  box-shadow: 0 8px 35px rgba(0, 0, 0, .18);
+}
+
+.brand-mark {
+  box-shadow: 0 0 18px rgba(217, 184, 117, .12);
+  transition: .3s ease;
+}
+
+.brand:hover .brand-mark {
+  transform: rotate(0deg) scale(1.08);
+  background: rgba(217, 184, 117, .10);
+}
+
+/* Cinematic hero */
+.hero {
+  background:
+    radial-gradient(ellipse at 78% 40%, rgba(173, 121, 55, .25), transparent 38%),
+    linear-gradient(100deg, #080a0f 5%, rgba(8, 10, 15, .91) 48%, rgba(8, 10, 15, .52));
+}
+
+.hero-backdrop {
+  border-color: rgba(217, 184, 117, .27);
+  box-shadow:
+    0 35px 100px rgba(0, 0, 0, .55),
+    0 0 70px rgba(217, 184, 117, .07);
+}
+
+.hero h1 {
+  text-shadow: 0 8px 35px rgba(0, 0, 0, .35);
+}
+
+.hero-copy {
+  color: #bdc2cd;
+}
+
+/* Section headings */
+.section-heading h2,
+.trending-copy h2 {
+  text-shadow: 0 5px 25px rgba(0, 0, 0, .3);
+}
+
+.eyebrow {
+  letter-spacing: 2.8px;
+}
+
+/* Premium movie cards */
+.movie-grid {
+  gap: 32px 19px;
+}
+
+.movie-card {
+  border-radius: 5px;
+  transition: transform .3s ease, filter .3s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-8px);
+  filter: brightness(1.08);
+}
+
+.poster-art {
+  border-radius: 5px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+
+.movie-card:hover .poster-art {
+  border-color: rgba(217, 184, 117, .55);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, .42);
+}
+
+.poster-art:before {
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.02) 10%, transparent 35%, rgba(0,0,0,.88) 100%),
+    radial-gradient(circle at 70% 20%, rgba(255,255,255,.19), transparent 30%);
+}
+
+.poster-title {
+  text-shadow: 0 3px 15px rgba(0,0,0,.9);
+}
+
+/* Watchlist button */
+.save-button {
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+  transition: .25s ease;
+  box-shadow: 0 3px 12px rgba(0,0,0,.4);
+}
+
+.save-button:hover {
+  background: var(--gold);
+  color: #111;
+  border-color: var(--gold);
+  transform: scale(1.12);
+}
+
+.card-overlay {
+  pointer-events: none;
+}
+
+.quick-view {
+  background: rgba(12, 15, 22, .65);
+  backdrop-filter: blur(8px);
+  border-color: rgba(255,255,255,.6);
+}
+
+/* Movie information */
+.card-title {
+  transition: color .2s ease;
+}
+
+.movie-card:hover .card-title {
+  color: var(--gold2);
+}
+
+.card-rating {
+  font-weight: 700;
+}
+
+/* Filter buttons */
+.filter-button {
+  border-radius: 3px;
+  transition: .25s ease;
+}
+
+.filter-button:hover,
+.filter-button.active {
+  background: rgba(217, 184, 117, .11);
+  box-shadow: inset 0 0 0 1px rgba(217, 184, 117, .12);
+}
+
+/* Trending panel */
+.trending-section {
+  border-radius: 5px;
+  box-shadow: 0 20px 70px rgba(0,0,0,.2);
+}
+
+.art-core {
+  box-shadow:
+    0 0 70px rgba(217, 184, 117, .15),
+    inset 0 0 30px rgba(217, 184, 117, .08);
+}
+
+/* Genre cards */
+.genre-tile {
+  border-radius: 4px;
+  transition: transform .3s ease, border-color .3s ease;
+}
+
+.genre-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,.2);
+}
+
+/* Watchlist */
+.watchlist-empty {
+  border-radius: 5px;
+  background: rgba(255,255,255,.015);
+}
+
+/* Movie details modal */
+.movie-modal {
+  border-radius: 6px;
+  box-shadow: 0 30px 100px rgba(0,0,0,.7);
+}
+
+.modal-close {
+  border-radius: 50%;
+  transition: .2s ease;
+}
+
+.modal-close:hover {
+  background: var(--gold);
+  color: #111;
+}
+
+/* Buttons */
+.button {
+  border-radius: 3px;
+  transition: transform .25s ease, background .25s ease;
+}
+
+.button-primary {
+  box-shadow: 0 5px 22px rgba(217,184,117,.13);
+}
+
+/* Footer */
+.site-footer {
+  background:
+    linear-gradient(180deg, #090b10, #06070a);
+}
+
+/* Keyboard accessibility */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--gold2);
+  outline-offset: 3px;
+}
+
+/* Responsive refinement */
+@media (max-width: 760px) {
+  .movie-grid {
+    gap: 25px 13px;
+  }
+
+  .movie-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .hero-backdrop {
+    opacity: .45;
+  }
+}
+
+@media (max-width: 480px) {
+  .poster-art {
+    border-radius: 4px;
+  }
+
+  .section-heading h2 {
+    letter-spacing: -1.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: .01ms !important;
+  }
+}
