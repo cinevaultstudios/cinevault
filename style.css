@@ -15,3 +15,19 @@
 @media(max-width:760px){.site-header{height:66px;padding:0 5%}.menu-toggle{display:block;order:3}.header-actions{margin-left:auto;margin-right:12px}.header-cta{display:none}.main-nav{display:none;position:absolute;top:66px;left:0;right:0;margin:0;padding:18px 6%;background:#0e1219;border-bottom:1px solid var(--line);flex-direction:column;gap:16px}.main-nav.open{display:flex}.hero{min-height:590px;padding:75px 7% 90px}.hero-backdrop{right:-22%;width:70%;opacity:.65}.hero-side-note{display:none}.section-shell{padding:68px 6%}.movie-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 12px}.poster-art{height:220px;padding:12px}.poster-title{font-size:16px}.toolbar{align-items:flex-start;flex-direction:column}.sort-wrap{align-self:flex-end}.trending-section{margin:0 6%;padding:38px 7%;grid-template-columns:1fr}.trending-art{height:210px}.genre-grid{grid-template-columns:repeat(2,1fr)}.genre-tile{height:110px}.footer-bottom{flex-wrap:wrap}.footer-note{width:100%}.movie-modal{grid-template-columns:150px 1fr}.modal-poster{min-height:330px;padding:13px}.modal-poster span{font-size:19px}.modal-content{padding:43px 20px 22px}.modal-content h2{font-size:25px}}
 @media(max-width:480px){.brand{font-size:14px}.hero{min-height:570px;padding-top:65px}.hero h1{font-size:49px}.hero-copy{font-size:12px}.hero-actions{align-items:flex-start;flex-direction:column;gap:12px}.hero-meta{margin-top:38px;font-size:7px}.section-heading{align-items:flex-start}.collection-count{padding-top:6px}.collection-count strong{font-size:24px}.movie-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 13px}.poster-art{height:245px}.poster-title{font-size:19px}.card-title{font-size:11px}.genre-grid{gap:8px}.genre-tile{height:100px;padding:14px}.genre-name{left:14px;bottom:12px;font-size:18px}.genre-number{font-size:7px}.genre-arrow{right:13px;bottom:12px}.trending-copy h2{font-size:36px}.footer-top{align-items:flex-start;flex-wrap:wrap}.footer-top p{width:100%;order:3}.footer-bottom{font-size:8px}.footer-links{gap:12px}.movie-modal{display:block;max-width:390px}.modal-poster{min-height:190px}.modal-poster span{font-size:24px}.modal-content{padding:25px 22px}.modal-content h2{font-size:27px}.modal-backdrop{padding:12px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* CINEVAULT — WATCHLIST BUTTON CLICK FIX */
+.poster-art {
+  position: relative;
+}
+
+.save-button {
+  position: absolute;
+  z-index: 10 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.card-overlay {
+  pointer-events: none;
+}
