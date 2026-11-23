@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description" content="Explore movie details, ratings, cast information and authorised viewing options on CineVault.">
+  <meta name="robots" content="index, follow">
+
+  <title>Movie Details | CineVault</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .movie-details-page {
+      min-height: 70vh;
+      padding-bottom: 70px;
+    }
+
+    .movie-backdrop {
+      min-height: 430px;
+      position: relative;
+      display: flex;
+      align-items: end;
+      padding: 55px 6%;
+      background: linear-gradient(0deg, #080a0f 5%, rgba(8,10,15,.55) 65%, rgba(8,10,15,.25)),
+                  linear-gradient(90deg, #080a0f, transparent);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .movie-detail-heading {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .movie-detail-heading h1 {
+      font-size: clamp(32px, 5vw, 58px);
+      margin: 12px 0;
+      color: #fff;
+    }
+
+    .movie-detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 22px;
+      color: #ddd;
+      margin: 15px 0 24px;
+    }
+
+    .movie-detail-meta span {
+      color: #d6b36a;
+    }
+
+    .movie-detail-layout {
+      max-width: 1200px;
+      margin: 45px auto;
+      padding: 0 6%;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 42px;
+    }
+
+    .movie-detail-poster {
+      width: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #171a20;
+      box-shadow: 0 12px 35px rgba(0,0,0,.4);
+    }
+
+    .movie-detail-info h2 {
+      color: #d6b36a;
+      margin: 0 0 18px;
+    }
+
+    .movie-detail-description {
+      color: #c4c4c4;
+      line-height: 1.9;
+      margin-bottom: 25px;
+    }
+
+    .movie-info-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 25px 0;
+    }
+
+    .movie-info-item {
+      background: #11151d;
+      padding: 15px;
+      border: 1px solid rgba(214,179,106,.13);
+      border-radius: 9px;
+    }
+
+    .movie-info-item small {
+      display: block;
+      color: #999;
+      margin-bottom: 6px;
+    }
+
+    .movie-info-item strong {
+      color: #eee;
+      overflow-wrap: anywhere;
+    }
+
+    .movie-action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .movie-action-buttons a {
+      display: inline-block;
+      text-decoration: none;
+      padding: 14px 25px;
+      border-radius: 7px;
+      font-weight: 700;
+      text-align: center;
+      transition: .2s;
+    }
+
+    .watch-button {
+      background: #d6b36a;
+      color: #080a0f;
+    }
+
+    .download-button {
+      border: 1px solid #d6b36a;
+      color: #d6b36a;
+    }
+
+    .movie-action-buttons a:hover {
+      transform: translateY(-3px);
+      opacity: .9;
+    }
+
+    .movie-unavailable {
+      color: #aaa;
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .similar-movies {
+      max-width: 1200px;
+      margin: 55px auto 0;
+      padding: 0 6%;
+    }
+
+    .similar-movies h2 {
+      color: #d6b36a;
+      margin-bottom: 22px;
+    }
+
+    .similar-movies-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .similar-movie-card {
+      color: #fff;
+      text-decoration: none;
+      min-width: 0;
+    }
+
+    .similar-movie-card img {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #171a20;
+    }
+
+    .similar-movie-card h3 {
+      font-size: 14px;
+      margin: 9px 0 4px;
+    }
+
+    .similar-movie-card p {
+      color: #aaa;
+      font-size: 12px;
+    }
+
+    .movie-error {
+      max-width: 700px;
+      margin: 100px auto;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .movie-error h1 {
+      color: #d6b36a;
+    }
+
+    .movie-error a {
+      color: #d6b36a;
+    }
+
+    @media (max-width: 700px) {
+      .movie-backdrop {
+        min-height: 330px;
+        padding: 35px 5%;
+      }
+
+      .movie-detail-layout {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        margin-top: 30px;
+      }
+
+      .movie-detail-poster {
+        max-width: 220px;
+        margin: 0 auto;
+      }
+
+      .movie-info-list {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .similar-movies-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .movie-action-buttons a {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">C</span>
+    <span>CINE<span>VAULT</span></span>
+  </a>
+
+  <a class="header-cta" href="index.html">Back to CineVault ↗</a>
+</header>
+
+<main id="movieDetails" class="movie-details-page">
+  <div class="movie-error">
+    <h1>Loading Movie...</h1>
+    <p>Please wait while we load the movie details.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-bottom">
+    <span>© <span id="year"></span> CineVault</span>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="dmca.html">DMCA</a>
+    </div>
+  </div>
+</footer>
+
+<script src="movies.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const container = document.getElementById("movieDetails");
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function (char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char];
+    });
+  }
+
+  function slugify(value) {
+    return String(value || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  function validImage(url) {
+    if (!url || url === "placeholder.jpg") return "";
+    try {
+      const parsed = new URL(url, window.location.href);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+        return "";
+      }
+      return parsed.href;
+    } catch {
+      return "";
+    }
+  }
+
+  function fallbackArtwork(title) {
+    const safeTitle = escapeHTML(title || "CineVault");
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750">
+      <rect width="100%" height="100%" fill="#11151d"/>
+      <text x="50%" y="47%" fill="#d6b36a" font-size="30" text-anchor="middle" font-family="Arial">CINEVAULT</text>
+      <text x="50%" y="55%" fill="#ffffff" font-size="22" text-anchor="middle" font-family="Arial">${safeTitle}</text>
+    </svg>`;
+    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+  }
+
+  function findMovie() {
+    if (typeof movies === "undefined" || !Array.isArray(movies)) {
+      return null;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedId = params.get("id");
+    const requestedSlug = params.get("title");
+
+    return movies.find(function (movie) {
+      return (
+        (requestedId && String(movie.id) === requestedId) ||
+        (requestedSlug && slugify(movie.title) === requestedSlug)
+      );
+    }) || null;
+  }
+
+  function renderMovie(movie) {
+    const poster = validImage(movie.poster) || fallbackArtwork(movie.title);
+    const backdrop = validImage(movie.backdrop) || poster;
+
+    document.title = movie.title + " | CineVault";
+
+    const watchUrl = validImage(movie.watchUrl) || "";
+    const downloadUrl = validImage(movie.downloadUrl) || "";
+
+    const watchButton = watchUrl
+      ? `<a class="watch-button" href="${escapeHTML(watchUrl)}" target="_blank" rel="noopener noreferrer">▶ WATCH NOW</a>`
+      : "";
+
+    const downloadButton = downloadUrl
+      ? `<a class="download-button" href="${escapeHTML(downloadUrl)}" target="_blank" rel="noopener noreferrer">↓ DOWNLOAD</a>`
+      : "";
+
+    const similar = movies
+      .filter(function (item) {
+        return String(item.id) !== String(movie.id);
+      })
+      .filter(function (item) {
+        return item.genre && movie.genre &&
+          item.genre.toLowerCase() === movie.genre.toLowerCase();
+      })
+      .slice(0, 5);
+
+    const similarHTML = similar.map(function (item) {
+      const image = validImage(item.poster) || fallbackArtwork(item.title);
+      return `
+        <a class="similar-movie-card"
+           href="movie.html?id=${encodeURIComponent(item.id)}">
+          <img src="${escapeHTML(image)}"
+               alt="${escapeHTML(item.title)}"
+               loading="lazy">
+          <h3>${escapeHTML(item.title)}</h3>
+          <p>${escapeHTML(item.year || "")}</p>
+        </a>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <section class="movie-backdrop"
+        style="background-image: linear-gradient(0deg,#080a0f 5%,rgba(8,10,15,.55) 65%,rgba(8,10,15,.25)),url('${escapeHTML(backdrop)}')">
+        <div class="movie-detail-heading">
+          <div class="eyebrow">MOVIE DETAILS</div>
+          <h1>${escapeHTML(movie.title)}</h1>
+          <div class="movie-detail-meta">
+            <span>★ ${escapeHTML(movie.rating || "N/A")}</span>
+            <span>${escapeHTML(movie.year || "Year unavailable")}</span>
+            <span>${escapeHTML(movie.genre || "Genre unavailable")}</span>
+            <span>${escapeHTML(movie.duration || "Duration unavailable")}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="movie-detail-layout">
+        <div>
+          <img class="movie-detail-poster"
+            src="${escapeHTML(poster)}"
+            alt="${escapeHTML(movie.title)} poster">
+        </div>
+
+        <div class="movie-detail-info">
+          <h2>About the Movie</h2>
+          <p class="movie-detail-description">
+            ${escapeHTML(movie.description || "Movie description is not available yet.")}
+          </p>
+
+          <div class="movie-info-list">
+            <div class="movie-info-item">
+              <small>Release Year</small>
+              <strong>${escapeHTML(movie.year || "N/A")}</strong>
+            </div>
+            <div class="movie-info-item">
+              <small>Genre</small>
+              <strong>${escapeHTML(movie.genre || "N/A")}</strong>
+            </div>
+            <div class="movie-info-item">
+              <small>Language</small>
+              <strong>${escapeHTML(movie.language || "N/A")}</strong>
+            </div>
+            <div class="movie-info-item">
+              <small>Country</small>
+              <strong>${escapeHTML(movie.country || "N/A")}</strong>
+            </div>
+            <div class="movie-info-item">
+              <small>Director</small>
+              <strong>${escapeHTML(movie.director || "N/A")}</strong>
+            </div>
+            <div class="movie-info-item">
+              <small>Duration</small>
+              <strong>${escapeHTML(movie.duration || "N/A")}</strong>
+            </div>
+          </div>
+
+          <div class="movie-action-buttons">
+            ${watchButton}
+            ${downloadButton}
+          </div>
+
+          ${!watchUrl && !downloadUrl
+            ? `<p class="movie-unavailable">Viewing and download links have not been added for this movie yet.</p>`
+            : ""}
+        </div>
+      </section>
+
+      ${similar.length ? `
+        <section class="similar-movies">
+          <h2>Similar Movies</h2>
+          <div class="similar-movies-grid">${similarHTML}</div>
+        </section>
+      ` : ""}
+    `;
+  }
+
+  const movie = findMovie();
+
+  if (movie) {
+    renderMovie(movie);
+  } else {
+    container.innerHTML = `
+      <div class="movie-error">
+        <h1>Movie Not Found</h1>
+        <p>Sorry, this movie could not be found in our catalogue.</p>
+        <p><a href="index.html">← Return to Home</a></p>
+      </div>
+    `;
+  }
+})();
+</script>
+
+</body>
+</html>
