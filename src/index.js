@@ -11,6 +11,8 @@ const json = (data, status = 200, extraHeaders = {}) =>
 
 const COOKIE_NAME = "cinevault_admin";
 const SESSION_SECONDS = 8 * 60 * 60;
+const CLOUDINARY_CLOUD_NAME = "v9vl1rze";
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 function toBase64Url(bytes) {
   let binary = "";
@@ -59,6 +61,7 @@ async function verifySession(request, password) {
     if (parts.length !== 3) return false;
 
     const [expires, nonce, signature] = parts;
+
     if (!/^\d+$/.test(expires)) return false;
     if (Number(expires) < Math.floor(Date.now() / 1000)) return false;
 
@@ -100,6 +103,7 @@ function validOrigin(request, url) {
 
 function validUrl(value) {
   if (!value) return "";
+
   const parsed = new URL(String(value));
 
   if (!["http:", "https:"].includes(parsed.protocol)) {
@@ -115,6 +119,7 @@ function cleanMovie(data) {
   const rating = Number(data.rating) || 0;
 
   if (!title) throw new Error("Movie title is required");
+
   if (rating < 0 || rating > 10) {
     throw new Error("Rating must be between 0 and 10");
   }
@@ -156,11 +161,117 @@ const MOVIE_SELECT = `
   FROM movies
 `;
 
+async function uploadToCloudinary(request, env) {
+  if (!env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET) {
+    return json({
+      success: false,
+      message: "Cloudinary credentials are not configured"
+    }, 500);
+  }
+
+  let form;
+
+  try {
+    form = await request.formData();
+  } catch {
+    return json({
+      success: false,
+      message: "Invalid upload form"
+    }, 400);
+  }
+
+  const file = form.get("file");
+  const type = String(form.get("type") || "poster");
+
+  if (!file || typeof file.arrayBuffer !== "function") {
+    return json({
+      success: false,
+      message: "Please select an image"
+    }, 400);
+  }
+
+  if (!["poster", "backdrop"].includes(type)) {
+    return json({
+      success: false,
+      message: "Invalid image type"
+    }, 400);
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/avif"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    return json({
+      success: false,
+      message: "Only JPG, PNG, WEBP and AVIF images are allowed"
+    }, 400);
+  }
+
+  if (file.size <= 0 || file.size > MAX_IMAGE_SIZE) {
+    return json({
+      success: false,
+      message: "Image size must be between 1 byte and 5 MB"
+    }, 400);
+  }
+
+  const cloudForm = new FormData();
+  cloudForm.set("file", file, file.name || "image");
+  cloudForm.set("folder", `cinevault/${type}`);
+
+  const credentials = btoa(
+    `${env.CLOUDINARY_API_KEY}:${env.CLOUDINARY_API_SECRET}`
+  );
+
+  const cloudResponse = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${credentials}`
+      },
+      body: cloudForm
+    }
+  );
+
+  let result;
+
+  try {
+    result = await cloudResponse.json();
+  } catch {
+    return json({
+      success: false,
+      message: "Invalid response from Cloudinary"
+    }, 502);
+  }
+
+  if (!cloudResponse.ok || !result.secure_url) {
+    return json({
+      success: false,
+      message: result.error?.message || "Cloudinary upload failed"
+    }, 502);
+  }
+
+  return json({
+    success: true,
+    message: "Image uploaded successfully",
+    url: result.secure_url,
+    publicId: result.public_id,
+    type
+  });
+}
+
 async function handleAdmin(request, env, url) {
   const password = env.ADMIN_PASSWORD;
 
   if (!password) {
-    return json({ success: false, message: "Admin password is not configured" }, 500);
+    return json({
+      success: false,
+      message: "Admin password is not configured"
+    }, 500);
   }
 
   const path = url.pathname;
@@ -171,6 +282,7 @@ async function handleAdmin(request, env, url) {
     }
 
     let data;
+
     try {
       data = await request.json();
     } catch {
@@ -183,11 +295,13 @@ async function handleAdmin(request, env, url) {
     const expectedHash = new Uint8Array(
       await crypto.subtle.digest("SHA-256", encoder.encode(password))
     );
+
     const suppliedHash = new Uint8Array(
       await crypto.subtle.digest("SHA-256", encoder.encode(supplied))
     );
 
     let difference = 0;
+
     for (let i = 0; i < expectedHash.length; i++) {
       difference |= expectedHash[i] ^ suppliedHash[i];
     }
@@ -231,6 +345,11 @@ async function handleAdmin(request, env, url) {
     return json({ success: false, message: "Invalid origin" }, 403);
   }
 
+  // Cloudinary image upload
+  if (path === "/api/admin/upload" && request.method === "POST") {
+    return await uploadToCloudinary(request, env);
+  }
+
   if (path === "/api/admin/movies" && request.method === "GET") {
     const result = await env.DB.prepare(
       MOVIE_SELECT + " ORDER BY id DESC"
@@ -268,7 +387,10 @@ async function handleAdmin(request, env, url) {
       movie.download_url, movie.watch_url
     ).run();
 
-    return json({ success: true, message: "Movie added successfully" }, 201);
+    return json({
+      success: true,
+      message: "Movie added successfully"
+    }, 201);
   }
 
   const match = path.match(/^\/api\/admin\/movies\/(\d+)$/);
@@ -308,7 +430,10 @@ async function handleAdmin(request, env, url) {
         return json({ success: false, message: "Movie not found" }, 404);
       }
 
-      return json({ success: true, message: "Movie updated successfully" });
+      return json({
+        success: true,
+        message: "Movie updated successfully"
+      });
     }
 
     if (request.method === "DELETE") {
@@ -320,11 +445,17 @@ async function handleAdmin(request, env, url) {
         return json({ success: false, message: "Movie not found" }, 404);
       }
 
-      return json({ success: true, message: "Movie deleted successfully" });
+      return json({
+        success: true,
+        message: "Movie deleted successfully"
+      });
     }
   }
 
-  return json({ success: false, message: "Admin API route not found" }, 404);
+  return json({
+    success: false,
+    message: "Admin API route not found"
+  }, 404);
 }
 
 export default {
@@ -333,11 +464,17 @@ export default {
 
     try {
       if (!env.DB) {
-        return json({ success: false, message: "Database binding DB is missing" }, 500);
+        return json({
+          success: false,
+          message: "Database binding DB is missing"
+        }, 500);
       }
 
       if (url.pathname === "/api/hello") {
-        return json({ success: true, message: "CineVault API is running" });
+        return json({
+          success: true,
+          message: "CineVault API is running"
+        });
       }
 
       if (url.pathname === "/api/movies" && request.method === "GET") {
