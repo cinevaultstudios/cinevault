@@ -2,6 +2,7 @@
 /* =========================================
    CINEVAULT — MAIN APPLICATION
    SEARCH • FILTER • SORT • WATCHLIST
+   MOVIE DETAILS PAGE
    ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,10 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultsCount = document.getElementById("resultsCount");
   const emptyState = document.getElementById("emptyState");
   const pagination = document.getElementById("pagination");
-
-  const modal = document.getElementById("movieModal");
-  const modalContent = document.getElementById("modalContent");
-  const modalClose = document.getElementById("modalClose");
 
   const watchlistCount = document.getElementById("watchlistCount");
 
@@ -384,117 +381,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  /* MOVIE DETAILS */
-
-  function openMovie(id) {
-
-    const movie = movies.find(item =>
-      Number(item.id) === Number(id)
-    );
-
-    if (!movie) return;
-
-    const watchButton = movie.watchUrl
-      ? `<a class="btn btn-primary" href="${escapeHTML(movie.watchUrl)}" target="_blank" rel="noopener noreferrer">▶ Watch Movie</a>`
-      : "";
-
-    const downloadButton = movie.downloadUrl
-      ? `<a class="btn btn-outline" href="${escapeHTML(movie.downloadUrl)}" target="_blank" rel="noopener noreferrer">↓ Download</a>`
-      : "";
-
-    modalContent.innerHTML = `
-
-      <div style="padding:25px">
-
-        <div style="
-          display:grid;
-          grid-template-columns:minmax(110px,220px) 1fr;
-          gap:25px;
-          align-items:start;
-        ">
-
-          <img
-            src="${escapeHTML(posterURL(movie))}"
-            alt="${escapeHTML(movie.title)}"
-            style="width:100%;border-radius:10px"
-          >
-
-          <div>
-
-            <span class="section-eyebrow">CINEVAULT COLLECTION</span>
-
-            <h2 id="modalTitle" style="
-              margin:12px 0;
-              font-family:Manrope,sans-serif;
-              font-size:clamp(23px,4vw,34px);
-            ">
-              ${escapeHTML(movie.title)}
-            </h2>
-
-            <p style="color:#d6b36a;margin-bottom:15px">
-              ★ ${escapeHTML(movie.rating)} / 10
-            </p>
-
-            <p style="color:#9ba3b1;font-size:12px;line-height:1.9">
-              ${escapeHTML(movie.description)}
-            </p>
-
-            <div style="
-              margin-top:20px;
-              display:grid;
-              grid-template-columns:1fr 1fr;
-              gap:12px;
-              color:#9ba3b1;
-              font-size:11px;
-            ">
-              <span>Year: ${escapeHTML(movie.year)}</span>
-              <span>Genre: ${escapeHTML(movie.genre)}</span>
-              <span>Language: ${escapeHTML(movie.language)}</span>
-              <span>Country: ${escapeHTML(movie.country)}</span>
-              <span>Duration: ${escapeHTML(movie.duration || "N/A")}</span>
-              <span>Director: ${escapeHTML(movie.director || "N/A")}</span>
-            </div>
-
-            <div style="
-              display:flex;
-              flex-wrap:wrap;
-              gap:10px;
-              margin-top:25px;
-            ">
-              ${watchButton}
-              ${downloadButton}
-            </div>
-
-            <p style="margin-top:15px;color:#9ba3b1;font-size:10px">
-              Watch and download options are available only when an authorized source is configured.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-
-    document.body.style.overflow = "hidden";
-  }
-
-
-  function closeModal() {
-
-    modal.classList.remove("open");
-
-    modal.setAttribute("aria-hidden", "true");
-
-    document.body.style.overflow = "";
-
-  }
-
-
   /* EVENTS */
 
   searchInput.addEventListener("input", () => {
@@ -573,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-  /* MOVIE CARD CLICK */
+  /* MOVIE CARD CLICK — OPEN DETAILS PAGE */
 
   document.addEventListener("click", event => {
 
@@ -583,6 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (watchButton) {
 
+      event.preventDefault();
       event.stopPropagation();
 
       toggleWatchlist(watchButton.dataset.watchlistId);
@@ -596,29 +483,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (movieCardElement) {
 
-      openMovie(movieCardElement.dataset.movieId);
+      const movieId = movieCardElement.dataset.movieId;
 
-    }
+      window.location.href =
+        `movie.html?id=${encodeURIComponent(movieId)}`;
 
-  });
-
-
-  /* MODAL EVENTS */
-
-  modalClose.addEventListener("click", closeModal);
-
-  modal.addEventListener("click", event => {
-
-    if (event.target === modal) {
-      closeModal();
-    }
-
-  });
-
-  document.addEventListener("keydown", event => {
-
-    if (event.key === "Escape") {
-      closeModal();
     }
 
   });
