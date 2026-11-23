@@ -2,341 +2,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <title>CineVault | Admin Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>CineVault | Admin Dashboard</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    body {
-      background: #090909;
-      color: #eee;
-      font-family: Arial, sans-serif;
-    }
+:root {
+  --gold:#d6ad55;
+  --gold2:#f0d58c;
+  --bg:#080808;
+  --panel:#121212;
+  --panel2:#191919;
+  --text:#f5f5f5;
+  --muted:#999;
+  --border:#292929;
+  --danger:#e05252;
+  --success:#35b779;
+}
 
-    :root {
-      --gold: #d6ad45;
-      --panel: #151515;
-      --muted: #999;
-      --border: #292929;
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
 
-    header {
-      background: #111;
-      border-bottom: 1px solid var(--border);
-      padding: 18px 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
+.gold{color:var(--gold)}
+.muted{color:var(--muted)}
+.container{max-width:1250px;margin:auto;padding:24px}
 
-    .logo {
-      color: var(--gold);
-      font-size: 23px;
-      font-weight: bold;
-    }
+header{
+  border-bottom:1px solid var(--border);
+  background:#0c0c0c;
+}
+.header-inner{
+  max-width:1250px;margin:auto;padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;flex-wrap:wrap;
+}
+.brand{
+  font-size:24px;font-weight:800;letter-spacing:2px;
+  color:var(--gold);
+}
+.brand small{
+  display:block;font-size:10px;letter-spacing:4px;
+  color:#aaa;margin-top:4px;
+}
+.header-right{display:flex;align-items:center;gap:12px}
 
-    .logo span {
-      color: white;
-    }
+.btn{
+  border:1px solid var(--border);border-radius:7px;
+  padding:10px 16px;background:#202020;color:white;
+  font-weight:600;transition:.2s;
+}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn-gold{
+  background:linear-gradient(135deg,#b88b35,#f0d58c);
+  color:#111;border:0;
+}
+.btn-gold:hover{color:#111;filter:brightness(1.08)}
+.btn-danger{background:#351919;color:#ff8c8c;border-color:#633030}
+.btn-small{padding:7px 11px;font-size:12px}
 
-    header a {
-      color: var(--gold);
-      text-decoration: none;
-    }
+h1{font-size:27px;margin:0 0 8px}
+h2{font-size:19px;margin:0 0 18px}
+h3{font-size:15px;margin:0 0 10px}
+.page-subtitle{color:var(--muted);font-size:13px;margin:0}
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 30px 18px;
-    }
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin:28px 0;
+}
+.stat-card{
+  background:linear-gradient(145deg,#171717,#101010);
+  border:1px solid var(--border);border-radius:12px;
+  padding:22px;
+}
+.stat-card .label{font-size:12px;color:var(--muted)}
+.stat-card .number{
+  font-size:32px;font-weight:800;color:var(--gold);
+  margin-top:9px;
+}
 
-    h1 {
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
+.tabs{
+  display:flex;gap:8px;border-bottom:1px solid var(--border);
+  margin:25px 0 20px;flex-wrap:wrap;
+}
+.tab{
+  border:0;background:transparent;color:var(--muted);
+  padding:13px 17px;border-bottom:2px solid transparent;
+  font-weight:600;
+}
+.tab.active{color:var(--gold);border-color:var(--gold)}
 
-    .subtitle {
-      color: var(--muted);
-      margin-bottom: 25px;
-    }
+.panel{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:22px;margin-bottom:20px;
+}
+.toolbar{
+  display:flex;gap:12px;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;margin-bottom:18px;
+}
+.search{
+  flex:1;min-width:220px;max-width:450px;
+}
+input,textarea,select{
+  width:100%;background:#0b0b0b;color:white;
+  border:1px solid #333;border-radius:7px;
+  padding:12px;outline:none;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--gold)}
+textarea{min-height:105px;resize:vertical}
+label{
+  display:block;font-size:12px;color:#bbb;
+  margin-bottom:7px;font-weight:600;
+}
+.form-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:17px;
+}
+.form-group.full{grid-column:1/-1}
+.form-actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;
+}
+.checkbox-row{display:flex;align-items:center;gap:9px}
+.checkbox-row input{width:auto;accent-color:var(--gold)}
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
+.movie-list{display:grid;gap:12px}
+.movie-item{
+  display:grid;grid-template-columns:65px 1fr auto;
+  gap:15px;align-items:center;
+  padding:12px;background:#171717;
+  border:1px solid var(--border);border-radius:9px;
+}
+.movie-poster{
+  width:65px;height:85px;object-fit:cover;
+  border-radius:5px;background:#222;
+}
+.movie-title{font-weight:700;font-size:14px}
+.movie-meta{font-size:11px;color:var(--muted);margin-top:6px}
+.movie-actions{display:flex;gap:7px;flex-wrap:wrap}
 
-    .stat-card, .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-    }
+.notice{
+  display:none;padding:12px 15px;border-radius:7px;
+  margin:15px 0;font-size:13px;
+}
+.notice.show{display:block}
+.notice.error{background:#351919;color:#ff9999}
+.notice.success{background:#123222;color:#82e2ae}
+.empty{
+  text-align:center;padding:35px 15px;color:var(--muted);
+  border:1px dashed #333;border-radius:9px;
+}
+.loading{text-align:center;padding:25px;color:var(--gold)}
 
-    .stat-card p {
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
+.login-wrap{
+  min-height:calc(100vh - 80px);
+  display:flex;align-items:center;justify-content:center;
+  padding:25px;
+}
+.login-card{
+  width:100%;max-width:420px;
+  padding:35px;background:linear-gradient(145deg,#171717,#0e0e0e);
+  border:1px solid #3c3321;border-radius:14px;
+  box-shadow:0 15px 60px #000;
+}
+.login-logo{text-align:center;margin-bottom:25px}
+.login-logo .brand{font-size:30px}
+.login-card h2{text-align:center;margin-bottom:7px}
+.login-card .muted{text-align:center;font-size:13px;margin-bottom:25px}
+.login-card .form-group{margin-bottom:17px}
+.login-card .btn{width:100%;padding:13px}
+.login-foot{text-align:center;color:#777;font-size:11px;margin-top:20px}
 
-    .stat-card h2 {
-      color: var(--gold);
-      font-size: 28px;
-    }
+footer{
+  text-align:center;padding:25px;color:#666;
+  font-size:11px;border-top:1px solid var(--border);
+  margin-top:35px;
+}
 
-    .tabs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    button {
-      cursor: pointer;
-      border: 1px solid var(--gold);
-      border-radius: 5px;
-      padding: 11px 16px;
-      font-weight: bold;
-    }
-
-    .tab {
-      color: var(--gold);
-      background: transparent;
-    }
-
-    .tab.active, .primary {
-      background: var(--gold);
-      color: #111;
-    }
-
-    .danger {
-      background: #a62929;
-      color: white;
-      border-color: #a62929;
-    }
-
-    .secondary {
-      background: #292929;
-      color: white;
-      border-color: #444;
-    }
-
-    .panel {
-      margin-bottom: 22px;
-    }
-
-    .panel h2 {
-      color: var(--gold);
-      margin-bottom: 18px;
-      font-size: 20px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 15px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      color: #ccc;
-      font-size: 14px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      background: #0c0c0c;
-      border: 1px solid #393939;
-      color: white;
-      padding: 12px;
-      border-radius: 5px;
-      outline: none;
-      font: inherit;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--gold);
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .notice {
-      padding: 13px;
-      border-radius: 6px;
-      margin-bottom: 18px;
-      line-height: 1.5;
-      background: #302613;
-      border: 1px solid #715b29;
-      color: #f0d58c;
-    }
-
-    .error {
-      background: #351919;
-      border-color: #773535;
-      color: #ffb5b5;
-    }
-
-    .success {
-      background: #17301f;
-      border-color: #326b43;
-      color: #b8edc5;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .toolbar input {
-      flex: 1;
-      min-width: 180px;
-    }
-
-    .movie-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .movie-item {
-      background: #101010;
-      border: 1px solid var(--border);
-      padding: 13px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .movie-item img {
-      width: 58px;
-      height: 78px;
-      object-fit: cover;
-      border-radius: 5px;
-      background: #252525;
-    }
-
-    .movie-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .movie-info h3 {
-      font-size: 15px;
-      margin-bottom: 7px;
-    }
-
-    .movie-info p {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .movie-actions {
-      display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-    }
-
-    .movie-actions button {
-      padding: 8px 11px;
-      font-size: 12px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .empty {
-      color: var(--muted);
-      text-align: center;
-      padding: 25px;
-    }
-
-    footer {
-      text-align: center;
-      color: #777;
-      padding: 25px;
-      border-top: 1px solid var(--border);
-      font-size: 13px;
-    }
-
-    @media (max-width: 650px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .field.full {
-        grid-column: auto;
-      }
-
-      .movie-item {
-        align-items: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .movie-actions {
-        width: 100%;
-        padding-left: 72px;
-      }
-    }
-  </style>
+@media(max-width:700px){
+  .container{padding:17px}
+  .stats{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:auto}
+  .movie-item{grid-template-columns:52px 1fr}
+  .movie-poster{width:52px;height:72px}
+  .movie-actions{grid-column:1/-1}
+  .header-inner{padding:15px}
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo">CINE<span>VAULT</span> ADMIN</div>
-  <a href="index.html">← Visit Website</a>
+  <div class="header-inner">
+    <div class="brand">
+      CINEVAULT
+      <small>ADMINISTRATION PANEL</small>
+    </div>
+
+    <div class="header-right">
+      <span class="muted" id="adminStatus">Admin Panel</span>
+      <button class="btn btn-danger btn-small hidden" id="logoutBtn">
+        Logout
+      </button>
+    </div>
+  </div>
 </header>
 
-<main class="container">
+<!-- LOGIN SCREEN -->
+<section class="login-wrap" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="brand">CINEVAULT</div>
+      <div class="muted">PREMIUM ADMIN ACCESS</div>
+    </div>
 
-  <h1>Admin Dashboard</h1>
-  <p class="subtitle">Manage your CineVault movie collection.</p>
+    <h2>Admin Login</h2>
+    <p class="muted">Sign in to manage your movie library.</p>
 
-  <div id="message" class="notice">
-    Admin interface তৈরি হয়েছে। নিরাপদ API সংযোগ এখনো প্রস্তুত করা হয়নি।
-    এই মুহূর্তে Add, Edit ও Delete করলে সার্ভারে কোনো পরিবর্তন হবে না।
+    <div id="loginNotice" class="notice"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="adminPassword">ADMIN PASSWORD</label>
+        <input
+          type="password"
+          id="adminPassword"
+          placeholder="Enter admin password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button class="btn btn-gold" type="submit" id="loginBtn">
+        Secure Login
+      </button>
+    </form>
+
+    <div class="login-foot">
+      Protected CineVault Administration
+    </div>
   </div>
+</section>
+
+<!-- ADMIN DASHBOARD -->
+<main class="container hidden" id="dashboard">
+
+  <div>
+    <h1>Admin <span class="gold">Dashboard</span></h1>
+    <p class="page-subtitle">
+      Manage your CineVault movie collection.
+    </p>
+  </div>
+
+  <div id="mainNotice" class="notice"></div>
 
   <section class="stats">
     <div class="stat-card">
-      <p>Total Movies</p>
-      <h2 id="totalMovies">—</h2>
+      <div class="label">TOTAL MOVIES</div>
+      <div class="number" id="totalMovies">0</div>
     </div>
 
     <div class="stat-card">
-      <p>Dashboard Status</p>
-      <h2 style="font-size:19px">Setup Pending</h2>
+      <div class="label">FEATURED MOVIES</div>
+      <div class="number" id="featuredMovies">0</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="label">DATABASE STATUS</div>
+      <div class="number" id="databaseStatus" style="font-size:20px">
+        Checking...
+      </div>
     </div>
   </section>
 
@@ -345,436 +289,573 @@
     <button class="tab" data-tab="add">Add Movie</button>
   </div>
 
-  <section id="library" class="panel">
-    <h2>Movie Library</h2>
+  <!-- MOVIE LIBRARY -->
+  <section id="libraryTab" class="panel">
+    <div class="toolbar">
+      <div>
+        <h2>Movie Library</h2>
+        <p class="page-subtitle">Search, edit and delete movies.</p>
+      </div>
+
+      <button class="btn" id="refreshBtn">Refresh</button>
+    </div>
 
     <div class="toolbar">
-      <input id="searchMovies" type="search"
-        placeholder="Search movie title...">
-      <button class="secondary" id="refreshButton">Refresh</button>
+      <input
+        class="search"
+        type="search"
+        id="movieSearch"
+        placeholder="Search by movie title, genre or year..."
+      >
+      <span class="muted" id="resultCount">0 movies</span>
     </div>
 
     <div id="movieList" class="movie-list">
-      <p class="empty">Loading movies...</p>
+      <div class="loading">Loading movies...</div>
     </div>
   </section>
 
-  <section id="add" class="panel hidden">
+  <!-- ADD / EDIT FORM -->
+  <section id="addTab" class="panel hidden">
     <h2 id="formHeading">Add New Movie</h2>
+    <p class="page-subtitle" id="formSubtitle">
+      Add a movie to your CineVault database.
+    </p>
 
     <form id="movieForm">
-
       <input type="hidden" id="movieId">
 
       <div class="form-grid">
 
-        <div class="field">
-          <label for="title">Movie Title *</label>
-          <input id="title" required>
+        <div class="form-group">
+          <label for="title">MOVIE TITLE *</label>
+          <input id="title" required maxlength="200" placeholder="Movie title">
         </div>
 
-        <div class="field">
-          <label for="year">Release Year</label>
-          <input id="year" type="number" min="1888" max="2100">
+        <div class="form-group">
+          <label for="year">RELEASE YEAR</label>
+          <input id="year" type="number" min="1888" max="2100" placeholder="2026">
         </div>
 
-        <div class="field">
-          <label for="genre">Genre</label>
-          <input id="genre" placeholder="Action, Drama">
+        <div class="form-group">
+          <label for="genre">GENRE</label>
+          <input id="genre" placeholder="Action, Drama, Thriller">
         </div>
 
-        <div class="field">
-          <label for="language">Language</label>
-          <input id="language" placeholder="English">
+        <div class="form-group">
+          <label for="language">LANGUAGE</label>
+          <input id="language" placeholder="English, Hindi, Bangla">
         </div>
 
-        <div class="field">
-          <label for="country">Country</label>
-          <input id="country">
+        <div class="form-group">
+          <label for="country">COUNTRY</label>
+          <input id="country" placeholder="USA, India, Bangladesh">
         </div>
 
-        <div class="field">
-          <label for="rating">Rating</label>
-          <input id="rating" type="number" min="0" max="10"
-            step="0.1">
+        <div class="form-group">
+          <label for="rating">IMDB RATING</label>
+          <input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5">
         </div>
 
-        <div class="field">
-          <label for="duration">Duration</label>
-          <input id="duration" placeholder="2h 10m">
+        <div class="form-group">
+          <label for="duration">DURATION</label>
+          <input id="duration" placeholder="2h 15m">
         </div>
 
-        <div class="field">
-          <label for="director">Director</label>
-          <input id="director">
+        <div class="form-group">
+          <label for="director">DIRECTOR</label>
+          <input id="director" placeholder="Director name">
         </div>
 
-        <div class="field full">
-          <label for="poster">Poster Image URL</label>
-          <input id="poster" type="url" placeholder="https://...">
+        <div class="form-group full">
+          <label for="poster">POSTER IMAGE URL</label>
+          <input id="poster" type="url" placeholder="https://example.com/poster.jpg">
         </div>
 
-        <div class="field full">
-          <label for="backdrop">Backdrop Image URL</label>
-          <input id="backdrop" type="url" placeholder="https://...">
+        <div class="form-group full">
+          <label for="backdrop">BACKDROP IMAGE URL</label>
+          <input id="backdrop" type="url" placeholder="https://example.com/backdrop.jpg">
         </div>
 
-        <div class="field full">
-          <label for="description">Description</label>
-          <textarea id="description"></textarea>
+        <div class="form-group full">
+          <label for="description">MOVIE DESCRIPTION</label>
+          <textarea id="description" placeholder="Write movie description..."></textarea>
         </div>
 
-        <div class="field full">
-          <label for="watchUrl">Watch URL</label>
-          <input id="watchUrl" type="url" placeholder="https://...">
+        <div class="form-group full">
+          <label for="watchUrl">WATCH URL</label>
+          <input id="watchUrl" type="url" placeholder="https://example.com/watch">
         </div>
 
-        <div class="field full">
-          <label for="downloadUrl">Download URL</label>
-          <input id="downloadUrl" type="url" placeholder="https://...">
+        <div class="form-group full">
+          <label for="downloadUrl">DOWNLOAD URL</label>
+          <input id="downloadUrl" type="url" placeholder="https://example.com/download">
         </div>
 
-        <div class="field">
-          <label for="featured">Featured Movie</label>
-          <select id="featured">
-            <option value="false">No</option>
-            <option value="true">Yes</option>
-          </select>
+        <div class="form-group full">
+          <label class="checkbox-row">
+            <input type="checkbox" id="featured">
+            FEATURED MOVIE
+          </label>
         </div>
 
       </div>
 
-      <div class="actions">
-        <button type="submit" class="primary" id="saveButton">
+      <div class="form-actions">
+        <button class="btn btn-gold" type="submit" id="saveBtn">
           Save Movie
         </button>
-
-        <button type="button" class="secondary" id="resetButton">
+        <button class="btn hidden" type="button" id="cancelEditBtn">
+          Cancel Edit
+        </button>
+        <button class="btn" type="reset" id="resetBtn">
           Clear Form
         </button>
       </div>
-
     </form>
   </section>
 
 </main>
 
 <footer>
-  CineVault Admin Dashboard
+  CINEVAULT ADMIN PANEL · PREMIUM BLACK & GOLD
 </footer>
 
-<script src="movies.js"></script>
-
 <script>
-  const API = "/api/admin/movies";
+"use strict";
 
-  const message = document.getElementById("message");
-  const movieList = document.getElementById("movieList");
-  const totalMovies = document.getElementById("totalMovies");
-  const movieForm = document.getElementById("movieForm");
+const API = "/api/admin";
 
-  let movies = [];
-  let apiReady = false;
+const $ = id => document.getElementById(id);
 
-  function showMessage(text, type = "") {
-    message.textContent = text;
-    message.className = "notice " + type;
+let movies = [];
+let editingId = null;
+
+function showNotice(elementId, message, type = "success") {
+  const box = $(elementId);
+  box.textContent = message;
+  box.className = "notice show " + type;
+
+  if (elementId === "mainNotice") {
+    window.setTimeout(() => {
+      box.className = "notice";
+    }, 5000);
   }
+}
 
-  function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    })[char]);
-  }
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
 
-  function validURL(value) {
-    if (!value) return "";
-    try {
-      const url = new URL(value);
-      return ["http:", "https:"].includes(url.protocol)
-        ? url.href : "";
-    } catch {
-      return "";
+async function apiRequest(path, options = {}) {
+  const response = await fetch(API + path, {
+    ...options,
+    credentials: "same-origin",
+    headers: {
+      ...(options.body ? {"Content-Type": "application/json"} : {}),
+      ...(options.headers || {})
     }
-  }
-
-  function switchTab(tabName) {
-    document.querySelectorAll(".tab").forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.tab === tabName
-      );
-    });
-
-    document.getElementById("library").classList.toggle(
-      "hidden", tabName !== "library"
-    );
-
-    document.getElementById("add").classList.toggle(
-      "hidden", tabName !== "add"
-    );
-  }
-
-  document.querySelectorAll(".tab").forEach(button => {
-    button.addEventListener("click", () => {
-      switchTab(button.dataset.tab);
-    });
   });
 
-  function renderMovies() {
-    const query = document.getElementById("searchMovies")
-      .value.toLowerCase().trim();
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (_) {
+    data = {};
+  }
 
-    const filtered = movies.filter(movie =>
-      String(movie.title || "").toLowerCase().includes(query)
+  if (response.status === 401) {
+    showLogin();
+    throw new Error("Your session has expired. Please log in again.");
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || "Request failed. Please try again.");
+  }
+
+  return data;
+}
+
+function showLogin() {
+  $("loginScreen").classList.remove("hidden");
+  $("dashboard").classList.add("hidden");
+  $("logoutBtn").classList.add("hidden");
+  $("adminStatus").textContent = "Admin Login";
+}
+
+function showDashboard() {
+  $("loginScreen").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  $("logoutBtn").classList.remove("hidden");
+  $("adminStatus").textContent = "Authenticated Admin";
+}
+
+async function checkSession() {
+  try {
+    const data = await apiRequest("/session");
+
+    if (data.authenticated) {
+      showDashboard();
+      await loadMovies();
+    } else {
+      showLogin();
+    }
+  } catch (error) {
+    showLogin();
+    if (error.message) {
+      console.warn(error.message);
+    }
+  }
+}
+
+/* LOGIN */
+$("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const password = $("adminPassword").value;
+  if (!password) return;
+
+  $("loginBtn").disabled = true;
+  $("loginBtn").textContent = "Signing in...";
+
+  try {
+    await apiRequest("/login", {
+      method: "POST",
+      body: JSON.stringify({password})
+    });
+
+    $("adminPassword").value = "";
+    $("loginNotice").className = "notice";
+
+    showDashboard();
+    await loadMovies();
+
+  } catch (error) {
+    showNotice("loginNotice", error.message, "error");
+  } finally {
+    $("loginBtn").disabled = false;
+    $("loginBtn").textContent = "Secure Login";
+  }
+});
+
+/* LOGOUT */
+$("logoutBtn").addEventListener("click", async () => {
+  if (!confirm("Are you sure you want to logout?")) return;
+
+  try {
+    await apiRequest("/logout", {method: "POST"});
+  } catch (error) {
+    console.warn(error.message);
+  }
+
+  movies = [];
+  $("movieList").innerHTML = "";
+  $("adminPassword").value = "";
+  showLogin();
+});
+
+/* TABS */
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(tab =>
+      tab.classList.remove("active")
     );
 
-    totalMovies.textContent = movies.length;
+    button.classList.add("active");
 
-    if (!filtered.length) {
-      movieList.innerHTML =
-        '<p class="empty">No movies found.</p>';
-      return;
-    }
+    const selected = button.dataset.tab;
+    $("libraryTab").classList.toggle("hidden", selected !== "library");
+    $("addTab").classList.toggle("hidden", selected !== "add");
+  });
+});
 
-    movieList.innerHTML = filtered.map(movie => {
-      const poster = validURL(movie.poster) ||
-        "https://placehold.co/100x140/151515/d6ad45?text=Movie";
+function openTab(name) {
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.tab === name);
+  });
 
-      return `
-        <div class="movie-item">
-          <img src="${escapeHTML(poster)}"
-               alt="${escapeHTML(movie.title)}"
-               loading="lazy">
+  $("libraryTab").classList.toggle("hidden", name !== "library");
+  $("addTab").classList.toggle("hidden", name !== "add");
+}
 
-          <div class="movie-info">
-            <h3>${escapeHTML(movie.title)}</h3>
-            <p>
-              ${escapeHTML(movie.year || "N/A")}
-              · ${escapeHTML(movie.genre || "N/A")}
-              · ID: ${escapeHTML(movie.id)}
-            </p>
-          </div>
+/* LOAD MOVIES FROM D1 API */
+async function loadMovies() {
+  $("movieList").innerHTML = '<div class="loading">Loading movies...</div>';
+  $("databaseStatus").textContent = "Connecting...";
 
-          <div class="movie-actions">
-            <button class="tab"
-              data-edit="${escapeHTML(movie.id)}">Edit</button>
-            <button class="danger"
-              data-delete="${escapeHTML(movie.id)}">Delete</button>
-          </div>
+  try {
+    const data = await apiRequest("/movies");
+
+    movies = Array.isArray(data.movies) ? data.movies : [];
+
+    $("totalMovies").textContent =
+      Number.isFinite(Number(data.total)) ? data.total : movies.length;
+
+    $("featuredMovies").textContent =
+      movies.filter(movie =>
+        movie.featured === true ||
+        movie.featured === 1 ||
+        movie.featured === "1"
+      ).length;
+
+    $("databaseStatus").textContent = "Connected";
+    $("databaseStatus").style.color = "var(--success)";
+
+    renderMovies();
+
+  } catch (error) {
+    $("movieList").innerHTML =
+      '<div class="empty">Could not load movies. ' +
+      escapeHTML(error.message) + '</div>';
+
+    $("databaseStatus").textContent = "Error";
+    $("databaseStatus").style.color = "var(--danger)";
+    showNotice("mainNotice", error.message, "error");
+  }
+}
+
+/* RENDER MOVIE LIBRARY */
+function renderMovies() {
+  const query = $("movieSearch").value.trim().toLowerCase();
+
+  const filtered = movies.filter(movie => {
+    const searchable = [
+      movie.title,
+      movie.genre,
+      movie.year,
+      movie.language,
+      movie.country,
+      movie.director
+    ].join(" ").toLowerCase();
+
+    return searchable.includes(query);
+  });
+
+  $("resultCount").textContent = filtered.length + " movies";
+
+  if (!filtered.length) {
+    $("movieList").innerHTML =
+      '<div class="empty">No movies found.</div>';
+    return;
+  }
+
+  $("movieList").innerHTML = filtered.map(movie => {
+    const poster = movie.poster || "";
+    const title = escapeHTML(movie.title || "Untitled");
+    const meta = [
+      movie.year,
+      movie.genre,
+      movie.language
+    ].filter(Boolean).map(escapeHTML).join(" · ");
+
+    return `
+      <div class="movie-item">
+        <img
+          class="movie-poster"
+          src="${escapeHTML(poster)}"
+          alt=""
+          loading="lazy"
+          onerror="this.style.visibility='hidden'"
+        >
+
+        <div>
+          <div class="movie-title">${title}</div>
+          <div class="movie-meta">${meta || "Movie details unavailable"}</div>
+          <div class="movie-meta">ID: ${escapeHTML(movie.id)}</div>
         </div>
-      `;
-    }).join("");
+
+        <div class="movie-actions">
+          <button class="btn btn-small edit-btn" data-id="${escapeHTML(movie.id)}">
+            Edit
+          </button>
+          <button class="btn btn-danger btn-small delete-btn" data-id="${escapeHTML(movie.id)}">
+            Delete
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+$("movieSearch").addEventListener("input", renderMovies);
+$("refreshBtn").addEventListener("click", loadMovies);
+
+/* EDIT MOVIE */
+$("movieList").addEventListener("click", event => {
+  const editButton = event.target.closest(".edit-btn");
+  const deleteButton = event.target.closest(".delete-btn");
+
+  if (editButton) {
+    const movie = movies.find(item =>
+      String(item.id) === editButton.dataset.id
+    );
+
+    if (movie) editMovie(movie);
   }
 
-  async function loadMovies() {
-    showMessage("Connecting to secure admin API...");
+  if (deleteButton) {
+    deleteMovie(deleteButton.dataset.id);
+  }
+});
 
-    try {
-      const response = await fetch(API, {
-        method: "GET",
-        credentials: "same-origin",
-        headers: { "Accept": "application/json" }
-      });
+function editMovie(movie) {
+  editingId = movie.id;
 
-      if (!response.ok) {
-        throw new Error("API unavailable (HTTP " + response.status + ")");
+  const fields = [
+    "title", "year", "genre", "language", "country",
+    "rating", "duration", "director", "poster",
+    "backdrop", "description", "watchUrl", "downloadUrl"
+  ];
+
+  fields.forEach(field => {
+    $(field).value = movie[field] ?? "";
+  });
+
+  $("featured").checked =
+    movie.featured === true ||
+    movie.featured === 1 ||
+    movie.featured === "1";
+
+  $("movieId").value = movie.id;
+  $("formHeading").textContent = "Edit Movie";
+  $("formSubtitle").textContent = "Update movie information.";
+  $("saveBtn").textContent = "Update Movie";
+  $("cancelEditBtn").classList.remove("hidden");
+
+  openTab("add");
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+/* RESET FORM */
+function resetMovieForm() {
+  $("movieForm").reset();
+  $("movieId").value = "";
+  editingId = null;
+
+  $("formHeading").textContent = "Add New Movie";
+  $("formSubtitle").textContent =
+    "Add a movie to your CineVault database.";
+  $("saveBtn").textContent = "Save Movie";
+  $("cancelEditBtn").classList.add("hidden");
+}
+
+$("cancelEditBtn").addEventListener("click", () => {
+  resetMovieForm();
+  openTab("library");
+});
+
+$("resetBtn").addEventListener("click", () => {
+  window.setTimeout(resetMovieForm, 0);
+});
+
+/* SAVE OR UPDATE MOVIE */
+$("movieForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const movie = {
+    title: $("title").value.trim(),
+    year: $("year").value ? Number($("year").value) : null,
+    genre: $("genre").value.trim(),
+    language: $("language").value.trim(),
+    country: $("country").value.trim(),
+    rating: $("rating").value ? Number($("rating").value) : null,
+    duration: $("duration").value.trim(),
+    director: $("director").value.trim(),
+    poster: $("poster").value.trim(),
+    backdrop: $("backdrop").value.trim(),
+    description: $("description").value.trim(),
+    watchUrl: $("watchUrl").value.trim(),
+    downloadUrl: $("downloadUrl").value.trim(),
+    featured: $("featured").checked
+  };
+
+  if (!movie.title) {
+    showNotice("mainNotice", "Movie title is required.", "error");
+    return;
+  }
+
+  for (const field of ["poster", "backdrop", "watchUrl", "downloadUrl"]) {
+    if (movie[field]) {
+      try {
+        const url = new URL(movie[field]);
+        if (!["http:", "https:"].includes(url.protocol)) {
+          throw new Error("Invalid URL");
+        }
+      } catch (_) {
+        showNotice(
+          "mainNotice",
+          "Please enter a valid HTTP or HTTPS URL for " + field + ".",
+          "error"
+        );
+        return;
       }
-
-      const data = await response.json();
-
-      if (!Array.isArray(data.movies)) {
-        throw new Error("Invalid API response.");
-      }
-
-      movies = data.movies;
-      apiReady = true;
-
-      showMessage("Secure movie database connected.", "success");
-      renderMovies();
-
-    } catch (error) {
-      apiReady = false;
-
-      movies = Array.isArray(window.movies)
-        ? window.movies : [];
-
-      renderMovies();
-
-      showMessage(
-        "Admin API এখনো তৈরি হয়নি। নিচে বর্তমান সিনেমাগুলো দেখা যাবে, " +
-        "কিন্তু Add, Edit ও Delete এখনো কাজ করবে না। পরবর্তী ধাপে " +
-        "Cloudflare Functions ও D1 Database যুক্ত করা হবে।",
-        "error"
-      );
     }
   }
 
-  function resetForm() {
-    movieForm.reset();
-    document.getElementById("movieId").value = "";
-    document.getElementById("formHeading").textContent =
-      "Add New Movie";
-    document.getElementById("saveButton").textContent =
-      "Save Movie";
-  }
+  const isEditing = editingId !== null;
+  const endpoint = isEditing
+    ? "/movies/" + encodeURIComponent(editingId)
+    : "/movies";
 
-  function editMovie(id) {
-    if (!apiReady) {
-      showMessage("Edit চালু করতে আগে secure API তৈরি করতে হবে.", "error");
-      return;
-    }
+  $("saveBtn").disabled = true;
+  $("saveBtn").textContent = isEditing ? "Updating..." : "Saving...";
 
-    const movie = movies.find(item => String(item.id) === String(id));
-    if (!movie) return;
-
-    const fields = [
-      "title", "year", "genre", "language", "country",
-      "rating", "duration", "director", "poster",
-      "backdrop", "description", "watchUrl", "downloadUrl"
-    ];
-
-    document.getElementById("movieId").value = movie.id;
-
-    fields.forEach(field => {
-      document.getElementById(field).value =
-        movie[field] ?? "";
+  try {
+    await apiRequest(endpoint, {
+      method: isEditing ? "PUT" : "POST",
+      body: JSON.stringify(movie)
     });
 
-    document.getElementById("featured").value =
-      String(Boolean(movie.featured));
+    showNotice(
+      "mainNotice",
+      isEditing ? "Movie updated successfully." : "Movie added successfully.",
+      "success"
+    );
 
-    document.getElementById("formHeading").textContent =
-      "Edit Movie";
+    resetMovieForm();
+    await loadMovies();
+    openTab("library");
 
-    document.getElementById("saveButton").textContent =
-      "Update Movie";
-
-    switchTab("add");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (error) {
+    showNotice("mainNotice", error.message, "error");
+  } finally {
+    $("saveBtn").disabled = false;
+    $("saveBtn").textContent = editingId !== null
+      ? "Update Movie"
+      : "Save Movie";
   }
+});
 
-  async function deleteMovie(id) {
-    if (!apiReady) {
-      showMessage("Delete চালু করতে আগে secure API তৈরি করতে হবে.", "error");
-      return;
-    }
+/* DELETE MOVIE */
+async function deleteMovie(id) {
+  const movie = movies.find(item => String(item.id) === String(id));
 
-    const movie = movies.find(item => String(item.id) === String(id));
-    if (!movie) return;
+  if (!confirm(
+    'Delete "' + (movie?.title || "this movie") +
+    '" permanently from the database?'
+  )) return;
 
-    if (!confirm(`Delete "${movie.title}" permanently?`)) return;
+  try {
+    await apiRequest("/movies/" + encodeURIComponent(id), {
+      method: "DELETE"
+    });
 
-    try {
-      const response = await fetch(
-        API + "/" + encodeURIComponent(id),
-        {
-          method: "DELETE",
-          credentials: "same-origin"
-        }
-      );
+    showNotice("mainNotice", "Movie deleted successfully.", "success");
+    await loadMovies();
 
-      if (!response.ok) throw new Error("Delete failed.");
-
-      showMessage("Movie deleted successfully.", "success");
-      await loadMovies();
-
-    } catch (error) {
-      showMessage(error.message, "error");
-    }
+  } catch (error) {
+    showNotice("mainNotice", error.message, "error");
   }
+}
 
-  movieList.addEventListener("click", event => {
-    const editButton = event.target.closest("[data-edit]");
-    const deleteButton = event.target.closest("[data-delete]");
-
-    if (editButton) editMovie(editButton.dataset.edit);
-    if (deleteButton) deleteMovie(deleteButton.dataset.delete);
-  });
-
-  movieForm.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (!apiReady) {
-      showMessage(
-        "Save করার আগে Cloudflare secure API ও Database তৈরি করতে হবে.",
-        "error"
-      );
-      return;
-    }
-
-    const id = document.getElementById("movieId").value;
-
-    const payload = {
-      title: document.getElementById("title").value.trim(),
-      year: Number(document.getElementById("year").value) || null,
-      genre: document.getElementById("genre").value.trim(),
-      language: document.getElementById("language").value.trim(),
-      country: document.getElementById("country").value.trim(),
-      rating: Number(document.getElementById("rating").value) || 0,
-      duration: document.getElementById("duration").value.trim(),
-      director: document.getElementById("director").value.trim(),
-      poster: validURL(document.getElementById("poster").value),
-      backdrop: validURL(document.getElementById("backdrop").value),
-      description: document.getElementById("description").value.trim(),
-      watchUrl: validURL(document.getElementById("watchUrl").value),
-      downloadUrl: validURL(document.getElementById("downloadUrl").value),
-      featured: document.getElementById("featured").value === "true"
-    };
-
-    if (!payload.title) {
-      showMessage("Movie title is required.", "error");
-      return;
-    }
-
-    const button = document.getElementById("saveButton");
-    button.disabled = true;
-
-    try {
-      const response = await fetch(
-        id ? API + "/" + encodeURIComponent(id) : API,
-        {
-          method: id ? "PUT" : "POST",
-          credentials: "same-origin",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        }
-      );
-
-      if (!response.ok) throw new Error("Save failed.");
-
-      showMessage(
-        id ? "Movie updated successfully." : "Movie added successfully.",
-        "success"
-      );
-
-      resetForm();
-      await loadMovies();
-      switchTab("library");
-
-    } catch (error) {
-      showMessage(error.message, "error");
-    } finally {
-      button.disabled = false;
-    }
-  });
-
-  document.getElementById("resetButton")
-    .addEventListener("click", resetForm);
-
-  document.getElementById("refreshButton")
-    .addEventListener("click", loadMovies);
-
-  document.getElementById("searchMovies")
-    .addEventListener("input", renderMovies);
-
-  loadMovies();
+/* START */
+checkSession();
 </script>
 
 </body>
