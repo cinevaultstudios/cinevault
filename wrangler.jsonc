@@ -1,3 +1,4 @@
+
 {
   "$schema": "https://www.schemastore.org/wrangler.json",
   "name": "cinevault-website",
@@ -7,5 +8,12 @@
     "directory": "./",
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cinevault-db",
+      "database_id": "ae4762a3-c175-4b5a-98c8-5ca5dc3e3dd7"
+    }
+  ]
 }
