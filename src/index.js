@@ -1,33 +1,112 @@
 
-const json = (data, status = 200) =>
+const json = (data, status = 200, extraHeaders = {}) =>
   new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store"
+      "Cache-Control": "no-store",
+      ...extraHeaders
     }
   });
 
-const MOVIE_SELECT = `
-  SELECT
-    id, title, slug, description, poster, backdrop,
-    year, genre, rating, duration, language, country,
-    director, quality, featured,
-    download_url AS downloadUrl,
-    watch_url AS watchUrl,
-    created_at AS createdAt,
-    updated_at AS updatedAt
-  FROM movies
-`;
+const COOKIE_NAME = "cinevault_admin";
+const SESSION_SECONDS = 8 * 60 * 60;
 
-function makeSlug(title, year) {
-  const slug = String(title)
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+function toBase64Url(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
 
-  return `${slug || "movie"}-${year || Date.now()}`;
+function fromBase64Url(value) {
+  const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(base64);
+  return Uint8Array.from(binary, c => c.charCodeAt(0));
+}
+
+async function hmacKey(password) {
+  return crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"]
+  );
+}
+
+async function signSession(password, payload) {
+  const key = await hmacKey(password);
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(payload)
+  );
+  return toBase64Url(new Uint8Array(signature));
+}
+
+async function verifySession(request, password) {
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const cookie = cookieHeader
+    .split(";")
+    .map(item => item.trim())
+    .find(item => item.startsWith(COOKIE_NAME + "="));
+
+  if (!cookie) return false;
+
+  try {
+    const token = cookie.slice(COOKIE_NAME.length + 1);
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+
+    const [expires, nonce, signature] = parts;
+    if (!/^\d+$/.test(expires)) return false;
+    if (Number(expires) < Math.floor(Date.now() / 1000)) return false;
+
+    const payload = `${expires}.${nonce}`;
+    const key = await hmacKey(password);
+
+    return await crypto.subtle.verify(
+      "HMAC",
+      key,
+      fromBase64Url(signature),
+      new TextEncoder().encode(payload)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function sessionCookie(token, maxAge) {
+  return `${COOKIE_NAME}=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
+}
+
+function clearSessionCookie() {
+  return `${COOKIE_NAME}=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`;
+}
+
+async function createSession(password) {
+  const expires = Math.floor(Date.now() / 1000) + SESSION_SECONDS;
+  const random = crypto.getRandomValues(new Uint8Array(16));
+  const nonce = toBase64Url(random);
+  const payload = `${expires}.${nonce}`;
+  const signature = await signSession(password, payload);
+
+  return `${payload}.${signature}`;
+}
+
+function validOrigin(request, url) {
+  return request.headers.get("Origin") === url.origin;
+}
+
+function validUrl(value) {
+  if (!value) return "";
+  const parsed = new URL(String(value));
+
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error("Only HTTP and HTTPS URLs are allowed");
+  }
+
+  return parsed.toString();
 }
 
 function cleanMovie(data) {
@@ -40,18 +119,14 @@ function cleanMovie(data) {
     throw new Error("Rating must be between 0 and 10");
   }
 
-  const validUrl = (value) => {
-    if (!value) return "";
-    const url = new URL(String(value));
-    if (!["http:", "https:"].includes(url.protocol)) {
-      throw new Error("Only HTTP/HTTPS URLs are allowed");
-    }
-    return url.toString();
-  };
+  const slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
   return {
     title,
-    slug: makeSlug(title, year),
+    slug: `${slug || "movie"}-${year || Date.now()}`,
     description: String(data.description || ""),
     poster: validUrl(data.poster),
     backdrop: validUrl(data.backdrop),
@@ -69,34 +144,95 @@ function cleanMovie(data) {
   };
 }
 
-async function adminAuthorized(request, env) {
-  // Cloudflare Access must protect /admin.html
-  // and /api/admin/* before requests reach this Worker.
-  if (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) return false;
-
-  const token = request.headers.get("CF-Access-JWT-Assertion");
-  if (!token) return false;
-
-  // Access validates the JWT at its edge.
-  // The application must be protected by an Access policy.
-  return true;
-}
+const MOVIE_SELECT = `
+  SELECT
+    id, title, slug, description, poster, backdrop,
+    year, genre, rating, duration, language, country,
+    director, quality, featured,
+    download_url AS downloadUrl,
+    watch_url AS watchUrl,
+    created_at AS createdAt,
+    updated_at AS updatedAt
+  FROM movies
+`;
 
 async function handleAdmin(request, env, url) {
-  if (!await adminAuthorized(request, env)) {
-    return json({ success: false, message: "Unauthorized" }, 401);
+  const password = env.ADMIN_PASSWORD;
+
+  if (!password) {
+    return json({ success: false, message: "Admin password is not configured" }, 500);
   }
 
-  const origin = request.headers.get("Origin");
-  if (request.method !== "GET" && origin !== url.origin) {
+  const path = url.pathname;
+
+  if (path === "/api/admin/login" && request.method === "POST") {
+    if (!validOrigin(request, url)) {
+      return json({ success: false, message: "Invalid origin" }, 403);
+    }
+
+    let data;
+    try {
+      data = await request.json();
+    } catch {
+      return json({ success: false, message: "Invalid JSON" }, 400);
+    }
+
+    const supplied = String(data.password || "");
+    const encoder = new TextEncoder();
+
+    const expectedHash = new Uint8Array(
+      await crypto.subtle.digest("SHA-256", encoder.encode(password))
+    );
+    const suppliedHash = new Uint8Array(
+      await crypto.subtle.digest("SHA-256", encoder.encode(supplied))
+    );
+
+    let difference = 0;
+    for (let i = 0; i < expectedHash.length; i++) {
+      difference |= expectedHash[i] ^ suppliedHash[i];
+    }
+
+    if (difference !== 0) {
+      return json({ success: false, message: "Incorrect password" }, 401);
+    }
+
+    const token = await createSession(password);
+
+    return json(
+      { success: true, message: "Login successful" },
+      200,
+      { "Set-Cookie": sessionCookie(token, SESSION_SECONDS) }
+    );
+  }
+
+  if (path === "/api/admin/logout" && request.method === "POST") {
+    if (!validOrigin(request, url)) {
+      return json({ success: false, message: "Invalid origin" }, 403);
+    }
+
+    return json(
+      { success: true, message: "Logged out" },
+      200,
+      { "Set-Cookie": clearSessionCookie() }
+    );
+  }
+
+  const authorized = await verifySession(request, password);
+
+  if (path === "/api/admin/session" && request.method === "GET") {
+    return json({ success: true, authenticated: authorized });
+  }
+
+  if (!authorized) {
+    return json({ success: false, message: "Please login first" }, 401);
+  }
+
+  if (request.method !== "GET" && !validOrigin(request, url)) {
     return json({ success: false, message: "Invalid origin" }, 403);
   }
 
-  const db = env.DB;
-  const path = url.pathname;
-
   if (path === "/api/admin/movies" && request.method === "GET") {
-    const result = await db.prepare(
+    const result = await env.DB.prepare(
       MOVIE_SELECT + " ORDER BY id DESC"
     ).all();
 
@@ -108,10 +244,15 @@ async function handleAdmin(request, env, url) {
   }
 
   if (path === "/api/admin/movies" && request.method === "POST") {
-    const data = await request.json();
-    const movie = cleanMovie(data);
+    let movie;
 
-    await db.prepare(`
+    try {
+      movie = cleanMovie(await request.json());
+    } catch (error) {
+      return json({ success: false, message: error.message }, 400);
+    }
+
+    await env.DB.prepare(`
       INSERT INTO movies (
         title, slug, description, poster, backdrop,
         year, genre, rating, duration, language,
@@ -136,10 +277,15 @@ async function handleAdmin(request, env, url) {
     const id = Number(match[1]);
 
     if (request.method === "PUT") {
-      const data = await request.json();
-      const movie = cleanMovie(data);
+      let movie;
 
-      const result = await db.prepare(`
+      try {
+        movie = cleanMovie(await request.json());
+      } catch (error) {
+        return json({ success: false, message: error.message }, 400);
+      }
+
+      const result = await env.DB.prepare(`
         UPDATE movies SET
           title = ?, slug = ?, description = ?,
           poster = ?, backdrop = ?, year = ?,
@@ -166,7 +312,7 @@ async function handleAdmin(request, env, url) {
     }
 
     if (request.method === "DELETE") {
-      const result = await db.prepare(
+      const result = await env.DB.prepare(
         "DELETE FROM movies WHERE id = ?"
       ).bind(id).run();
 
@@ -187,10 +333,7 @@ export default {
 
     try {
       if (!env.DB) {
-        return json({
-          success: false,
-          message: "Database binding DB is missing"
-        }, 500);
+        return json({ success: false, message: "Database binding DB is missing" }, 500);
       }
 
       if (url.pathname === "/api/hello") {
@@ -209,14 +352,7 @@ export default {
         });
       }
 
-      if (
-        url.pathname === "/api/admin/movies" ||
-        url.pathname.startsWith("/api/admin/movies/")
-      ) {
-        if (!["GET", "POST", "PUT", "DELETE"].includes(request.method)) {
-          return json({ success: false, message: "Method not allowed" }, 405);
-        }
-
+      if (url.pathname.startsWith("/api/admin/")) {
         return await handleAdmin(request, env, url);
       }
 
