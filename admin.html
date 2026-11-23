@@ -1,0 +1,781 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>CineVault | Admin Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #090909;
+      color: #eee;
+      font-family: Arial, sans-serif;
+    }
+
+    :root {
+      --gold: #d6ad45;
+      --panel: #151515;
+      --muted: #999;
+      --border: #292929;
+    }
+
+    header {
+      background: #111;
+      border-bottom: 1px solid var(--border);
+      padding: 18px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      color: var(--gold);
+      font-size: 23px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: white;
+    }
+
+    header a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px 18px;
+    }
+
+    h1 {
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 25px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card, .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .stat-card p {
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .stat-card h2 {
+      color: var(--gold);
+      font-size: 28px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    button {
+      cursor: pointer;
+      border: 1px solid var(--gold);
+      border-radius: 5px;
+      padding: 11px 16px;
+      font-weight: bold;
+    }
+
+    .tab {
+      color: var(--gold);
+      background: transparent;
+    }
+
+    .tab.active, .primary {
+      background: var(--gold);
+      color: #111;
+    }
+
+    .danger {
+      background: #a62929;
+      color: white;
+      border-color: #a62929;
+    }
+
+    .secondary {
+      background: #292929;
+      color: white;
+      border-color: #444;
+    }
+
+    .panel {
+      margin-bottom: 22px;
+    }
+
+    .panel h2 {
+      color: var(--gold);
+      margin-bottom: 18px;
+      font-size: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: #0c0c0c;
+      border: 1px solid #393939;
+      color: white;
+      padding: 12px;
+      border-radius: 5px;
+      outline: none;
+      font: inherit;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--gold);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .notice {
+      padding: 13px;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      line-height: 1.5;
+      background: #302613;
+      border: 1px solid #715b29;
+      color: #f0d58c;
+    }
+
+    .error {
+      background: #351919;
+      border-color: #773535;
+      color: #ffb5b5;
+    }
+
+    .success {
+      background: #17301f;
+      border-color: #326b43;
+      color: #b8edc5;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar input {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .movie-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .movie-item {
+      background: #101010;
+      border: 1px solid var(--border);
+      padding: 13px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .movie-item img {
+      width: 58px;
+      height: 78px;
+      object-fit: cover;
+      border-radius: 5px;
+      background: #252525;
+    }
+
+    .movie-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .movie-info h3 {
+      font-size: 15px;
+      margin-bottom: 7px;
+    }
+
+    .movie-info p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .movie-actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .movie-actions button {
+      padding: 8px 11px;
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 25px;
+    }
+
+    footer {
+      text-align: center;
+      color: #777;
+      padding: 25px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+
+      .movie-item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .movie-actions {
+        width: 100%;
+        padding-left: 72px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">CINE<span>VAULT</span> ADMIN</div>
+  <a href="index.html">← Visit Website</a>
+</header>
+
+<main class="container">
+
+  <h1>Admin Dashboard</h1>
+  <p class="subtitle">Manage your CineVault movie collection.</p>
+
+  <div id="message" class="notice">
+    Admin interface তৈরি হয়েছে। নিরাপদ API সংযোগ এখনো প্রস্তুত করা হয়নি।
+    এই মুহূর্তে Add, Edit ও Delete করলে সার্ভারে কোনো পরিবর্তন হবে না।
+  </div>
+
+  <section class="stats">
+    <div class="stat-card">
+      <p>Total Movies</p>
+      <h2 id="totalMovies">—</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Dashboard Status</p>
+      <h2 style="font-size:19px">Setup Pending</h2>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="library">Movie Library</button>
+    <button class="tab" data-tab="add">Add Movie</button>
+  </div>
+
+  <section id="library" class="panel">
+    <h2>Movie Library</h2>
+
+    <div class="toolbar">
+      <input id="searchMovies" type="search"
+        placeholder="Search movie title...">
+      <button class="secondary" id="refreshButton">Refresh</button>
+    </div>
+
+    <div id="movieList" class="movie-list">
+      <p class="empty">Loading movies...</p>
+    </div>
+  </section>
+
+  <section id="add" class="panel hidden">
+    <h2 id="formHeading">Add New Movie</h2>
+
+    <form id="movieForm">
+
+      <input type="hidden" id="movieId">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label for="title">Movie Title *</label>
+          <input id="title" required>
+        </div>
+
+        <div class="field">
+          <label for="year">Release Year</label>
+          <input id="year" type="number" min="1888" max="2100">
+        </div>
+
+        <div class="field">
+          <label for="genre">Genre</label>
+          <input id="genre" placeholder="Action, Drama">
+        </div>
+
+        <div class="field">
+          <label for="language">Language</label>
+          <input id="language" placeholder="English">
+        </div>
+
+        <div class="field">
+          <label for="country">Country</label>
+          <input id="country">
+        </div>
+
+        <div class="field">
+          <label for="rating">Rating</label>
+          <input id="rating" type="number" min="0" max="10"
+            step="0.1">
+        </div>
+
+        <div class="field">
+          <label for="duration">Duration</label>
+          <input id="duration" placeholder="2h 10m">
+        </div>
+
+        <div class="field">
+          <label for="director">Director</label>
+          <input id="director">
+        </div>
+
+        <div class="field full">
+          <label for="poster">Poster Image URL</label>
+          <input id="poster" type="url" placeholder="https://...">
+        </div>
+
+        <div class="field full">
+          <label for="backdrop">Backdrop Image URL</label>
+          <input id="backdrop" type="url" placeholder="https://...">
+        </div>
+
+        <div class="field full">
+          <label for="description">Description</label>
+          <textarea id="description"></textarea>
+        </div>
+
+        <div class="field full">
+          <label for="watchUrl">Watch URL</label>
+          <input id="watchUrl" type="url" placeholder="https://...">
+        </div>
+
+        <div class="field full">
+          <label for="downloadUrl">Download URL</label>
+          <input id="downloadUrl" type="url" placeholder="https://...">
+        </div>
+
+        <div class="field">
+          <label for="featured">Featured Movie</label>
+          <select id="featured">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="saveButton">
+          Save Movie
+        </button>
+
+        <button type="button" class="secondary" id="resetButton">
+          Clear Form
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+</main>
+
+<footer>
+  CineVault Admin Dashboard
+</footer>
+
+<script src="movies.js"></script>
+
+<script>
+  const API = "/api/admin/movies";
+
+  const message = document.getElementById("message");
+  const movieList = document.getElementById("movieList");
+  const totalMovies = document.getElementById("totalMovies");
+  const movieForm = document.getElementById("movieForm");
+
+  let movies = [];
+  let apiReady = false;
+
+  function showMessage(text, type = "") {
+    message.textContent = text;
+    message.className = "notice " + type;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[char]);
+  }
+
+  function validURL(value) {
+    if (!value) return "";
+    try {
+      const url = new URL(value);
+      return ["http:", "https:"].includes(url.protocol)
+        ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function switchTab(tabName) {
+    document.querySelectorAll(".tab").forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.tab === tabName
+      );
+    });
+
+    document.getElementById("library").classList.toggle(
+      "hidden", tabName !== "library"
+    );
+
+    document.getElementById("add").classList.toggle(
+      "hidden", tabName !== "add"
+    );
+  }
+
+  document.querySelectorAll(".tab").forEach(button => {
+    button.addEventListener("click", () => {
+      switchTab(button.dataset.tab);
+    });
+  });
+
+  function renderMovies() {
+    const query = document.getElementById("searchMovies")
+      .value.toLowerCase().trim();
+
+    const filtered = movies.filter(movie =>
+      String(movie.title || "").toLowerCase().includes(query)
+    );
+
+    totalMovies.textContent = movies.length;
+
+    if (!filtered.length) {
+      movieList.innerHTML =
+        '<p class="empty">No movies found.</p>';
+      return;
+    }
+
+    movieList.innerHTML = filtered.map(movie => {
+      const poster = validURL(movie.poster) ||
+        "https://placehold.co/100x140/151515/d6ad45?text=Movie";
+
+      return `
+        <div class="movie-item">
+          <img src="${escapeHTML(poster)}"
+               alt="${escapeHTML(movie.title)}"
+               loading="lazy">
+
+          <div class="movie-info">
+            <h3>${escapeHTML(movie.title)}</h3>
+            <p>
+              ${escapeHTML(movie.year || "N/A")}
+              · ${escapeHTML(movie.genre || "N/A")}
+              · ID: ${escapeHTML(movie.id)}
+            </p>
+          </div>
+
+          <div class="movie-actions">
+            <button class="tab"
+              data-edit="${escapeHTML(movie.id)}">Edit</button>
+            <button class="danger"
+              data-delete="${escapeHTML(movie.id)}">Delete</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  async function loadMovies() {
+    showMessage("Connecting to secure admin API...");
+
+    try {
+      const response = await fetch(API, {
+        method: "GET",
+        credentials: "same-origin",
+        headers: { "Accept": "application/json" }
+      });
+
+      if (!response.ok) {
+        throw new Error("API unavailable (HTTP " + response.status + ")");
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data.movies)) {
+        throw new Error("Invalid API response.");
+      }
+
+      movies = data.movies;
+      apiReady = true;
+
+      showMessage("Secure movie database connected.", "success");
+      renderMovies();
+
+    } catch (error) {
+      apiReady = false;
+
+      movies = Array.isArray(window.movies)
+        ? window.movies : [];
+
+      renderMovies();
+
+      showMessage(
+        "Admin API এখনো তৈরি হয়নি। নিচে বর্তমান সিনেমাগুলো দেখা যাবে, " +
+        "কিন্তু Add, Edit ও Delete এখনো কাজ করবে না। পরবর্তী ধাপে " +
+        "Cloudflare Functions ও D1 Database যুক্ত করা হবে।",
+        "error"
+      );
+    }
+  }
+
+  function resetForm() {
+    movieForm.reset();
+    document.getElementById("movieId").value = "";
+    document.getElementById("formHeading").textContent =
+      "Add New Movie";
+    document.getElementById("saveButton").textContent =
+      "Save Movie";
+  }
+
+  function editMovie(id) {
+    if (!apiReady) {
+      showMessage("Edit চালু করতে আগে secure API তৈরি করতে হবে.", "error");
+      return;
+    }
+
+    const movie = movies.find(item => String(item.id) === String(id));
+    if (!movie) return;
+
+    const fields = [
+      "title", "year", "genre", "language", "country",
+      "rating", "duration", "director", "poster",
+      "backdrop", "description", "watchUrl", "downloadUrl"
+    ];
+
+    document.getElementById("movieId").value = movie.id;
+
+    fields.forEach(field => {
+      document.getElementById(field).value =
+        movie[field] ?? "";
+    });
+
+    document.getElementById("featured").value =
+      String(Boolean(movie.featured));
+
+    document.getElementById("formHeading").textContent =
+      "Edit Movie";
+
+    document.getElementById("saveButton").textContent =
+      "Update Movie";
+
+    switchTab("add");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function deleteMovie(id) {
+    if (!apiReady) {
+      showMessage("Delete চালু করতে আগে secure API তৈরি করতে হবে.", "error");
+      return;
+    }
+
+    const movie = movies.find(item => String(item.id) === String(id));
+    if (!movie) return;
+
+    if (!confirm(`Delete "${movie.title}" permanently?`)) return;
+
+    try {
+      const response = await fetch(
+        API + "/" + encodeURIComponent(id),
+        {
+          method: "DELETE",
+          credentials: "same-origin"
+        }
+      );
+
+      if (!response.ok) throw new Error("Delete failed.");
+
+      showMessage("Movie deleted successfully.", "success");
+      await loadMovies();
+
+    } catch (error) {
+      showMessage(error.message, "error");
+    }
+  }
+
+  movieList.addEventListener("click", event => {
+    const editButton = event.target.closest("[data-edit]");
+    const deleteButton = event.target.closest("[data-delete]");
+
+    if (editButton) editMovie(editButton.dataset.edit);
+    if (deleteButton) deleteMovie(deleteButton.dataset.delete);
+  });
+
+  movieForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!apiReady) {
+      showMessage(
+        "Save করার আগে Cloudflare secure API ও Database তৈরি করতে হবে.",
+        "error"
+      );
+      return;
+    }
+
+    const id = document.getElementById("movieId").value;
+
+    const payload = {
+      title: document.getElementById("title").value.trim(),
+      year: Number(document.getElementById("year").value) || null,
+      genre: document.getElementById("genre").value.trim(),
+      language: document.getElementById("language").value.trim(),
+      country: document.getElementById("country").value.trim(),
+      rating: Number(document.getElementById("rating").value) || 0,
+      duration: document.getElementById("duration").value.trim(),
+      director: document.getElementById("director").value.trim(),
+      poster: validURL(document.getElementById("poster").value),
+      backdrop: validURL(document.getElementById("backdrop").value),
+      description: document.getElementById("description").value.trim(),
+      watchUrl: validURL(document.getElementById("watchUrl").value),
+      downloadUrl: validURL(document.getElementById("downloadUrl").value),
+      featured: document.getElementById("featured").value === "true"
+    };
+
+    if (!payload.title) {
+      showMessage("Movie title is required.", "error");
+      return;
+    }
+
+    const button = document.getElementById("saveButton");
+    button.disabled = true;
+
+    try {
+      const response = await fetch(
+        id ? API + "/" + encodeURIComponent(id) : API,
+        {
+          method: id ? "PUT" : "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (!response.ok) throw new Error("Save failed.");
+
+      showMessage(
+        id ? "Movie updated successfully." : "Movie added successfully.",
+        "success"
+      );
+
+      resetForm();
+      await loadMovies();
+      switchTab("library");
+
+    } catch (error) {
+      showMessage(error.message, "error");
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  document.getElementById("resetButton")
+    .addEventListener("click", resetForm);
+
+  document.getElementById("refreshButton")
+    .addEventListener("click", loadMovies);
+
+  document.getElementById("searchMovies")
+    .addEventListener("input", renderMovies);
+
+  loadMovies();
+</script>
+
+</body>
+</html>
