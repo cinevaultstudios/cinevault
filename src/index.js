@@ -17,7 +17,10 @@ const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 function toBase64Url(bytes) {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 }
 
 function fromBase64Url(value) {
@@ -58,12 +61,15 @@ async function verifySession(request, password) {
   try {
     const token = cookie.slice(COOKIE_NAME.length + 1);
     const parts = token.split(".");
+
     if (parts.length !== 3) return false;
 
     const [expires, nonce, signature] = parts;
 
     if (!/^\d+$/.test(expires)) return false;
-    if (Number(expires) < Math.floor(Date.now() / 1000)) return false;
+    if (Number(expires) < Math.floor(Date.now() / 1000)) {
+      return false;
+    }
 
     const payload = `${expires}.${nonce}`;
     const key = await hmacKey(password);
@@ -104,7 +110,7 @@ function validOrigin(request, url) {
 function validUrl(value) {
   if (!value) return "";
 
-  const parsed = new URL(String(value));
+  const parsed = new URL(String(value).trim());
 
   if (!["http:", "https:"].includes(parsed.protocol)) {
     throw new Error("Only HTTP and HTTPS URLs are allowed");
@@ -118,10 +124,25 @@ function cleanMovie(data) {
   const year = Number(data.year) || null;
   const rating = Number(data.rating) || 0;
 
-  if (!title) throw new Error("Movie title is required");
+  if (!title) {
+    throw new Error("Movie title is required");
+  }
 
   if (rating < 0 || rating > 10) {
     throw new Error("Rating must be between 0 and 10");
+  }
+
+  // Per-movie advertisement settings
+  const rawAdCount = data.adCount ?? data.ad_count ?? 4;
+  const adCount = Number(rawAdCount);
+
+  if (
+    !Number.isSafeInteger(adCount) ||
+    adCount < 4
+  ) {
+    throw new Error(
+      "Advertisement count must be a whole number of at least 4"
+    );
   }
 
   const slug = title
@@ -145,7 +166,11 @@ function cleanMovie(data) {
     quality: String(data.quality || ""),
     featured: data.featured ? 1 : 0,
     download_url: validUrl(data.downloadUrl),
-    watch_url: validUrl(data.watchUrl)
+    watch_url: validUrl(data.watchUrl),
+
+    // New advertisement fields
+    ad_url: validUrl(data.adUrl ?? data.ad_url ?? ""),
+    ad_count: adCount
   };
 }
 
@@ -156,6 +181,8 @@ const MOVIE_SELECT = `
     director, quality, featured,
     download_url AS downloadUrl,
     watch_url AS watchUrl,
+    ad_url AS adUrl,
+    ad_count AS adCount,
     created_at AS createdAt,
     updated_at AS updatedAt
   FROM movies
@@ -278,7 +305,10 @@ async function handleAdmin(request, env, url) {
 
   if (path === "/api/admin/login" && request.method === "POST") {
     if (!validOrigin(request, url)) {
-      return json({ success: false, message: "Invalid origin" }, 403);
+      return json({
+        success: false,
+        message: "Invalid origin"
+      }, 403);
     }
 
     let data;
@@ -286,18 +316,27 @@ async function handleAdmin(request, env, url) {
     try {
       data = await request.json();
     } catch {
-      return json({ success: false, message: "Invalid JSON" }, 400);
+      return json({
+        success: false,
+        message: "Invalid JSON"
+      }, 400);
     }
 
     const supplied = String(data.password || "");
     const encoder = new TextEncoder();
 
     const expectedHash = new Uint8Array(
-      await crypto.subtle.digest("SHA-256", encoder.encode(password))
+      await crypto.subtle.digest(
+        "SHA-256",
+        encoder.encode(password)
+      )
     );
 
     const suppliedHash = new Uint8Array(
-      await crypto.subtle.digest("SHA-256", encoder.encode(supplied))
+      await crypto.subtle.digest(
+        "SHA-256",
+        encoder.encode(supplied)
+      )
     );
 
     let difference = 0;
@@ -307,7 +346,10 @@ async function handleAdmin(request, env, url) {
     }
 
     if (difference !== 0) {
-      return json({ success: false, message: "Incorrect password" }, 401);
+      return json({
+        success: false,
+        message: "Incorrect password"
+      }, 401);
     }
 
     const token = await createSession(password);
@@ -321,7 +363,10 @@ async function handleAdmin(request, env, url) {
 
   if (path === "/api/admin/logout" && request.method === "POST") {
     if (!validOrigin(request, url)) {
-      return json({ success: false, message: "Invalid origin" }, 403);
+      return json({
+        success: false,
+        message: "Invalid origin"
+      }, 403);
     }
 
     return json(
@@ -334,15 +379,24 @@ async function handleAdmin(request, env, url) {
   const authorized = await verifySession(request, password);
 
   if (path === "/api/admin/session" && request.method === "GET") {
-    return json({ success: true, authenticated: authorized });
+    return json({
+      success: true,
+      authenticated: authorized
+    });
   }
 
   if (!authorized) {
-    return json({ success: false, message: "Please login first" }, 401);
+    return json({
+      success: false,
+      message: "Please login first"
+    }, 401);
   }
 
   if (request.method !== "GET" && !validOrigin(request, url)) {
-    return json({ success: false, message: "Invalid origin" }, 403);
+    return json({
+      success: false,
+      message: "Invalid origin"
+    }, 403);
   }
 
   // Cloudinary image upload
@@ -350,6 +404,7 @@ async function handleAdmin(request, env, url) {
     return await uploadToCloudinary(request, env);
   }
 
+  // Admin movie list
   if (path === "/api/admin/movies" && request.method === "GET") {
     const result = await env.DB.prepare(
       MOVIE_SELECT + " ORDER BY id DESC"
@@ -362,13 +417,17 @@ async function handleAdmin(request, env, url) {
     });
   }
 
+  // Add movie
   if (path === "/api/admin/movies" && request.method === "POST") {
     let movie;
 
     try {
       movie = cleanMovie(await request.json());
     } catch (error) {
-      return json({ success: false, message: error.message }, 400);
+      return json({
+        success: false,
+        message: error.message
+      }, 400);
     }
 
     await env.DB.prepare(`
@@ -376,15 +435,31 @@ async function handleAdmin(request, env, url) {
         title, slug, description, poster, backdrop,
         year, genre, rating, duration, language,
         country, director, quality, featured,
-        download_url, watch_url
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        download_url, watch_url,
+        ad_url, ad_count
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?
+      )
     `).bind(
-      movie.title, movie.slug, movie.description,
-      movie.poster, movie.backdrop, movie.year,
-      movie.genre, movie.rating, movie.duration,
-      movie.language, movie.country, movie.director,
-      movie.quality, movie.featured,
-      movie.download_url, movie.watch_url
+      movie.title,
+      movie.slug,
+      movie.description,
+      movie.poster,
+      movie.backdrop,
+      movie.year,
+      movie.genre,
+      movie.rating,
+      movie.duration,
+      movie.language,
+      movie.country,
+      movie.director,
+      movie.quality,
+      movie.featured,
+      movie.download_url,
+      movie.watch_url,
+      movie.ad_url,
+      movie.ad_count
     ).run();
 
     return json({
@@ -393,6 +468,7 @@ async function handleAdmin(request, env, url) {
     }, 201);
   }
 
+  // Edit or delete movie
   const match = path.match(/^\/api\/admin\/movies\/(\d+)$/);
 
   if (match) {
@@ -404,7 +480,10 @@ async function handleAdmin(request, env, url) {
       try {
         movie = cleanMovie(await request.json());
       } catch (error) {
-        return json({ success: false, message: error.message }, 400);
+        return json({
+          success: false,
+          message: error.message
+        }, 400);
       }
 
       const result = await env.DB.prepare(`
@@ -415,19 +494,36 @@ async function handleAdmin(request, env, url) {
           language = ?, country = ?, director = ?,
           quality = ?, featured = ?,
           download_url = ?, watch_url = ?,
+          ad_url = ?, ad_count = ?,
           updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `).bind(
-        movie.title, movie.slug, movie.description,
-        movie.poster, movie.backdrop, movie.year,
-        movie.genre, movie.rating, movie.duration,
-        movie.language, movie.country, movie.director,
-        movie.quality, movie.featured,
-        movie.download_url, movie.watch_url, id
+        movie.title,
+        movie.slug,
+        movie.description,
+        movie.poster,
+        movie.backdrop,
+        movie.year,
+        movie.genre,
+        movie.rating,
+        movie.duration,
+        movie.language,
+        movie.country,
+        movie.director,
+        movie.quality,
+        movie.featured,
+        movie.download_url,
+        movie.watch_url,
+        movie.ad_url,
+        movie.ad_count,
+        id
       ).run();
 
       if (!result.meta.changes) {
-        return json({ success: false, message: "Movie not found" }, 404);
+        return json({
+          success: false,
+          message: "Movie not found"
+        }, 404);
       }
 
       return json({
@@ -442,7 +538,10 @@ async function handleAdmin(request, env, url) {
       ).bind(id).run();
 
       if (!result.meta.changes) {
-        return json({ success: false, message: "Movie not found" }, 404);
+        return json({
+          success: false,
+          message: "Movie not found"
+        }, 404);
       }
 
       return json({
@@ -477,7 +576,11 @@ export default {
         });
       }
 
-      if (url.pathname === "/api/movies" && request.method === "GET") {
+      // Public movie list
+      if (
+        url.pathname === "/api/movies" &&
+        request.method === "GET"
+      ) {
         const result = await env.DB.prepare(
           MOVIE_SELECT + " ORDER BY id DESC"
         ).all();
