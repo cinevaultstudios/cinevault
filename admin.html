@@ -61,6 +61,7 @@ header{
   font-weight:600;transition:.2s;
 }
 .btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
 .btn-gold{
   background:linear-gradient(135deg,#b88b35,#f0d58c);
   color:#111;border:0;
@@ -108,9 +109,8 @@ h3{font-size:15px;margin:0 0 10px}
   display:flex;gap:12px;justify-content:space-between;
   align-items:center;flex-wrap:wrap;margin-bottom:18px;
 }
-.search{
-  flex:1;min-width:220px;max-width:450px;
-}
+.search{flex:1;min-width:220px;max-width:450px}
+
 input,textarea,select{
   width:100%;background:#0b0b0b;color:white;
   border:1px solid #333;border-radius:7px;
@@ -132,6 +132,46 @@ label{
 }
 .checkbox-row{display:flex;align-items:center;gap:9px}
 .checkbox-row input{width:auto;accent-color:var(--gold)}
+
+.upload-box{
+  background:#0d0d0d;
+  border:1px dashed #514328;
+  border-radius:9px;
+  padding:15px;
+  margin-top:9px;
+}
+.upload-box input[type=file]{
+  padding:9px;
+  border:1px solid #333;
+  background:#151515;
+  font-size:12px;
+}
+.upload-help{
+  color:#888;font-size:11px;margin-top:8px;line-height:1.6;
+}
+.upload-status{
+  font-size:12px;margin-top:9px;min-height:17px;
+  color:var(--muted);
+}
+.upload-status.success{color:#82e2ae}
+.upload-status.error{color:#ff9999}
+.image-preview{
+  display:none;
+  max-width:180px;
+  max-height:230px;
+  object-fit:contain;
+  margin-top:12px;
+  border:1px solid #444;
+  border-radius:7px;
+  background:#171717;
+}
+.image-preview.visible{display:block}
+.backdrop-preview{
+  max-width:100%;
+  width:320px;
+  max-height:180px;
+  aspect-ratio:16/9;
+}
 
 .movie-list{display:grid;gap:12px}
 .movie-item{
@@ -367,14 +407,44 @@ footer{
           <input id="director" placeholder="Director name">
         </div>
 
+        <!-- POSTER UPLOAD -->
         <div class="form-group full">
           <label for="poster">POSTER IMAGE URL</label>
-          <input id="poster" type="url" placeholder="https://example.com/poster.jpg">
+          <input id="poster" type="url" placeholder="Upload an image or enter image URL">
+
+          <div class="upload-box">
+            <label for="posterFile">UPLOAD POSTER FROM YOUR DEVICE</label>
+            <input
+              id="posterFile"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+            >
+            <div class="upload-help">
+              JPG, PNG, WEBP or AVIF · Maximum 5 MB
+            </div>
+            <div id="posterStatus" class="upload-status"></div>
+            <img id="posterPreview" class="image-preview" alt="Poster preview">
+          </div>
         </div>
 
+        <!-- BACKDROP UPLOAD -->
         <div class="form-group full">
           <label for="backdrop">BACKDROP IMAGE URL</label>
-          <input id="backdrop" type="url" placeholder="https://example.com/backdrop.jpg">
+          <input id="backdrop" type="url" placeholder="Upload an image or enter image URL">
+
+          <div class="upload-box">
+            <label for="backdropFile">UPLOAD BACKDROP FROM YOUR DEVICE</label>
+            <input
+              id="backdropFile"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+            >
+            <div class="upload-help">
+              JPG, PNG, WEBP or AVIF · Maximum 5 MB
+            </div>
+            <div id="backdropStatus" class="upload-status"></div>
+            <img id="backdropPreview" class="image-preview backdrop-preview" alt="Backdrop preview">
+          </div>
         </div>
 
         <div class="form-group full">
@@ -425,11 +495,20 @@ footer{
 "use strict";
 
 const API = "/api/admin";
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif"
+];
 
 const $ = id => document.getElementById(id);
 
 let movies = [];
 let editingId = null;
+let activeUploads = 0;
 
 function showNotice(elementId, message, type = "success") {
   const box = $(elementId);
@@ -458,12 +537,15 @@ async function apiRequest(path, options = {}) {
     ...options,
     credentials: "same-origin",
     headers: {
-      ...(options.body ? {"Content-Type": "application/json"} : {}),
+      ...(options.body && !(options.body instanceof FormData)
+        ? {"Content-Type": "application/json"}
+        : {}),
       ...(options.headers || {})
     }
   });
 
   let data = {};
+
   try {
     data = await response.json();
   } catch (_) {
@@ -508,9 +590,7 @@ async function checkSession() {
     }
   } catch (error) {
     showLogin();
-    if (error.message) {
-      console.warn(error.message);
-    }
+    if (error.message) console.warn(error.message);
   }
 }
 
@@ -563,15 +643,7 @@ $("logoutBtn").addEventListener("click", async () => {
 /* TABS */
 document.querySelectorAll(".tab").forEach(button => {
   button.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(tab =>
-      tab.classList.remove("active")
-    );
-
-    button.classList.add("active");
-
-    const selected = button.dataset.tab;
-    $("libraryTab").classList.toggle("hidden", selected !== "library");
-    $("addTab").classList.toggle("hidden", selected !== "add");
+    openTab(button.dataset.tab);
   });
 });
 
@@ -583,6 +655,105 @@ function openTab(name) {
   $("libraryTab").classList.toggle("hidden", name !== "library");
   $("addTab").classList.toggle("hidden", name !== "add");
 }
+
+/* IMAGE PREVIEW */
+function updatePreview(field) {
+  const preview = $(field + "Preview");
+  const url = $(field).value.trim();
+
+  preview.classList.remove("visible");
+  preview.removeAttribute("src");
+
+  if (!url) return;
+
+  try {
+    const parsed = new URL(url);
+
+    if (!["http:", "https:"].includes(parsed.protocol)) return;
+
+    preview.onload = () => preview.classList.add("visible");
+    preview.onerror = () => preview.classList.remove("visible");
+    preview.src = parsed.href;
+
+  } catch (_) {
+    preview.classList.remove("visible");
+  }
+}
+
+$("poster").addEventListener("input", () => updatePreview("poster"));
+$("backdrop").addEventListener("input", () => updatePreview("backdrop"));
+
+/* CLOUDINARY DIRECT UPLOAD */
+async function uploadImage(type, file) {
+  const isPoster = type === "poster";
+
+  const fileInput = $(type + "File");
+  const urlInput = $(type);
+  const status = $(type + "Status");
+  const preview = $(type + "Preview");
+
+  if (!file) return;
+
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    status.textContent = "Unsupported image format.";
+    status.className = "upload-status error";
+    fileInput.value = "";
+    return;
+  }
+
+  if (file.size <= 0 || file.size > MAX_IMAGE_SIZE) {
+    status.textContent = "Image must be smaller than 5 MB.";
+    status.className = "upload-status error";
+    fileInput.value = "";
+    return;
+  }
+
+  fileInput.disabled = true;
+  activeUploads++;
+
+  $("saveBtn").disabled = true;
+
+  status.textContent = "Uploading image to Cloudinary...";
+  status.className = "upload-status";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+
+    const data = await apiRequest("/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!data.url) {
+      throw new Error("Cloudinary did not return an image URL.");
+    }
+
+    urlInput.value = data.url;
+    updatePreview(type);
+
+    status.textContent = "Upload successful!";
+    status.className = "upload-status success";
+
+  } catch (error) {
+    status.textContent = error.message;
+    status.className = "upload-status error";
+
+  } finally {
+    fileInput.disabled = false;
+    activeUploads = Math.max(0, activeUploads - 1);
+    $("saveBtn").disabled = activeUploads > 0;
+  }
+}
+
+$("posterFile").addEventListener("change", event => {
+  uploadImage("poster", event.target.files[0]);
+});
+
+$("backdropFile").addEventListener("change", event => {
+  uploadImage("backdrop", event.target.files[0]);
+});
 
 /* LOAD MOVIES FROM D1 API */
 async function loadMovies() {
@@ -616,6 +787,7 @@ async function loadMovies() {
 
     $("databaseStatus").textContent = "Error";
     $("databaseStatus").style.color = "var(--danger)";
+
     showNotice("mainNotice", error.message, "error");
   }
 }
@@ -648,6 +820,7 @@ function renderMovies() {
   $("movieList").innerHTML = filtered.map(movie => {
     const poster = movie.poster || "";
     const title = escapeHTML(movie.title || "Untitled");
+
     const meta = [
       movie.year,
       movie.genre,
@@ -661,7 +834,6 @@ function renderMovies() {
           src="${escapeHTML(poster)}"
           alt=""
           loading="lazy"
-          onerror="this.style.visibility='hidden'"
         >
 
         <div>
@@ -681,6 +853,12 @@ function renderMovies() {
       </div>
     `;
   }).join("");
+
+  $("movieList").querySelectorAll(".movie-poster").forEach(img => {
+    img.addEventListener("error", () => {
+      img.style.visibility = "hidden";
+    });
+  });
 }
 
 $("movieSearch").addEventListener("input", renderMovies);
@@ -723,6 +901,16 @@ function editMovie(movie) {
     movie.featured === "1";
 
   $("movieId").value = movie.id;
+
+  $("posterFile").value = "";
+  $("backdropFile").value = "";
+
+  $("posterStatus").textContent = "";
+  $("backdropStatus").textContent = "";
+
+  updatePreview("poster");
+  updatePreview("backdrop");
+
   $("formHeading").textContent = "Edit Movie";
   $("formSubtitle").textContent = "Update movie information.";
   $("saveBtn").textContent = "Update Movie";
@@ -738,9 +926,22 @@ function resetMovieForm() {
   $("movieId").value = "";
   editingId = null;
 
+  $("posterStatus").textContent = "";
+  $("backdropStatus").textContent = "";
+
+  $("posterStatus").className = "upload-status";
+  $("backdropStatus").className = "upload-status";
+
+  $("posterPreview").classList.remove("visible");
+  $("backdropPreview").classList.remove("visible");
+
+  $("posterPreview").removeAttribute("src");
+  $("backdropPreview").removeAttribute("src");
+
   $("formHeading").textContent = "Add New Movie";
   $("formSubtitle").textContent =
     "Add a movie to your CineVault database.";
+
   $("saveBtn").textContent = "Save Movie";
   $("cancelEditBtn").classList.add("hidden");
 }
@@ -757,6 +958,15 @@ $("resetBtn").addEventListener("click", () => {
 /* SAVE OR UPDATE MOVIE */
 $("movieForm").addEventListener("submit", async event => {
   event.preventDefault();
+
+  if (activeUploads > 0) {
+    showNotice(
+      "mainNotice",
+      "Please wait until image uploads finish.",
+      "error"
+    );
+    return;
+  }
 
   const movie = {
     title: $("title").value.trim(),
@@ -784,9 +994,11 @@ $("movieForm").addEventListener("submit", async event => {
     if (movie[field]) {
       try {
         const url = new URL(movie[field]);
+
         if (!["http:", "https:"].includes(url.protocol)) {
           throw new Error("Invalid URL");
         }
+
       } catch (_) {
         showNotice(
           "mainNotice",
@@ -799,6 +1011,7 @@ $("movieForm").addEventListener("submit", async event => {
   }
 
   const isEditing = editingId !== null;
+
   const endpoint = isEditing
     ? "/movies/" + encodeURIComponent(editingId)
     : "/movies";
@@ -814,7 +1027,9 @@ $("movieForm").addEventListener("submit", async event => {
 
     showNotice(
       "mainNotice",
-      isEditing ? "Movie updated successfully." : "Movie added successfully.",
+      isEditing
+        ? "Movie updated successfully."
+        : "Movie added successfully.",
       "success"
     );
 
@@ -824,11 +1039,11 @@ $("movieForm").addEventListener("submit", async event => {
 
   } catch (error) {
     showNotice("mainNotice", error.message, "error");
+
   } finally {
-    $("saveBtn").disabled = false;
-    $("saveBtn").textContent = editingId !== null
-      ? "Update Movie"
-      : "Save Movie";
+    $("saveBtn").disabled = activeUploads > 0;
+    $("saveBtn").textContent =
+      editingId !== null ? "Update Movie" : "Save Movie";
   }
 });
 
