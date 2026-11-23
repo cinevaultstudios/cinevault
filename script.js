@@ -1,369 +1,678 @@
 
-/* CINEVAULT — POSTERS, SEARCH, FILTERS, DETAILS AND WATCHLIST */
+/* =========================================
+   CINEVAULT — MAIN APPLICATION
+   SEARCH • FILTER • SORT • WATCHLIST
+   ========================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
-  const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-  const grid = $("#movieGrid");
-  const watchGrid = $("#watchlistGrid");
-  const searchPanel = $("#searchPanel");
-  const searchInput = $("#movieSearch");
-  const filterButtons = $$(".filter-button");
-  const modal = $("#movieModal");
+  const movieGrid = document.getElementById("movieGrid");
+  const featuredGrid = document.getElementById("featuredMovies");
+  const watchlistGrid = document.getElementById("watchlistGrid");
+  const watchlistEmpty = document.getElementById("watchlistEmpty");
 
-  let activeFilter = "all";
-  let query = "";
-  let sortMode = "featured";
-  let selectedMovie = null;
-  let saved = readSaved();
+  const searchInput = document.getElementById("movieSearch");
+  const clearSearch = document.getElementById("clearSearch");
+  const sortSelect = document.getElementById("sortMovies");
 
-  // Poster image sources for the sample catalogue.
-  const posterImages = {
-    "Inception": "https://image.tmdb.org/t/p/w500/pIkRyD18kl4FhoCNQuWxWu5cBLM.jpg",
-    "Interstellar": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MXLH0R9Z.jpg",
-    "The Dark Knight": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-    "Parasite": "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    "3 Idiots": "https://image.tmdb.org/t/p/w500/66A9MqXOyVFCssoloscw79z8Tew.jpg",
-    "Your Name": "https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6cabZ9ykb3Xw.jpg",
-    "Spirited Away": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
-    "The Shawshank Redemption": "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-    "Mad Max: Fury Road": "https://image.tmdb.org/t/p/w500/8tZYtuWezp8JbcsvHYO0O46tFbo.jpg",
-    "Arrival": "https://image.tmdb.org/t/p/w500/x2FJsf1Elauf2ckkqCIGMck7Zq3.jpg",
-    "Whiplash": "https://image.tmdb.org/t/p/w500/7fn624j5lj3xTme2SgiLCeuedmO.jpg",
-    "The Grand Budapest Hotel": "https://image.tmdb.org/t/p/w500/eWdyYQreja6JGCzqHWXpWHDrrPo.jpg",
-    "Coco": "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg",
-    "The Prestige": "https://image.tmdb.org/t/p/w500/5MXyQfz8xUP3dIFPT16grhT5n0.jpg",
-    "Dune: Part Two": "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-    "La La Land": "https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",
-    "Train to Busan": "https://image.tmdb.org/t/p/w500/vNVFt6dtcqnI7hqa6LFBUibuFiw.jpg",
-    "The Social Network": "https://image.tmdb.org/t/p/w500/n0ybibhJtQ5icDqTp8eRytcIHJx.jpg",
-    "Everything Everywhere All at Once": "https://image.tmdb.org/t/p/w500/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg",
-    "The Lion King": "https://image.tmdb.org/t/p/w500/2bXbqYdUdNVa8VIWXVfclP2ICtT.jpg"
-  };
+  const genreFilter = document.getElementById("genreFilter");
+  const languageFilter = document.getElementById("languageFilter");
+  const yearFilter = document.getElementById("yearFilter");
+  const ratingFilter = document.getElementById("ratingFilter");
 
-  function readSaved() {
+  const filterPanel = document.getElementById("filterPanel");
+  const filterToggle = document.getElementById("filterToggle");
+
+  const resultsCount = document.getElementById("resultsCount");
+  const emptyState = document.getElementById("emptyState");
+  const pagination = document.getElementById("pagination");
+
+  const modal = document.getElementById("movieModal");
+  const modalContent = document.getElementById("modalContent");
+  const modalClose = document.getElementById("modalClose");
+
+  const watchlistCount = document.getElementById("watchlistCount");
+
+  const PAGE_SIZE = 40;
+
+  let currentPage = 1;
+  let currentMovies = [];
+  let watchlist = loadWatchlist();
+
+
+  /* SAFE HTML */
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+
+  /* IMAGE FALLBACK */
+
+  function posterURL(movie) {
+    const url = movie.poster || "";
+
+    if (
+      !/^https:\/\/image\.tmdb\.org\/t\/p\/w\d+\//.test(url) ||
+      url.includes("placeholder.jpg")
+    ) {
+      return fallbackPoster(movie.title);
+    }
+
+    return url;
+  }
+
+  function fallbackPoster(title) {
+    const safeTitle = escapeHTML(title);
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="500" height="750">
+        <rect width="100%" height="100%" fill="#111722"/>
+        <circle cx="250" cy="290" r="110" fill="#d6b36a" opacity=".10"/>
+        <text x="50%" y="45%" fill="#d6b36a"
+          font-size="34" font-family="Arial"
+          text-anchor="middle">CINEVAULT</text>
+        <text x="50%" y="55%" fill="#ffffff"
+          font-size="24" font-family="Arial"
+          text-anchor="middle">${safeTitle}</text>
+        <text x="50%" y="92%" fill="#9ba3b1"
+          font-size="18" font-family="Arial"
+          text-anchor="middle">MOVIE POSTER</text>
+      </svg>
+    `;
+
+    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+  }
+
+
+  /* WATCHLIST STORAGE */
+
+  function loadWatchlist() {
     try {
-      return JSON.parse(localStorage.getItem("cinevault-watchlist") || "[]");
+      const saved = JSON.parse(
+        localStorage.getItem("cinevault_watchlist") || "[]"
+      );
+
+      return Array.isArray(saved) ? saved : [];
     } catch {
       return [];
     }
   }
 
-  function saveSaved() {
-    localStorage.setItem("cinevault-watchlist", JSON.stringify(saved));
+  function saveWatchlist() {
+    localStorage.setItem(
+      "cinevault_watchlist",
+      JSON.stringify(watchlist)
+    );
   }
 
-  function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, c => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;",
-      '"': "&quot;", "'": "&#39;"
-    }[c]));
+  function isInWatchlist(id) {
+    return watchlist.includes(Number(id));
   }
 
-  function slug(value) {
-    return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  }
 
-  function toast(message) {
-    const el = $("#toast");
-    el.textContent = message;
-    el.classList.add("show");
-    clearTimeout(toast.timer);
-    toast.timer = setTimeout(() => el.classList.remove("show"), 1900);
-  }
-
-  function posterMarkup(movie, className = "poster-image") {
-    const src = posterImages[movie.title];
-
-    if (!src) return "";
-
-    return `<img
-      class="${className}"
-      src="${src}"
-      alt="${escapeHTML(movie.title)} poster"
-      loading="lazy"
-      onerror="this.remove()"
-    >`;
-  }
+  /* MOVIE CARD */
 
   function movieCard(movie) {
-    const isSaved = saved.includes(movie.id);
-    const genres = movie.genres.join(" · ");
+
+    const active = isInWatchlist(movie.id);
 
     return `
-      <article class="movie-card" data-id="${movie.id}">
-        <div class="poster-art" style="--poster-bg:${movie.palette}">
-          ${posterMarkup(movie)}
-          <span class="poster-ornament">CINEVAULT / ${String(movie.id).padStart(2, "0")}</span>
-          <div class="poster-fallback-title">
-            <div class="poster-title">${escapeHTML(movie.title)}</div>
-            <div class="poster-year">${movie.year} · ${escapeHTML(movie.language)}</div>
-          </div>
-          <button class="save-button ${isSaved ? "saved" : ""}"
-            data-save="${movie.id}"
-            aria-label="${isSaved ? "Remove from" : "Add to"} watchlist">
-            ${isSaved ? "♥" : "＋"}
+      <article class="movie-card" data-movie-id="${Number(movie.id)}">
+
+        <div class="movie-poster">
+
+          <img
+            src="${escapeHTML(posterURL(movie))}"
+            alt="${escapeHTML(movie.title)} poster"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='${escapeHTML(fallbackPoster(movie.title))}'"
+          >
+
+          <span class="movie-rating">
+            ★ ${escapeHTML(movie.rating)}
+          </span>
+
+          <button
+            class="watchlist-btn ${active ? "active" : ""}"
+            data-watchlist-id="${Number(movie.id)}"
+            aria-label="Toggle watchlist"
+            title="Add to watchlist"
+          >
+            ${active ? "♥" : "♡"}
           </button>
-          <div class="card-overlay">
-            <span class="quick-view">VIEW DETAILS ↗</span>
-          </div>
+
         </div>
-        <div class="card-info">
-          <div class="card-title-row">
-            <h3 class="card-title">${escapeHTML(movie.title)}</h3>
-            <span class="card-rating">★ ${movie.rating.toFixed(1)}</span>
+
+        <div class="movie-info">
+
+          <h3>${escapeHTML(movie.title)}</h3>
+
+          <div class="movie-meta">
+            <span>${escapeHTML(movie.year)}</span>
+            <span>${escapeHTML(movie.language)}</span>
           </div>
-          <div class="card-sub">${movie.year} &nbsp;·&nbsp; ${escapeHTML(genres)}</div>
+
+          <span class="movie-genre">
+            ${escapeHTML(movie.genre)}
+          </span>
+
         </div>
-      </article>`;
+
+      </article>
+    `;
   }
 
-  function filteredMovies() {
-    let list = movies.filter(m => {
-      const genreMatch =
-        activeFilter === "all" ||
-        m.genres.some(g => slug(g) === activeFilter);
 
-      const text = [
-        m.title, m.language, m.description, m.tag, ...m.genres
-      ].join(" ").toLowerCase();
+  /* FEATURED MOVIES */
 
-      return genreMatch && text.includes(query);
-    });
+  function renderFeatured() {
 
-    if (sortMode === "rating") list.sort((a, b) => b.rating - a.rating);
-    else if (sortMode === "newest") list.sort((a, b) => b.year - a.year);
-    else if (sortMode === "oldest") list.sort((a, b) => a.year - b.year);
-    else if (sortMode === "title") list.sort((a, b) => a.title.localeCompare(b.title));
-    else list.sort((a, b) =>
-      (b.featured === true) - (a.featured === true) || b.rating - a.rating
-    );
+    if (!featuredGrid) return;
 
-    return list;
+    const featured = movies.filter(movie => movie.featured);
+
+    featuredGrid.innerHTML = featured
+      .slice(0, 4)
+      .map(movieCard)
+      .join("");
   }
+
+
+  /* FILTER OPTIONS */
+
+  function populateYears() {
+
+    const years = [...new Set(
+      movies.map(movie => Number(movie.year))
+    )].sort((a, b) => b - a);
+
+    yearFilter.innerHTML =
+      '<option value="">All Years</option>' +
+      years.map(year =>
+        `<option value="${year}">${year}</option>`
+      ).join("");
+  }
+
+
+  /* SEARCH + FILTER */
+
+  function getFilteredMovies() {
+
+    let result = [...movies];
+
+    const search = searchInput.value.trim().toLowerCase();
+
+    if (search) {
+      result = result.filter(movie => {
+
+        const searchable = [
+          movie.title,
+          movie.genre,
+          movie.language,
+          movie.country,
+          movie.director,
+          movie.description,
+          movie.year
+        ].join(" ").toLowerCase();
+
+        return searchable.includes(search);
+      });
+    }
+
+    if (genreFilter.value) {
+      result = result.filter(movie =>
+        movie.genre.toLowerCase() ===
+        genreFilter.value.toLowerCase()
+      );
+    }
+
+    if (languageFilter.value) {
+      result = result.filter(movie =>
+        movie.language.toLowerCase() ===
+        languageFilter.value.toLowerCase()
+      );
+    }
+
+    if (yearFilter.value) {
+      result = result.filter(movie =>
+        String(movie.year) === yearFilter.value
+      );
+    }
+
+    if (ratingFilter.value) {
+      result = result.filter(movie =>
+        Number(movie.rating) >= Number(ratingFilter.value)
+      );
+    }
+
+    switch (sortSelect.value) {
+
+      case "newest":
+        result.sort((a, b) => b.year - a.year);
+        break;
+
+      case "oldest":
+        result.sort((a, b) => a.year - b.year);
+        break;
+
+      case "rating":
+        result.sort((a, b) => b.rating - a.rating);
+        break;
+
+      case "az":
+        result.sort((a, b) =>
+          a.title.localeCompare(b.title)
+        );
+        break;
+
+      default:
+        result.sort((a, b) => a.id - b.id);
+    }
+
+    return result;
+  }
+
+
+  /* MAIN MOVIE RENDER */
 
   function renderMovies() {
-    const list = filteredMovies();
-    grid.innerHTML = list.map(movieCard).join("");
 
-    $("#movieCount").textContent = String(list.length).padStart(2, "0");
-    $("#resultsLabel").textContent =
-      `Showing ${list.length} ${list.length === 1 ? "film" : "films"}`;
+    currentMovies = getFilteredMovies();
 
-    $("#noResults").hidden = list.length !== 0;
-    $("#clearFilters").hidden = activeFilter === "all" && !query;
-  }
+    const total = currentMovies.length;
 
-  function renderWatchlist() {
-    const list = movies.filter(m => saved.includes(m.id));
+    const totalPages = Math.ceil(total / PAGE_SIZE);
 
-    watchGrid.innerHTML = list.map(movieCard).join("");
-    $("#watchlistCount").textContent = `${list.length} SAVED`;
-    $("#watchlistEmpty").hidden = list.length > 0;
-  }
-
-  function setFilter(filter) {
-    activeFilter = filter;
-
-    filterButtons.forEach(btn => {
-      const on = btn.dataset.filter === filter;
-      btn.classList.toggle("active", on);
-      btn.setAttribute("aria-pressed", String(on));
-    });
-
-    renderMovies();
-    $("#discover").scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function toggleSaved(id) {
-    if (saved.includes(id)) {
-      saved = saved.filter(x => x !== id);
-      toast("Removed from your list");
-    } else {
-      saved.push(id);
-      toast("Added to your list");
+    if (currentPage > totalPages) {
+      currentPage = Math.max(1, totalPages);
     }
 
-    saveSaved();
-    renderMovies();
-    renderWatchlist();
+    const start = (currentPage - 1) * PAGE_SIZE;
 
-    if (selectedMovie && selectedMovie.id === id) {
-      updateModalSaveButton();
-    }
-  }
+    const visibleMovies = currentMovies.slice(
+      start,
+      start + PAGE_SIZE
+    );
 
-  function openMovie(id) {
-    const movie = movies.find(m => m.id === Number(id));
-    if (!movie) return;
-
-    selectedMovie = movie;
-
-    const poster = $("#modalPoster");
-    poster.style.setProperty("--poster-bg", movie.palette);
-    poster.innerHTML = `
-      ${posterMarkup(movie, "modal-poster-image")}
-      <span class="modal-poster-fallback">${escapeHTML(movie.title)}</span>
-    `;
-
-    $("#modalTitle").textContent = movie.title;
-    $("#modalEyebrow").textContent = movie.tag.toUpperCase();
-    $("#modalMeta").textContent =
-      `★ ${movie.rating.toFixed(1)}   ·   ${movie.year}   ·   ${movie.duration}   ·   ${movie.language}`;
-
-    $("#modalDescription").textContent = movie.description;
-
-    $("#modalGenres").innerHTML = movie.genres
-      .map(g => `<span>${escapeHTML(g)}</span>`)
+    movieGrid.innerHTML = visibleMovies
+      .map(movieCard)
       .join("");
 
-    $("#officialInfoLink").href =
-      `https://www.imdb.com/find/?q=${encodeURIComponent(movie.title)}`;
+    resultsCount.textContent =
+      `Showing ${visibleMovies.length} of ${total} movies`;
 
-    updateModalSaveButton();
+    emptyState.hidden = total !== 0;
+
+    pagination.innerHTML = "";
+
+    if (totalPages > 1) {
+
+      for (let page = 1; page <= totalPages; page++) {
+
+        const button = document.createElement("button");
+
+        button.textContent = page;
+
+        if (page === currentPage) {
+          button.classList.add("active");
+        }
+
+        button.addEventListener("click", () => {
+
+          currentPage = page;
+
+          renderMovies();
+
+          document.getElementById("movies").scrollIntoView({
+            behavior: "smooth"
+          });
+
+        });
+
+        pagination.appendChild(button);
+      }
+    }
+  }
+
+
+  /* WATCHLIST RENDER */
+
+  function renderWatchlist() {
+
+    const savedMovies = movies.filter(movie =>
+      watchlist.includes(Number(movie.id))
+    );
+
+    watchlistGrid.innerHTML = savedMovies
+      .map(movieCard)
+      .join("");
+
+    watchlistEmpty.hidden = savedMovies.length > 0;
+
+    watchlistCount.textContent = savedMovies.length;
+  }
+
+
+  /* WATCHLIST TOGGLE */
+
+  function toggleWatchlist(id) {
+
+    id = Number(id);
+
+    if (isInWatchlist(id)) {
+
+      watchlist = watchlist.filter(item => item !== id);
+
+    } else {
+
+      watchlist.push(id);
+
+    }
+
+    saveWatchlist();
+
+    renderMovies();
+    renderFeatured();
+    renderWatchlist();
+  }
+
+
+  /* MOVIE DETAILS */
+
+  function openMovie(id) {
+
+    const movie = movies.find(item =>
+      Number(item.id) === Number(id)
+    );
+
+    if (!movie) return;
+
+    const watchButton = movie.watchUrl
+      ? `<a class="btn btn-primary" href="${escapeHTML(movie.watchUrl)}" target="_blank" rel="noopener noreferrer">▶ Watch Movie</a>`
+      : "";
+
+    const downloadButton = movie.downloadUrl
+      ? `<a class="btn btn-outline" href="${escapeHTML(movie.downloadUrl)}" target="_blank" rel="noopener noreferrer">↓ Download</a>`
+      : "";
+
+    modalContent.innerHTML = `
+
+      <div style="padding:25px">
+
+        <div style="
+          display:grid;
+          grid-template-columns:minmax(110px,220px) 1fr;
+          gap:25px;
+          align-items:start;
+        ">
+
+          <img
+            src="${escapeHTML(posterURL(movie))}"
+            alt="${escapeHTML(movie.title)}"
+            style="width:100%;border-radius:10px"
+          >
+
+          <div>
+
+            <span class="section-eyebrow">CINEVAULT COLLECTION</span>
+
+            <h2 id="modalTitle" style="
+              margin:12px 0;
+              font-family:Manrope,sans-serif;
+              font-size:clamp(23px,4vw,34px);
+            ">
+              ${escapeHTML(movie.title)}
+            </h2>
+
+            <p style="color:#d6b36a;margin-bottom:15px">
+              ★ ${escapeHTML(movie.rating)} / 10
+            </p>
+
+            <p style="color:#9ba3b1;font-size:12px;line-height:1.9">
+              ${escapeHTML(movie.description)}
+            </p>
+
+            <div style="
+              margin-top:20px;
+              display:grid;
+              grid-template-columns:1fr 1fr;
+              gap:12px;
+              color:#9ba3b1;
+              font-size:11px;
+            ">
+              <span>Year: ${escapeHTML(movie.year)}</span>
+              <span>Genre: ${escapeHTML(movie.genre)}</span>
+              <span>Language: ${escapeHTML(movie.language)}</span>
+              <span>Country: ${escapeHTML(movie.country)}</span>
+              <span>Duration: ${escapeHTML(movie.duration || "N/A")}</span>
+              <span>Director: ${escapeHTML(movie.director || "N/A")}</span>
+            </div>
+
+            <div style="
+              display:flex;
+              flex-wrap:wrap;
+              gap:10px;
+              margin-top:25px;
+            ">
+              ${watchButton}
+              ${downloadButton}
+            </div>
+
+            <p style="margin-top:15px;color:#9ba3b1;font-size:10px">
+              Watch and download options are available only when an authorized source is configured.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
 
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
+
     document.body.style.overflow = "hidden";
-    $("#modalClose").focus();
   }
 
-  function updateModalSaveButton() {
-    const btn = $("#modalWatchlist");
-    const on = saved.includes(selectedMovie.id);
-    btn.textContent = on ? "♥ Remove from my list" : "＋ Add to my list";
-  }
 
   function closeModal() {
+
     modal.classList.remove("open");
+
     modal.setAttribute("aria-hidden", "true");
+
     document.body.style.overflow = "";
+
   }
 
-  grid.addEventListener("click", e => {
-    const save = e.target.closest("[data-save]");
 
-    if (save) {
-      e.stopPropagation();
-      toggleSaved(Number(save.dataset.save));
-      return;
-    }
+  /* EVENTS */
 
-    const card = e.target.closest(".movie-card");
-    if (card) openMovie(card.dataset.id);
-  });
-
-  watchGrid.addEventListener("click", e => {
-    const save = e.target.closest("[data-save]");
-
-    if (save) {
-      e.stopPropagation();
-      toggleSaved(Number(save.dataset.save));
-      return;
-    }
-
-    const card = e.target.closest(".movie-card");
-    if (card) openMovie(card.dataset.id);
-  });
-
-  filterButtons.forEach(btn =>
-    btn.addEventListener("click", () => setFilter(btn.dataset.filter))
-  );
-
-  $$(".genre-tile").forEach(tile =>
-    tile.addEventListener("click", () => setFilter(tile.dataset.genreLink))
-  );
-
-  $("#sortSelect").addEventListener("change", e => {
-    sortMode = e.target.value;
+  searchInput.addEventListener("input", () => {
+    currentPage = 1;
     renderMovies();
   });
 
-  $("#searchToggle").addEventListener("click", () => {
-    searchPanel.classList.toggle("open");
-    searchPanel.setAttribute(
-      "aria-hidden",
-      String(!searchPanel.classList.contains("open"))
+  clearSearch.addEventListener("click", () => {
+    searchInput.value = "";
+    currentPage = 1;
+    renderMovies();
+  });
+
+  [
+    sortSelect,
+    genreFilter,
+    languageFilter,
+    yearFilter,
+    ratingFilter
+  ].forEach(element => {
+
+    element.addEventListener("change", () => {
+      currentPage = 1;
+      renderMovies();
+    });
+
+  });
+
+
+  filterToggle.addEventListener("click", () => {
+    filterPanel.classList.toggle("open");
+  });
+
+
+  function resetFilters() {
+
+    searchInput.value = "";
+    genreFilter.value = "";
+    languageFilter.value = "";
+    yearFilter.value = "";
+    ratingFilter.value = "";
+    sortSelect.value = "featured";
+
+    currentPage = 1;
+
+    renderMovies();
+  }
+
+
+  document.getElementById("resetFilters")
+    .addEventListener("click", resetFilters);
+
+  document.getElementById("emptyReset")
+    .addEventListener("click", resetFilters);
+
+
+  /* COLLECTION CATEGORY */
+
+  document.querySelectorAll(".collection-card")
+    .forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        genreFilter.value = button.dataset.genre;
+
+        currentPage = 1;
+
+        renderMovies();
+
+        document.getElementById("movies").scrollIntoView({
+          behavior: "smooth"
+        });
+
+      });
+
+    });
+
+
+  /* MOVIE CARD CLICK */
+
+  document.addEventListener("click", event => {
+
+    const watchButton = event.target.closest(
+      "[data-watchlist-id]"
     );
 
-    if (searchPanel.classList.contains("open")) searchInput.focus();
+    if (watchButton) {
+
+      event.stopPropagation();
+
+      toggleWatchlist(watchButton.dataset.watchlistId);
+
+      return;
+    }
+
+    const movieCardElement = event.target.closest(
+      "[data-movie-id]"
+    );
+
+    if (movieCardElement) {
+
+      openMovie(movieCardElement.dataset.movieId);
+
+    }
+
   });
 
-  $("#closeSearch").addEventListener("click", () => {
-    searchPanel.classList.remove("open");
-    searchPanel.setAttribute("aria-hidden", "true");
-    searchInput.value = "";
-    query = "";
-    renderMovies();
+
+  /* MODAL EVENTS */
+
+  modalClose.addEventListener("click", closeModal);
+
+  modal.addEventListener("click", event => {
+
+    if (event.target === modal) {
+      closeModal();
+    }
+
   });
 
-  searchInput.addEventListener("input", e => {
-    query = e.target.value.trim().toLowerCase();
-    renderMovies();
+  document.addEventListener("keydown", event => {
+
+    if (event.key === "Escape") {
+      closeModal();
+    }
+
   });
 
-  searchInput.addEventListener("keydown", e => {
-    if (e.key === "Escape") $("#closeSearch").click();
+
+  /* MOBILE MENU */
+
+  const menuToggle = document.getElementById("menuToggle");
+  const mainNav = document.getElementById("mainNav");
+
+  menuToggle.addEventListener("click", () => {
+    mainNav.classList.toggle("open");
   });
 
-  $("#clearFilters").addEventListener("click", () => {
-    activeFilter = "all";
-    query = "";
-    searchInput.value = "";
+  mainNav.querySelectorAll("a").forEach(link => {
 
-    filterButtons.forEach(b => {
-      const on = b.dataset.filter === "all";
-      b.classList.toggle("active", on);
-      b.setAttribute("aria-pressed", String(on));
-    });
-
-    renderMovies();
-  });
-
-  $("#resetSearch").addEventListener("click", () => $("#clearFilters").click());
-
-  $("#trendingExplore").addEventListener("click", () => {
-    activeFilter = "all";
-    query = "";
-    searchInput.value = "";
-    renderMovies();
-  });
-
-  $("#modalClose").addEventListener("click", closeModal);
-
-  modal.addEventListener("click", e => {
-    if (e.target === modal) closeModal();
-  });
-
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
-  });
-
-  $("#modalWatchlist").addEventListener("click", () => {
-    if (selectedMovie) toggleSaved(selectedMovie.id);
-  });
-
-  const menu = $("#menuToggle");
-  const nav = $("#mainNav");
-
-  menu.addEventListener("click", () => {
-    const open = nav.classList.toggle("open");
-    menu.setAttribute("aria-expanded", String(open));
-  });
-
-  $$(".nav-link").forEach(link => {
     link.addEventListener("click", () => {
-      nav.classList.remove("open");
-      menu.setAttribute("aria-expanded", "false");
-
-      $$(".nav-link").forEach(a =>
-        a.classList.toggle("active", a === link)
-      );
+      mainNav.classList.remove("open");
     });
+
   });
 
-  $("#currentYear").textContent = new Date().getFullYear();
+
+  /* SEARCH ICON */
+
+  document.getElementById("searchToggle")
+    .addEventListener("click", () => {
+
+      searchInput.focus();
+
+      document.getElementById("movies").scrollIntoView({
+        behavior: "smooth"
+      });
+
+    });
+
+
+  /* CURRENT YEAR */
+
+  document.getElementById("currentYear").textContent =
+    new Date().getFullYear();
+
+  document.getElementById("totalMovies").textContent =
+    `${movies.length}+`;
+
+
+  /* INITIALIZE */
+
+  populateYears();
+
+  renderFeatured();
 
   renderMovies();
+
   renderWatchlist();
+
 });
