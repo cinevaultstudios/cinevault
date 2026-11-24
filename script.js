@@ -5,6 +5,7 @@
    DYNAMIC SETTINGS • HERO • COLLECTIONS
    MOVIES • SEARCH • FILTER • SORT
    WATCHLIST • PAGINATION • RESPONSIVE NAVIGATION
+   CONFIGURABLE LINKS OPEN IN NEW TAB
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -154,6 +155,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return "";
+  }
+
+  /* =======================================================
+     CONFIGURABLE LINK — OPEN IN NEW TAB
+  ======================================================= */
+
+  function configureNewTab(anchor) {
+    if (!anchor) return;
+
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
   }
 
   /* =======================================================
@@ -335,6 +347,8 @@ document.addEventListener("DOMContentLoaded", () => {
     anchor.textContent = content;
     anchor.className = "content-link";
 
+    configureNewTab(anchor);
+
     element.appendChild(anchor);
   }
 
@@ -354,6 +368,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     anchor.href = link;
     anchor.className = "content-link";
+
+    configureNewTab(anchor);
 
     nodes.forEach(node => anchor.appendChild(node));
 
@@ -441,6 +457,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const anchor = document.createElement("a");
         anchor.href = mainLink;
         anchor.className = "content-link";
+
+        configureNewTab(anchor);
+
         anchor.appendChild(main);
         nodes.push(anchor);
       } else {
@@ -453,6 +472,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const anchor = document.createElement("a");
         anchor.href = highlightLink;
         anchor.className = "content-link";
+
+        configureNewTab(anchor);
+
         anchor.appendChild(highlight);
         nodes.push(anchor);
       } else {
@@ -472,10 +494,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const button1Text = $("heroButton1Text");
 
     if (button1) {
-      button1.href = safeLink(
+      const button1Url = safeLink(
         data.heroButton1Url,
         "#movies"
       );
+
+      button1.href = button1Url;
+
+      if (data.heroButton1Url && button1Url) {
+        configureNewTab(button1);
+      } else {
+        button1.removeAttribute("target");
+        button1.removeAttribute("rel");
+      }
     }
 
     if (button1Text) {
@@ -489,10 +520,19 @@ document.addEventListener("DOMContentLoaded", () => {
       button2.textContent =
         data.heroButton2Text || "Browse Collections";
 
-      button2.href = safeLink(
+      const button2Url = safeLink(
         data.heroButton2Url,
         "#collections"
       );
+
+      button2.href = button2Url;
+
+      if (data.heroButton2Url && button2Url) {
+        configureNewTab(button2);
+      } else {
+        button2.removeAttribute("target");
+        button2.removeAttribute("rel");
+      }
     }
 
     const heroImage = safeImageURL(data.heroImage);
@@ -613,6 +653,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const anchor = document.createElement("a");
         anchor.href = mainLink;
         anchor.className = "content-link";
+
+        configureNewTab(anchor);
+
         anchor.appendChild(main);
         nodes.push(anchor);
       } else {
@@ -625,6 +668,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const anchor = document.createElement("a");
         anchor.href = highlightLink;
         anchor.className = "content-link";
+
+        configureNewTab(anchor);
+
         anchor.appendChild(highlight);
         nodes.push(anchor);
       } else {
@@ -643,10 +689,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const aboutButton = $("aboutButton");
 
     if (aboutButton) {
-      aboutButton.href = safeLink(
+      const aboutButtonUrl = safeLink(
         data.aboutButtonUrl,
         "#movies"
       );
+
+      aboutButton.href = aboutButtonUrl;
+
+      if (data.aboutButtonUrl && aboutButtonUrl) {
+        configureNewTab(aboutButton);
+      } else {
+        aboutButton.removeAttribute("target");
+        aboutButton.removeAttribute("rel");
+      }
 
       const buttonText = $("aboutButtonText");
 
@@ -699,9 +754,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (link) {
         const anchor = document.createElement("a");
+
         anchor.href = link;
         anchor.textContent =
           `${siteName}. ${copyrightText}`;
+
+        configureNewTab(anchor);
+
         copyright.appendChild(anchor);
       } else {
         copyright.appendChild(
@@ -850,7 +909,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const tag = link ? "a" : "button";
 
       const attributes = link
-        ? `href="${escapeHTML(link)}"`
+        ? `href="${escapeHTML(link)}" target="_blank" rel="noopener noreferrer"`
         : `type="button" data-genre="${escapeHTML(collection.genre)}"`;
 
       return `
