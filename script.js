@@ -632,7 +632,6 @@ document.addEventListener("DOMContentLoaded", () => {
         aria-roledescription="slide"
         aria-label="${index + 1} of ${heroBanners.length}"
         ${hasBackgroundLink ? 'tabindex="0"' : ""}
-        ${hasBackgroundLink ? 'aria-label="Open banner link in a new tab"' : ""}
         style="
           background-image:${backgroundImage};
           background-size:cover;
