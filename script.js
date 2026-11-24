@@ -5,14 +5,14 @@
    DYNAMIC SETTINGS • MULTIPLE HERO BANNERS
    COLLECTIONS • MOVIES • SEARCH • FILTER • SORT
    WATCHLIST • PAGINATION • RESPONSIVE NAVIGATION
-   CONFIGURABLE LINKS OPEN IN NEW TAB
+   ACCESSIBLE HERO SLIDER • SAFE EXTERNAL LINKS
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
   "use strict";
 
   /* =======================================================
-     DOM HELPERS
+     1. DOM HELPERS
   ======================================================= */
 
   const $ = id => document.getElementById(id);
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const PAGE_SIZE = 40;
 
   /* =======================================================
-     APPLICATION STATE
+     2. APPLICATION STATE
   ======================================================= */
 
   let movies = [];
@@ -61,13 +61,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let watchlist = loadWatchlist();
 
   /* =======================================================
-     HERO SLIDER STATE
+     3. HERO SLIDER STATE
   ======================================================= */
 
   let heroBanners = [];
   let currentHeroIndex = 0;
   let heroTimer = null;
-  let heroPaused = false;
+
+  // Hover and keyboard focus are tracked separately.
+  let heroHoverPaused = false;
+  let heroFocusPaused = false;
 
   const heroSlider = $("heroSlider");
   const heroSliderTrack = $("heroSliderTrack");
@@ -80,8 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
     window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  function isHeroPaused() {
+    return heroHoverPaused || heroFocusPaused;
+  }
+
   /* =======================================================
-     SAFE TEXT / HTML
+     4. SAFE TEXT / HTML
   ======================================================= */
 
   function escapeHTML(value) {
@@ -100,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     SAFE URL VALIDATION
+     5. SAFE URL VALIDATION
   ======================================================= */
 
   function safeLink(value, fallback = "") {
@@ -174,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     SAFE COLOR VALIDATION
+     6. SAFE COLOR / SLIDER VALUE VALIDATION
   ======================================================= */
 
   function safeColor(value, fallback) {
@@ -210,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     CONFIGURABLE LINK — OPEN IN NEW TAB
+     7. CONFIGURABLE LINKS — OPEN IN NEW TAB
   ======================================================= */
 
   function configureNewTab(anchor) {
@@ -221,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     API HELPER
+     8. API HELPER
   ======================================================= */
 
   async function apiRequest(url, options = {}) {
@@ -254,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     WATCHLIST STORAGE
+     9. WATCHLIST STORAGE
   ======================================================= */
 
   function loadWatchlist() {
@@ -291,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     NORMALIZE MOVIE DATA
+     10. NORMALIZE MOVIE DATA
   ======================================================= */
 
   function normalizeMovie(movie) {
@@ -345,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     NORMALIZE COLLECTION DATA
+     11. NORMALIZE COLLECTION DATA
   ======================================================= */
 
   function normalizeCollection(collection) {
@@ -377,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     LINKED TEXT HELPERS
+     12. LINKED TEXT HELPERS
   ======================================================= */
 
   function setLinkedText(element, value, url) {
@@ -429,7 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     DYNAMIC LOGO
+     13. DYNAMIC LOGO
   ======================================================= */
 
   function updateLogo(data) {
@@ -478,7 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     LEGACY SINGLE HERO
+     14. LEGACY SINGLE HERO
      USED WHEN NO ACTIVE MULTIPLE BANNERS EXIST
   ======================================================= */
 
@@ -493,10 +500,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (heroTitle) {
       const main = document.createElement("span");
+
       main.textContent =
         data.heroTitle || "Discover Stories.";
 
       const highlight = document.createElement("span");
+
       highlight.className = "gold-text";
       highlight.textContent =
         data.heroHighlight || "Experience Cinema.";
@@ -508,6 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (mainLink) {
         const anchor = document.createElement("a");
+
         anchor.href = mainLink;
         anchor.className = "content-link";
 
@@ -523,6 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (highlightLink) {
         const anchor = document.createElement("a");
+
         anchor.href = highlightLink;
         anchor.className = "content-link";
 
@@ -608,18 +619,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MULTIPLE HERO BANNER — NORMALIZE
+     15. MULTIPLE HERO BANNER — NORMALIZE
   ======================================================= */
 
   function normalizeHeroBanner(banner, index) {
     const item = banner || {};
 
+    const enabled =
+      item.enabled !== false &&
+      item.enabled !== 0 &&
+      item.enabled !== "0" &&
+      item.enabled !== "false";
+
     return {
       id: textValue(item.id, `hero-${index + 1}`),
 
-      enabled: item.enabled !== false &&
-        item.enabled !== 0 &&
-        item.enabled !== "false",
+      enabled,
 
       image: safeImageURL(item.image),
 
@@ -637,7 +652,10 @@ document.addEventListener("DOMContentLoaded", () => {
       button2Url: safeLink(item.button2Url),
 
       textColor: safeColor(item.textColor, "#FFFFFF"),
-      highlightColor: safeColor(item.highlightColor, "#D6B36A"),
+      highlightColor: safeColor(
+        item.highlightColor,
+        "#D6B36A"
+      ),
 
       overlay: safeOverlay(item.overlay),
 
@@ -648,7 +666,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MULTIPLE HERO BANNER — PARSE SETTINGS
+     16. MULTIPLE HERO BANNER — PARSE SETTINGS
   ======================================================= */
 
   function getHeroBannersFromSettings(data) {
@@ -668,18 +686,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return raw
-      .map(normalizeHeroBanner)
+      .map((banner, index) =>
+        normalizeHeroBanner(banner, index)
+      )
       .filter(banner =>
-        banner.enabled &&
-        banner.image
+        banner.enabled && banner.image
       );
   }
 
   /* =======================================================
-     MULTIPLE HERO BANNER — BUTTON HTML
+     17. MULTIPLE HERO BANNER — BUTTON HTML
   ======================================================= */
 
-  function createHeroButton(text, url, styleClass, fallbackUrl) {
+  function createHeroButton(
+    text,
+    url,
+    styleClass,
+    fallbackUrl
+  ) {
     const label = textValue(text);
 
     if (!label) return "";
@@ -691,14 +715,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const finalUrl = link || fallbackUrl;
-
     const opensNewTab = Boolean(link);
 
     return `
       <a
         href="${escapeHTML(finalUrl)}"
         class="btn ${escapeHTML(styleClass)}"
-        ${opensNewTab ? 'target="_blank" rel="noopener noreferrer"' : ""}
+        ${opensNewTab
+          ? 'target="_blank" rel="noopener noreferrer"'
+          : ""}
       >
         ${escapeHTML(label)}
         <span aria-hidden="true">→</span>
@@ -707,15 +732,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MULTIPLE HERO BANNER — RENDER SLIDE
+     18. MULTIPLE HERO BANNER — RENDER SLIDE
   ======================================================= */
 
   function renderHeroSlide(banner, index) {
     const overlay = banner.overlay / 100;
-
-    const position = banner.textPosition;
-
-    const positionClass = `hero-text-${position}`;
+    const positionClass = `hero-text-${banner.textPosition}`;
 
     const backgroundImage = `
       linear-gradient(
@@ -750,7 +772,7 @@ document.addEventListener("DOMContentLoaded", () => {
         role="group"
         aria-roledescription="slide"
         aria-label="${index + 1} of ${heroBanners.length}"
-        ${hasBackgroundLink ? 'tabindex="0" role="link"' : ""}
+        ${hasBackgroundLink ? 'tabindex="0"' : ""}
         style="
           background-image:${backgroundImage};
           background-size:cover;
@@ -809,7 +831,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MULTIPLE HERO BANNER — DOTS
+     19. MULTIPLE HERO BANNER — DOTS
   ======================================================= */
 
   function renderHeroDots() {
@@ -835,21 +857,60 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MULTIPLE HERO BANNER — SLIDE CHANGE
+     20. MULTIPLE HERO BANNER — AUTOPLAY
+  ======================================================= */
+
+  function stopHeroAutoplay() {
+    if (heroTimer !== null) {
+      clearTimeout(heroTimer);
+      heroTimer = null;
+    }
+  }
+
+  function startHeroAutoplay() {
+    stopHeroAutoplay();
+
+    if (
+      heroBanners.length <= 1 ||
+      isHeroPaused() ||
+      prefersReducedMotion ||
+      document.hidden
+    ) {
+      return;
+    }
+
+    const activeBanner = heroBanners[currentHeroIndex];
+
+    const duration =
+      safeDuration(activeBanner?.duration) * 1000;
+
+    heroTimer = setTimeout(() => {
+      showHeroSlide(currentHeroIndex + 1);
+    }, duration);
+  }
+
+  /* =======================================================
+     21. MULTIPLE HERO BANNER — SLIDE CHANGE
   ======================================================= */
 
   function showHeroSlide(index, resetTimer = true) {
-    if (!heroSliderTrack || !heroBanners.length) return;
+    if (!heroSliderTrack || !heroBanners.length) {
+      return;
+    }
 
     currentHeroIndex =
       (index + heroBanners.length) % heroBanners.length;
 
-    const slides = heroSliderTrack.querySelectorAll(".hero-slide");
+    const slides =
+      heroSliderTrack.querySelectorAll(".hero-slide");
 
     slides.forEach((slide, slideIndex) => {
       const active = slideIndex === currentHeroIndex;
 
-      slide.classList.toggle("hero-slide-active", active);
+      slide.classList.toggle(
+        "hero-slide-active",
+        active
+      );
 
       slide.setAttribute(
         "aria-hidden",
@@ -871,40 +932,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MULTIPLE HERO BANNER — AUTOPLAY
-  ======================================================= */
-
-  function stopHeroAutoplay() {
-    if (heroTimer) {
-      clearTimeout(heroTimer);
-      heroTimer = null;
-    }
-  }
-
-  function startHeroAutoplay() {
-    stopHeroAutoplay();
-
-    if (
-      heroBanners.length <= 1 ||
-      heroPaused ||
-      prefersReducedMotion
-    ) {
-      return;
-    }
-
-    const activeBanner = heroBanners[currentHeroIndex];
-
-    const duration = safeDuration(
-      activeBanner?.duration
-    ) * 1000;
-
-    heroTimer = setTimeout(() => {
-      showHeroSlide(currentHeroIndex + 1);
-    }, duration);
-  }
-
-  /* =======================================================
-     MULTIPLE HERO BANNER — NAVIGATION
+     22. MULTIPLE HERO BANNER — NAVIGATION
   ======================================================= */
 
   function initializeHeroControls() {
@@ -955,45 +983,63 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     MULTIPLE HERO BANNER — PAUSE ON HOVER
+     23. HERO SLIDER — PAUSE ON HOVER / FOCUS
   ======================================================= */
 
   heroSlider?.addEventListener("mouseenter", () => {
-    heroPaused = true;
+    heroHoverPaused = true;
     stopHeroAutoplay();
   });
 
   heroSlider?.addEventListener("mouseleave", () => {
-    heroPaused = false;
+    heroHoverPaused = false;
     startHeroAutoplay();
   });
 
   heroSlider?.addEventListener("focusin", () => {
-    heroPaused = true;
+    heroFocusPaused = true;
     stopHeroAutoplay();
   });
 
   heroSlider?.addEventListener("focusout", event => {
-    if (
-      heroSlider.contains(event.relatedTarget)
-    ) {
+    if (heroSlider.contains(event.relatedTarget)) {
       return;
     }
 
-    heroPaused = false;
+    heroFocusPaused = false;
     startHeroAutoplay();
   });
 
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopHeroAutoplay();
+    } else {
+      startHeroAutoplay();
+    }
+  });
+
   /* =======================================================
-     MULTIPLE HERO BANNER — BACKGROUND CLICK
+     24. HERO SLIDER — BACKGROUND CLICK / KEYBOARD
   ======================================================= */
 
   function openHeroBackgroundLink(slide) {
     if (!slide) return;
 
-    const index = Number(slide.dataset.heroIndex);
+    const indexValue = slide.dataset.heroIndex;
 
-    if (!Number.isInteger(index)) return;
+    if (indexValue === undefined || indexValue === "") {
+      return;
+    }
+
+    const index = Number(indexValue);
+
+    if (
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= heroBanners.length
+    ) {
+      return;
+    }
 
     const banner = heroBanners[index];
 
@@ -1003,7 +1049,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!link) return;
 
-    window.open(link, "_blank", "noopener,noreferrer");
+    window.open(
+      link,
+      "_blank",
+      "noopener,noreferrer"
+    );
   }
 
   heroSliderTrack?.addEventListener("click", event => {
@@ -1011,7 +1061,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!slide) return;
 
-    // Buttons and links must retain their own destinations.
+    // Do not override the buttons or links inside the banner.
     if (event.target.closest("a, button")) {
       return;
     }
@@ -1026,9 +1076,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const slide = event.target.closest(".hero-slide");
 
-    if (!slide || !slide.dataset.heroIndex) return;
+    if (!slide) return;
 
-    if (event.target.closest("a, button")) return;
+    if (event.target.closest("a, button")) {
+      return;
+    }
+
+    if (!slide.hasAttribute("tabindex")) {
+      return;
+    }
 
     event.preventDefault();
 
@@ -1036,7 +1092,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     MULTIPLE HERO BANNER — RENDER
+     25. MULTIPLE HERO BANNER — RENDER
   ======================================================= */
 
   function renderHeroBanners(data) {
@@ -1048,21 +1104,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     stopHeroAutoplay();
 
-    heroPaused = false;
+    heroHoverPaused = false;
+    heroFocusPaused = false;
 
     if (!heroBanners.length) {
-      // Keep the existing legacy single-banner HTML.
+      // Restore the original legacy banner.
       const fallbackSlide = $("heroFallbackSlide");
+
+      heroSliderTrack.replaceChildren();
 
       if (fallbackSlide) {
         fallbackSlide.hidden = false;
-        fallbackSlide.classList.add("hero-slide-active");
+
+        fallbackSlide.classList.add(
+          "hero-slide-active"
+        );
+
         fallbackSlide.removeAttribute("aria-hidden");
-      }
+        fallbackSlide.removeAttribute("inert");
+        fallbackSlide.removeAttribute("data-hero-index");
+        fallbackSlide.removeAttribute("tabindex");
 
-      heroSliderTrack.innerHTML = "";
-
-      if (fallbackSlide) {
         heroSliderTrack.appendChild(fallbackSlide);
       }
 
@@ -1071,7 +1133,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     heroSliderTrack.innerHTML = heroBanners
-      .map((banner, index) => renderHeroSlide(banner, index))
+      .map((banner, index) =>
+        renderHeroSlide(banner, index)
+      )
       .join("");
 
     showHeroSlide(0, false);
@@ -1080,7 +1144,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     DYNAMIC SECTION HEADINGS
+     26. DYNAMIC SECTION HEADINGS
   ======================================================= */
 
   function updateSectionHeadings(data) {
@@ -1094,10 +1158,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (collectionsHeading) {
       const main = document.createElement("span");
+
       main.id = "collectionsHeadingText";
-      main.textContent = data.collectionsHeading || "Movie";
+      main.textContent =
+        data.collectionsHeading || "Movie";
 
       const highlight = document.createElement("span");
+
       highlight.id = "collectionsHeadingHighlight";
       highlight.className = "gold-text";
       highlight.textContent =
@@ -1105,7 +1172,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setLinkedNodes(
         collectionsHeading,
-        [main, document.createTextNode(" "), highlight],
+        [
+          main,
+          document.createTextNode(" "),
+          highlight
+        ],
         data.collectionsHeadingUrl
       );
     }
@@ -1127,10 +1198,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (moviesHeading) {
       const main = document.createElement("span");
+
       main.id = "moviesHeadingText";
       main.textContent = data.moviesHeading || "Explore";
 
       const highlight = document.createElement("span");
+
       highlight.id = "moviesHeadingHighlight";
       highlight.className = "gold-text";
       highlight.textContent =
@@ -1138,7 +1211,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setLinkedNodes(
         moviesHeading,
-        [main, document.createTextNode(" "), highlight],
+        [
+          main,
+          document.createTextNode(" "),
+          highlight
+        ],
         data.moviesHeadingUrl
       );
     }
@@ -1152,7 +1229,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     DYNAMIC ABOUT SECTION
+     27. DYNAMIC ABOUT SECTION
   ======================================================= */
 
   function updateAbout(data) {
@@ -1166,10 +1243,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (title) {
       const main = document.createElement("span");
+
       main.textContent =
         data.aboutTitle || "More Than Movies.";
 
       const highlight = document.createElement("span");
+
       highlight.className = "gold-text";
       highlight.textContent =
         data.aboutHighlight || "A Cinema Experience.";
@@ -1181,6 +1260,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (mainLink) {
         const anchor = document.createElement("a");
+
         anchor.href = mainLink;
         anchor.className = "content-link";
 
@@ -1196,6 +1276,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (highlightLink) {
         const anchor = document.createElement("a");
+
         anchor.href = highlightLink;
         anchor.className = "content-link";
 
@@ -1246,7 +1327,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     DYNAMIC FOOTER
+     28. DYNAMIC FOOTER
   ======================================================= */
 
   function updateFooter(data) {
@@ -1268,7 +1349,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const copyright = $("copyrightText");
 
     if (copyright) {
-      const siteName = textValue(data.siteName, "CINEVAULT");
+      const siteName = textValue(
+        data.siteName,
+        "CINEVAULT"
+      );
+
       const copyrightText = textValue(
         data.copyrightText,
         "All rights reserved."
@@ -1309,7 +1394,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     LOAD SETTINGS FROM D1
+     29. LOAD SETTINGS FROM D1
   ======================================================= */
 
   async function loadSettings() {
@@ -1330,15 +1415,23 @@ document.addEventListener("DOMContentLoaded", () => {
       updateFooter(settings);
 
     } catch (error) {
-      console.error("CineVault Settings Error:", error);
+      console.error(
+        "CineVault Settings Error:",
+        error
+      );
     }
   }
 
   /* =======================================================
-     FILTER OPTION HELPERS
+     30. FILTER OPTION HELPERS
   ======================================================= */
 
-  function populateSelect(select, values, firstLabel, selectedValue) {
+  function populateSelect(
+    select,
+    values,
+    firstLabel,
+    selectedValue
+  ) {
     if (!select) return;
 
     const uniqueValues = [...new Set(
@@ -1400,7 +1493,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     COLLECTION RENDERING
+     31. COLLECTION RENDERING
   ======================================================= */
 
   function renderCollections() {
@@ -1464,11 +1557,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     LOAD COLLECTIONS FROM D1
+     32. LOAD COLLECTIONS FROM D1
   ======================================================= */
 
   async function loadCollections() {
     if (collectionGrid) {
+      collectionGrid.setAttribute("aria-busy", "true");
+
       collectionGrid.innerHTML = `
         <p class="loading-message">
           Loading collections...
@@ -1491,7 +1586,10 @@ document.addEventListener("DOMContentLoaded", () => {
       renderCollections();
 
     } catch (error) {
-      console.error("CineVault Collections Error:", error);
+      console.error(
+        "CineVault Collections Error:",
+        error
+      );
 
       if (collectionGrid) {
         collectionGrid.innerHTML = `
@@ -1500,11 +1598,13 @@ document.addEventListener("DOMContentLoaded", () => {
           </p>
         `;
       }
+    } finally {
+      collectionGrid?.setAttribute("aria-busy", "false");
     }
   }
 
   /* =======================================================
-     POSTER FALLBACK
+     33. POSTER FALLBACK
   ======================================================= */
 
   function fallbackPoster(title) {
@@ -1549,7 +1649,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MOVIE CARD
+     34. MOVIE CARD
   ======================================================= */
 
   function movieCard(movie) {
@@ -1608,7 +1708,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     MOVIE POSTER ERROR HANDLING
+     35. MOVIE POSTER ERROR HANDLING
   ======================================================= */
 
   function handlePosterErrors(container) {
@@ -1618,7 +1718,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .forEach(image => {
         image.addEventListener("error", () => {
           const movie = movies.find(
-            item => item.id === Number(image.dataset.posterFallback)
+            item =>
+              item.id === Number(image.dataset.posterFallback)
           );
 
           image.onerror = null;
@@ -1631,13 +1732,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     SEARCH + FILTER + SORT
+     36. SEARCH + FILTER + SORT
   ======================================================= */
 
   function getFilteredMovies() {
     let result = [...movies];
 
-    const search = searchInput?.value.trim().toLowerCase() || "";
+    const search =
+      searchInput?.value.trim().toLowerCase() || "";
 
     if (search) {
       result = result.filter(movie => {
@@ -1662,7 +1764,9 @@ document.addEventListener("DOMContentLoaded", () => {
       result = result.filter(movie =>
         movie.genre
           .split(",")
-          .some(value => value.trim().toLowerCase() === selected)
+          .some(value =>
+            value.trim().toLowerCase() === selected
+          )
       );
     }
 
@@ -1722,7 +1826,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     PAGINATION
+     37. PAGINATION
   ======================================================= */
 
   function renderPagination(totalPages) {
@@ -1732,7 +1836,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (totalPages <= 1) return;
 
-    function addButton(label, page, active = false, disabled = false) {
+    function addButton(
+      label,
+      page,
+      active = false,
+      disabled = false
+    ) {
       const button = document.createElement("button");
 
       button.type = "button";
@@ -1745,15 +1854,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       button.addEventListener("click", () => {
-        if (page === currentPage || page < 1 || page > totalPages) {
+        if (
+          page === currentPage ||
+          page < 1 ||
+          page > totalPages
+        ) {
           return;
         }
 
         currentPage = page;
+
         renderMovies();
 
         $("movies")?.scrollIntoView({
-          behavior: "smooth",
+          behavior: prefersReducedMotion ? "auto" : "smooth",
           block: "start"
         });
       });
@@ -1761,7 +1875,12 @@ document.addEventListener("DOMContentLoaded", () => {
       pagination.appendChild(button);
     }
 
-    addButton("‹", currentPage - 1, false, currentPage === 1);
+    addButton(
+      "‹",
+      currentPage - 1,
+      false,
+      currentPage === 1
+    );
 
     const pages = new Set([1, totalPages]);
 
@@ -1780,8 +1899,10 @@ document.addEventListener("DOMContentLoaded", () => {
     sortedPages.forEach(page => {
       if (previous && page - previous > 1) {
         const dots = document.createElement("span");
+
         dots.className = "pagination-dots";
         dots.textContent = "…";
+
         pagination.appendChild(dots);
       }
 
@@ -1794,11 +1915,16 @@ document.addEventListener("DOMContentLoaded", () => {
       previous = page;
     });
 
-    addButton("›", currentPage + 1, false, currentPage === totalPages);
+    addButton(
+      "›",
+      currentPage + 1,
+      false,
+      currentPage === totalPages
+    );
   }
 
   /* =======================================================
-     MAIN MOVIE RENDER
+     38. MAIN MOVIE RENDER
   ======================================================= */
 
   function renderMovies() {
@@ -1845,10 +1971,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (clearSearch) {
       clearSearch.hidden = !searchInput?.value;
     }
+
+    movieGrid.setAttribute("aria-busy", "false");
   }
 
   /* =======================================================
-     WATCHLIST RENDER
+     39. WATCHLIST RENDER
   ======================================================= */
 
   function renderWatchlist() {
@@ -1874,18 +2002,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     WATCHLIST TOGGLE
+     40. WATCHLIST TOGGLE
   ======================================================= */
 
   function toggleWatchlist(id) {
     const movieId = Number(id);
 
-    if (!Number.isSafeInteger(movieId) || movieId <= 0) {
+    if (
+      !Number.isSafeInteger(movieId) ||
+      movieId <= 0
+    ) {
       return;
     }
 
     if (isInWatchlist(movieId)) {
-      watchlist = watchlist.filter(item => item !== movieId);
+      watchlist = watchlist.filter(
+        item => item !== movieId
+      );
     } else {
       watchlist.push(movieId);
     }
@@ -1897,11 +2030,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     LOAD MOVIES FROM D1
+     41. LOAD MOVIES FROM D1
   ======================================================= */
 
   async function loadMovies() {
     if (movieGrid) {
+      movieGrid.setAttribute("aria-busy", "true");
+
       movieGrid.innerHTML = `
         <p class="loading-message">
           Loading movies...
@@ -1920,7 +2055,8 @@ document.addEventListener("DOMContentLoaded", () => {
       movies = response.movies
         .map(normalizeMovie)
         .filter(movie =>
-          Number.isSafeInteger(movie.id) && movie.id > 0
+          Number.isSafeInteger(movie.id) &&
+          movie.id > 0
         );
 
       populateFilters();
@@ -1934,22 +2070,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (totalMoviesElement) {
         totalMoviesElement.textContent =
-          Number(response.total ?? movies.length).toLocaleString();
+          Number(
+            response.total ?? movies.length
+          ).toLocaleString();
       }
 
     } catch (error) {
-      console.error("CineVault Movie Loading Error:", error);
+      console.error(
+        "CineVault Movie Loading Error:",
+        error
+      );
 
       movies = [];
 
       populateFilters();
 
       if (resultsCount) {
-        resultsCount.textContent = "Unable to load movies";
+        resultsCount.textContent =
+          "Unable to load movies";
       }
 
       if (movieGrid) {
         movieGrid.replaceChildren();
+        movieGrid.setAttribute("aria-busy", "false");
       }
 
       if (emptyState) {
@@ -1977,7 +2120,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     RESET FILTERS
+     42. RESET FILTERS
   ======================================================= */
 
   function resetFilters() {
@@ -1997,7 +2140,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     SEARCH EVENTS
+     43. SEARCH EVENTS
   ======================================================= */
 
   searchInput?.addEventListener("input", () => {
@@ -2011,13 +2154,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentPage = 1;
+
     renderMovies();
 
     searchInput?.focus();
   });
 
   /* =======================================================
-     FILTER EVENTS
+     44. FILTER EVENTS
   ======================================================= */
 
   [
@@ -2034,7 +2178,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   filterToggle?.addEventListener("click", () => {
-    const isOpen = filterPanel?.classList.toggle("open");
+    const isOpen =
+      filterPanel?.classList.toggle("open");
 
     filterToggle.setAttribute(
       "aria-expanded",
@@ -2042,11 +2187,18 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  $("resetFilters")?.addEventListener("click", resetFilters);
-  $("emptyReset")?.addEventListener("click", resetFilters);
+  $("resetFilters")?.addEventListener(
+    "click",
+    resetFilters
+  );
+
+  $("emptyReset")?.addEventListener(
+    "click",
+    resetFilters
+  );
 
   /* =======================================================
-     COLLECTION CLICK
+     45. COLLECTION CLICK
   ======================================================= */
 
   collectionGrid?.addEventListener("click", event => {
@@ -2059,8 +2211,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const genre = card.dataset.genre || "";
 
     if (genreFilter) {
-      const matchingOption = [...genreFilter.options].find(option =>
-        option.value.toLowerCase() === genre.toLowerCase()
+      const matchingOption = [
+        ...genreFilter.options
+      ].find(option =>
+        option.value.toLowerCase() ===
+        genre.toLowerCase()
       );
 
       genreFilter.value = matchingOption
@@ -2073,26 +2228,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentPage = 1;
+
     renderMovies();
 
     $("movies")?.scrollIntoView({
-      behavior: "smooth",
+      behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "start"
     });
   });
 
   /* =======================================================
-     MOVIE CARD + WATCHLIST CLICK HANDLING
+     46. MOVIE CARD + WATCHLIST CLICK HANDLING
   ======================================================= */
 
   document.addEventListener("click", event => {
-    const watchButton = event.target.closest("[data-watchlist-id]");
+    const watchButton =
+      event.target.closest("[data-watchlist-id]");
 
     if (watchButton) {
       event.preventDefault();
       event.stopPropagation();
 
-      toggleWatchlist(watchButton.dataset.watchlistId);
+      toggleWatchlist(
+        watchButton.dataset.watchlistId
+      );
+
       return;
     }
 
@@ -2100,7 +2260,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!card) return;
 
-    if (event.target.closest("a, button, input, select, textarea")) {
+    if (
+      event.target.closest(
+        "a, button, input, select, textarea"
+      )
+    ) {
       return;
     }
 
@@ -2113,11 +2277,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     KEYBOARD ACCESSIBILITY
+     47. KEYBOARD ACCESSIBILITY — MOVIE CARDS
   ======================================================= */
 
   document.addEventListener("keydown", event => {
-    if (event.key !== "Enter" && event.key !== " ") {
+    if (
+      event.key !== "Enter" &&
+      event.key !== " "
+    ) {
       return;
     }
 
@@ -2125,7 +2292,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!card) return;
 
-    if (event.target.closest("button, a, input, select, textarea")) {
+    if (
+      event.target.closest(
+        "button, a, input, select, textarea"
+      )
+    ) {
       return;
     }
 
@@ -2140,16 +2311,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     MOBILE NAVIGATION
+     48. MOBILE NAVIGATION
   ======================================================= */
 
   function closeMobileMenu() {
     mainNav?.classList.remove("open");
-    menuToggle?.setAttribute("aria-expanded", "false");
+
+    menuToggle?.setAttribute(
+      "aria-expanded",
+      "false"
+    );
   }
 
   menuToggle?.addEventListener("click", () => {
-    const isOpen = mainNav?.classList.toggle("open");
+    const isOpen =
+      mainNav?.classList.toggle("open");
 
     menuToggle.setAttribute(
       "aria-expanded",
@@ -2158,7 +2334,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   mainNav?.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", closeMobileMenu);
+    link.addEventListener(
+      "click",
+      closeMobileMenu
+    );
   });
 
   document.addEventListener("click", event => {
@@ -2173,20 +2352,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     SEARCH ICON
+     49. SEARCH ICON
   ======================================================= */
 
   $("searchToggle")?.addEventListener("click", () => {
     searchInput?.focus();
 
     $("movies")?.scrollIntoView({
-      behavior: "smooth",
+      behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "start"
     });
   });
 
   /* =======================================================
-     CURRENT YEAR
+     50. CURRENT YEAR
   ======================================================= */
 
   const currentYearElement = $("currentYear");
@@ -2197,7 +2376,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     INITIALIZE APPLICATION
+     51. INITIALIZE APPLICATION
   ======================================================= */
 
   loadSettings();
