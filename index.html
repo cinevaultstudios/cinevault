@@ -7,69 +7,134 @@
 
   <title>CineVault — Discover Movies & Entertainment</title>
 
-  <meta name="description" content="Explore movies, discover new releases and build your personal movie collection with CineVault.">
-  <meta name="keywords" content="movies, cinema, Hollywood, Bollywood, Korean movies, Bangla movies">
+  <meta name="description" content="Explore movies, discover new releases, browse curated collections and build your personal movie watchlist with CineVault.">
+  <meta name="keywords" content="movies, cinema, Hollywood, Bollywood, Korean movies, Bangla movies, movie collection">
   <meta name="author" content="CineVault">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#080a0f">
 
   <meta property="og:title" content="CineVault — Movie Collection">
-  <meta property="og:description" content="Discover your next favourite movie.">
+  <meta property="og:description" content="Discover your next favourite movie with CineVault.">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CineVault">
 
-  <meta name="theme-color" content="#080a0f">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CineVault — Movie Collection">
+  <meta name="twitter:description" content="Discover your next favourite movie with CineVault.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- D1 is the only movie database -->
   <script src="script.js" defer></script>
 </head>
 
 <body>
 
+  <a class="skip-link" href="#main-content">
+    Skip to main content
+  </a>
+
   <!-- HEADER -->
-  <header class="site-header">
+  <header class="site-header" id="siteHeader">
+
     <div class="header-inner">
 
-      <a href="index.html" class="brand" id="headerBrand">
+      <a href="index.html" class="brand" id="headerBrand" aria-label="CineVault Home">
+
         <span class="brand-icon" id="headerLogoIcon">C</span>
-        <span id="headerLogoText">CINE<span class="gold-text">VAULT</span></span>
+
+        <span id="headerLogoText">
+          CINE<span class="gold-text">VAULT</span>
+        </span>
+
       </a>
 
-      <nav class="main-nav" id="mainNav">
-        <a href="#home" class="active">Home</a>
-        <a href="#movies">Movies</a>
-        <a href="#collections">Collections</a>
-        <a href="#watchlist">My Watchlist</a>
+      <nav
+        class="main-nav"
+        id="mainNav"
+        aria-label="Main navigation"
+      >
+
+        <a href="#home" class="active" aria-current="page">
+          Home
+        </a>
+
+        <a href="#movies">
+          Movies
+        </a>
+
+        <a href="#collections">
+          Collections
+        </a>
+
+        <a href="#watchlist">
+          My Watchlist
+        </a>
+
       </nav>
 
       <div class="header-actions">
 
-        <button class="icon-button" id="searchToggle" aria-label="Open search">
-          <span>⌕</span>
+        <button
+          class="icon-button"
+          id="searchToggle"
+          type="button"
+          aria-label="Go to movie search"
+          title="Search movies"
+        >
+          <span aria-hidden="true">⌕</span>
         </button>
 
-        <a href="#watchlist" class="watchlist-link">
-          <span>♡</span>
-          <span class="watchlist-count" id="watchlistCount">0</span>
+        <a
+          href="#watchlist"
+          class="watchlist-link"
+          aria-label="Open my watchlist"
+        >
+
+          <span aria-hidden="true">♡</span>
+
+          <span
+            class="watchlist-count"
+            id="watchlistCount"
+            aria-live="polite"
+          >0</span>
+
         </a>
 
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <button
+          class="menu-toggle"
+          id="menuToggle"
+          type="button"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          aria-controls="mainNav"
+        >
           ☰
         </button>
 
       </div>
 
     </div>
+
   </header>
 
 
-  <main>
+  <!-- MAIN CONTENT -->
+  <main id="main-content">
 
     <!-- HERO BANNER -->
-    <section class="hero-section" id="home">
+    <section
+      class="hero-section"
+      id="home"
+      aria-labelledby="heroTitle"
+    >
 
       <div class="hero-overlay"></div>
 
@@ -80,10 +145,13 @@
         </span>
 
         <h1 id="heroTitle">
+
           Discover Stories.<br>
+
           <span class="gold-text" id="heroHighlight">
             Experience Cinema.
           </span>
+
         </h1>
 
         <p id="heroDescription">
@@ -93,12 +161,25 @@
 
         <div class="hero-buttons">
 
-          <a href="#movies" class="btn btn-primary" id="heroButton1">
-            <span id="heroButton1Text">Explore Movies</span>
-            <span>→</span>
+          <a
+            href="#movies"
+            class="btn btn-primary"
+            id="heroButton1"
+          >
+
+            <span id="heroButton1Text">
+              Explore Movies
+            </span>
+
+            <span aria-hidden="true">→</span>
+
           </a>
 
-          <a href="#collections" class="btn btn-outline" id="heroButton2">
+          <a
+            href="#collections"
+            class="btn btn-outline"
+            id="heroButton2"
+          >
             Browse Collections
           </a>
 
@@ -107,7 +188,7 @@
         <div class="hero-stats">
 
           <div>
-            <strong id="totalMovies">0</strong>
+            <strong id="totalMovies" aria-live="polite">0</strong>
             <span>Movies</span>
           </div>
 
@@ -125,7 +206,7 @@
 
       </div>
 
-      <div class="hero-decoration">
+      <div class="hero-decoration" aria-hidden="true">
         <span>C</span>
       </div>
 
@@ -133,11 +214,16 @@
 
 
     <!-- MOVIE COLLECTIONS -->
-    <section class="section collections-section" id="collections">
+    <section
+      class="section collections-section"
+      id="collections"
+      aria-labelledby="collectionsHeading"
+    >
 
       <div class="section-heading">
 
         <div>
+
           <span class="section-eyebrow" id="collectionsEyebrow">
             EXPLORE BY CATEGORY
           </span>
@@ -146,16 +232,22 @@
             Movie <span class="gold-text">Collections</span>
           </h2>
 
-          <p class="section-description" id="collectionsDescription">
+          <p
+            class="section-description"
+            id="collectionsDescription"
+          >
             Explore movies from your favourite genres.
           </p>
+
         </div>
 
       </div>
 
-      <div class="collection-grid" id="collectionGrid">
-
-        <!-- Collections loaded dynamically from D1 API -->
+      <div
+        class="collection-grid"
+        id="collectionGrid"
+        aria-live="polite"
+      >
 
         <p class="loading-message" id="collectionsLoading">
           Loading collections...
@@ -167,7 +259,11 @@
 
 
     <!-- EXPLORE MOVIES -->
-    <section class="section movies-section" id="movies">
+    <section
+      class="section movies-section"
+      id="movies"
+      aria-labelledby="moviesHeading"
+    >
 
       <div class="section-heading">
 
@@ -181,7 +277,10 @@
             Explore <span class="gold-text">Movies</span>
           </h2>
 
-          <p class="section-description" id="moviesDescription">
+          <p
+            class="section-description"
+            id="moviesDescription"
+          >
             Discover your next favourite movie from our collection.
           </p>
 
@@ -195,16 +294,21 @@
 
         <div class="search-box" id="mainSearchBox">
 
-          <span>⌕</span>
+          <span aria-hidden="true">⌕</span>
 
           <input
             type="search"
             id="movieSearch"
             placeholder="Search movies, actors or genres..."
             autocomplete="off"
+            aria-label="Search movies"
           >
 
-          <button id="clearSearch" aria-label="Clear search">
+          <button
+            id="clearSearch"
+            type="button"
+            aria-label="Clear search"
+          >
             ×
           </button>
 
@@ -212,14 +316,25 @@
 
         <div class="toolbar-actions">
 
-          <select id="sortMovies" aria-label="Sort movies">
+          <select
+            id="sortMovies"
+            aria-label="Sort movies"
+          >
+
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
             <option value="rating">Top Rated</option>
             <option value="az">Name A–Z</option>
+
           </select>
 
-          <button class="filter-toggle" id="filterToggle">
+          <button
+            class="filter-toggle"
+            id="filterToggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="filterPanel"
+          >
             ☷ Filters
           </button>
 
@@ -229,12 +344,20 @@
 
 
       <!-- FILTERS -->
-      <div class="filter-panel" id="filterPanel">
+      <div
+        class="filter-panel"
+        id="filterPanel"
+        aria-label="Movie filters"
+      >
 
         <div class="filter-group">
-          <label for="genreFilter">Genre</label>
+
+          <label for="genreFilter">
+            Genre
+          </label>
 
           <select id="genreFilter">
+
             <option value="">All Genres</option>
             <option value="Action">Action</option>
             <option value="Adventure">Adventure</option>
@@ -248,47 +371,71 @@
             <option value="Romance">Romance</option>
             <option value="Sci-Fi">Sci-Fi</option>
             <option value="Thriller">Thriller</option>
+
           </select>
+
         </div>
 
 
         <div class="filter-group">
-          <label for="languageFilter">Language</label>
+
+          <label for="languageFilter">
+            Language
+          </label>
 
           <select id="languageFilter">
+
             <option value="">All Languages</option>
             <option value="English">English</option>
             <option value="Hindi">Hindi</option>
             <option value="Korean">Korean</option>
             <option value="Bangla">Bangla</option>
             <option value="Japanese">Japanese</option>
+
           </select>
+
         </div>
 
 
         <div class="filter-group">
-          <label for="yearFilter">Release Year</label>
+
+          <label for="yearFilter">
+            Release Year
+          </label>
 
           <select id="yearFilter">
+
             <option value="">All Years</option>
+
           </select>
+
         </div>
 
 
         <div class="filter-group">
-          <label for="ratingFilter">Minimum Rating</label>
+
+          <label for="ratingFilter">
+            Minimum Rating
+          </label>
 
           <select id="ratingFilter">
+
             <option value="">Any Rating</option>
             <option value="9">9.0+</option>
             <option value="8">8.0+</option>
             <option value="7">7.0+</option>
             <option value="6">6.0+</option>
+
           </select>
+
         </div>
 
 
-        <button id="resetFilters" class="reset-filters">
+        <button
+          id="resetFilters"
+          class="reset-filters"
+          type="button"
+        >
           Reset Filters
         </button>
 
@@ -298,11 +445,18 @@
       <!-- RESULT INFORMATION -->
       <div class="results-bar">
 
-        <p id="resultsCount">
+        <p
+          id="resultsCount"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           Loading movies...
         </p>
 
-        <span class="results-label" id="resultsLabel">
+        <span
+          class="results-label"
+          id="resultsLabel"
+        >
           40 MOVIES PER PAGE
         </span>
 
@@ -310,7 +464,12 @@
 
 
       <!-- MOVIE GRID -->
-      <div class="movie-grid" id="movieGrid">
+      <div
+        class="movie-grid"
+        id="movieGrid"
+        aria-live="polite"
+        aria-busy="true"
+      >
 
         <p class="loading-message">
           Loading movies...
@@ -320,15 +479,27 @@
 
 
       <!-- EMPTY STATE -->
-      <div class="empty-state" id="emptyState" hidden>
+      <div
+        class="empty-state"
+        id="emptyState"
+        hidden
+      >
 
-        <div class="empty-icon">⌕</div>
+        <div class="empty-icon" aria-hidden="true">
+          ⌕
+        </div>
 
         <h3>No movies found</h3>
 
-        <p>Try changing your search or filters.</p>
+        <p>
+          Try changing your search or filters.
+        </p>
 
-        <button class="btn btn-primary" id="emptyReset">
+        <button
+          class="btn btn-primary"
+          id="emptyReset"
+          type="button"
+        >
           Clear Filters
         </button>
 
@@ -336,15 +507,23 @@
 
 
       <!-- PAGINATION -->
-      <div class="pagination" id="pagination">
+      <nav
+        class="pagination"
+        id="pagination"
+        aria-label="Movie pages"
+      >
         <!-- Pagination generated by JavaScript -->
-      </div>
+      </nav>
 
     </section>
 
 
     <!-- WATCHLIST -->
-    <section class="section watchlist-section" id="watchlist">
+    <section
+      class="section watchlist-section"
+      id="watchlist"
+      aria-labelledby="watchlistHeading"
+    >
 
       <div class="section-heading">
 
@@ -354,7 +533,7 @@
             YOUR PERSONAL COLLECTION
           </span>
 
-          <h2>
+          <h2 id="watchlistHeading">
             My <span class="gold-text">Watchlist</span>
           </h2>
 
@@ -366,11 +545,18 @@
 
       </div>
 
-      <div class="movie-grid" id="watchlistGrid">
+      <div
+        class="movie-grid"
+        id="watchlistGrid"
+        aria-live="polite"
+      >
         <!-- Watchlist movies generated by JavaScript -->
       </div>
 
-      <p class="watchlist-empty" id="watchlistEmpty">
+      <p
+        class="watchlist-empty"
+        id="watchlistEmpty"
+      >
         Your watchlist is empty. Add movies you want to watch later.
       </p>
 
@@ -378,19 +564,32 @@
 
 
     <!-- ABOUT -->
-    <section class="about-section" id="about">
+    <section
+      class="about-section"
+      id="about"
+      aria-labelledby="aboutTitle"
+    >
 
       <div class="about-content">
 
-        <span class="section-eyebrow" id="aboutEyebrow">
+        <span
+          class="section-eyebrow"
+          id="aboutEyebrow"
+        >
           WELCOME TO CINEVAULT
         </span>
 
         <h2 id="aboutTitle">
+
           More Than Movies.<br>
-          <span class="gold-text" id="aboutHighlight">
+
+          <span
+            class="gold-text"
+            id="aboutHighlight"
+          >
             A Cinema Experience.
           </span>
+
         </h2>
 
         <p id="aboutDescription">
@@ -398,7 +597,11 @@
           and a personal watchlist in one elegant destination.
         </p>
 
-        <a href="#movies" class="btn btn-primary" id="aboutButton">
+        <a
+          href="#movies"
+          class="btn btn-primary"
+          id="aboutButton"
+        >
           Discover Movies →
         </a>
 
@@ -410,7 +613,11 @@
 
 
   <!-- MOVIE DETAILS MODAL -->
-  <div class="modal-backdrop" id="movieModal" aria-hidden="true">
+  <div
+    class="modal-backdrop"
+    id="movieModal"
+    aria-hidden="true"
+  >
 
     <div
       class="movie-modal"
@@ -422,12 +629,16 @@
       <button
         class="modal-close"
         id="modalClose"
-        aria-label="Close details"
+        type="button"
+        aria-label="Close movie details"
       >
         ×
       </button>
 
-      <div class="modal-content" id="modalContent">
+      <div
+        class="modal-content"
+        id="modalContent"
+      >
         <!-- Movie details generated by JavaScript -->
       </div>
 
@@ -441,11 +652,22 @@
 
     <div class="footer-main">
 
+      <!-- FOOTER BRAND -->
       <div class="footer-brand">
 
-        <a href="#home" class="brand" id="footerBrand">
+        <a
+          href="#home"
+          class="brand"
+          id="footerBrand"
+          aria-label="CineVault Home"
+        >
 
-          <span class="brand-icon" id="footerLogoIcon">C</span>
+          <span
+            class="brand-icon"
+            id="footerLogoIcon"
+          >
+            C
+          </span>
 
           <span id="footerLogoText">
             CINE<span class="gold-text">VAULT</span>
@@ -460,37 +682,58 @@
       </div>
 
 
+      <!-- EXPLORE LINKS -->
       <div class="footer-links">
 
         <h4>Explore</h4>
 
-        <a href="#home">Home</a>
-        <a href="#movies">Movies</a>
-        <a href="#collections">Collections</a>
-        <a href="#watchlist">Watchlist</a>
+        <a href="#home">
+          Home
+        </a>
+
+        <a href="#movies">
+          Movies
+        </a>
+
+        <a href="#collections">
+          Collections
+        </a>
+
+        <a href="#watchlist">
+          Watchlist
+        </a>
 
       </div>
 
 
+      <!-- INFORMATION LINKS -->
       <div class="footer-links">
 
         <h4>Information</h4>
 
-        <a href="about.html">About Us</a>
-        <a href="contact.html">Contact</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms & Conditions</a>
-        <a href="dmca.html">DMCA</a>
+        <a href="about.html">
+          About Us
+        </a>
+
+        <a href="privacy.html">
+          Privacy Policy
+        </a>
+
+        <a href="terms.html">
+          Terms &amp; Conditions
+        </a>
 
       </div>
 
     </div>
 
 
+    <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
 
       <p id="copyrightText">
-        © <span id="currentYear">2026</span> CineVault. All rights reserved.
+        © <span id="currentYear">2026</span>
+        CineVault. All rights reserved.
       </p>
 
       <p id="footerTagline">
@@ -500,6 +743,7 @@
     </div>
 
   </footer>
+
 
 </body>
 </html>
