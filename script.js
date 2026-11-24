@@ -598,15 +598,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const overlay = banner.overlay / 100;
     const positionClass = `hero-text-${banner.textPosition}`;
 
-    const backgroundImage = `
-      linear-gradient(
-        110deg,
-        rgba(8,10,15,${Math.min(0.98, overlay + 0.18)}) 0%,
-        rgba(8,10,15,${overlay}) 55%,
-        rgba(8,10,15,${Math.max(0, overlay - 0.12)}) 100%
-      ),
-      url("${banner.image.replace(/["\\]/g, "")}")
-    `;
+    const backgroundImage =
+  `url("${banner.image.replace(/["\\]/g, "")}")`;
 
     const button1 = createHeroButton(
       banner.button1Text,
