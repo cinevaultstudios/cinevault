@@ -4,7 +4,7 @@
    D1 DATABASE • ADMIN AUTH • MOVIE CRUD
    COLLECTION CRUD • WEBSITE SETTINGS • CLOUDINARY UPLOAD
    SAFE DATABASE MIGRATIONS • SEARCH • FILTER • PAGINATION
-   INDIVIDUAL MOVIE API
+   INDIVIDUAL MOVIE API • MULTIPLE HERO BANNERS
    ========================================================= */
 
 const COOKIE_NAME = "cinevault_admin";
@@ -12,6 +12,8 @@ const SESSION_SECONDS = 8 * 60 * 60;
 const CLOUDINARY_CLOUD_NAME = "v9vl1rze";
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_PAGE_SIZE = 100;
+const MAX_BANNERS = 10;
+const MAX_BANNER_DATA_SIZE = 50000;
 
 let schemaPromise = null;
 
@@ -87,6 +89,7 @@ const DEFAULT_SETTINGS = {
   heroDescription: "Explore a curated world of movies, discover hidden gems and find your next unforgettable experience.",
   heroDescriptionUrl: "",
   heroImage: "",
+  heroBanners: "[]",
   heroButton1Text: "Explore Movies",
   heroButton1Url: "#movies",
   heroButton2Text: "Browse Collections",
@@ -243,8 +246,6 @@ async function ensureCustomizationSchema(env) {
         watch_url: "TEXT DEFAULT ''",
         ad_url: "TEXT DEFAULT ''",
         ad_count: "INTEGER DEFAULT 4",
-
-        /* Safe ALTER TABLE defaults */
         created_at: "TEXT DEFAULT ''",
         updated_at: "TEXT DEFAULT ''"
       });
@@ -309,8 +310,6 @@ async function ensureCustomizationSchema(env) {
         link_url: "TEXT DEFAULT ''",
         sort_order: "INTEGER DEFAULT 0",
         is_active: "INTEGER DEFAULT 1",
-
-        /* Safe ALTER TABLE defaults */
         created_at: "TEXT DEFAULT ''",
         updated_at: "TEXT DEFAULT ''"
       });
@@ -599,6 +598,132 @@ function validLink(value) {
 }
 
 /* =========================================================
+   HERO BANNER SLIDER VALIDATION
+========================================================= */
+
+function cleanHeroBanners(input) {
+  let banners = input;
+
+  if (typeof banners === "string") {
+    try {
+      banners = JSON.parse(banners || "[]");
+    } catch {
+      throw new Error("Invalid banner data format");
+    }
+  }
+
+  if (!Array.isArray(banners)) {
+    throw new Error("Banners must be an array");
+  }
+
+  if (banners.length > MAX_BANNERS) {
+    throw new Error(`Maximum ${MAX_BANNERS} banners are allowed`);
+  }
+
+  const allowedPositions = ["left", "center", "right"];
+
+  const colorValue = (value, fallback) => {
+    const color = textValue(value || fallback, 20);
+
+    if (!/^#[0-9a-fA-F]{6}$/.test(color)) {
+      throw new Error("Banner colors must use #RRGGBB format");
+    }
+
+    return color;
+  };
+
+  return banners.map((banner, index) => {
+    if (
+      !banner ||
+      typeof banner !== "object" ||
+      Array.isArray(banner)
+    ) {
+      throw new Error(`Invalid banner at position ${index + 1}`);
+    }
+
+    const rawOverlay = Number(banner.overlay ?? 55);
+    const rawDuration = Number(banner.duration ?? 5);
+
+    if (
+      !Number.isFinite(rawOverlay) ||
+      rawOverlay < 0 ||
+      rawOverlay > 90
+    ) {
+      throw new Error("Banner overlay must be between 0 and 90");
+    }
+
+    if (
+      !Number.isFinite(rawDuration) ||
+      rawDuration < 3 ||
+      rawDuration > 15
+    ) {
+      throw new Error("Banner duration must be between 3 and 15 seconds");
+    }
+
+    const position = textValue(
+      banner.textPosition || "left",
+      10
+    );
+
+    if (!allowedPositions.includes(position)) {
+      throw new Error("Invalid banner text position");
+    }
+
+    const enabled = !(
+      banner.enabled === false ||
+      banner.enabled === 0 ||
+      banner.enabled === "0" ||
+      banner.enabled === "false"
+    );
+
+    return {
+      id: textValue(
+        banner.id || `banner-${index + 1}`,
+        80
+      ),
+
+      enabled,
+
+      image: validUrl(banner.image || ""),
+
+      clickUrl: validLink(banner.clickUrl || ""),
+
+      eyebrow: textValue(banner.eyebrow, 200),
+
+      title: textValue(banner.title, 300),
+
+      highlight: textValue(banner.highlight, 300),
+
+      description: textValue(banner.description, 2000),
+
+      button1Text: textValue(banner.button1Text, 100),
+
+      button1Url: validLink(banner.button1Url || ""),
+
+      button2Text: textValue(banner.button2Text, 100),
+
+      button2Url: validLink(banner.button2Url || ""),
+
+      textColor: colorValue(
+        banner.textColor,
+        "#ffffff"
+      ),
+
+      highlightColor: colorValue(
+        banner.highlightColor,
+        "#d6b36a"
+      ),
+
+      overlay: Math.round(rawOverlay),
+
+      textPosition: position,
+
+      duration: Math.round(rawDuration)
+    };
+  });
+}
+
+/* =========================================================
    MOVIE DATA
 ========================================================= */
 
@@ -791,14 +916,26 @@ async function saveSettings(env, data) {
       continue;
     }
 
-    let value = textValue(data[key], 10000);
+    let value;
 
-    if (key === "heroImage") {
-      value = validUrl(value);
-    }
+    if (key === "heroBanners") {
+      const banners = cleanHeroBanners(data[key]);
 
-    if (URL_SETTING_KEYS.includes(key)) {
-      value = validLink(value);
+      value = JSON.stringify(banners);
+
+      if (value.length > MAX_BANNER_DATA_SIZE) {
+        throw new Error("Banner data is too large");
+      }
+    } else {
+      value = textValue(data[key], 10000);
+
+      if (key === "heroImage") {
+        value = validUrl(value);
+      }
+
+      if (URL_SETTING_KEYS.includes(key)) {
+        value = validLink(value);
+      }
     }
 
     await env.DB.prepare(`
