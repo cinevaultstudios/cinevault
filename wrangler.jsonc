@@ -1,14 +1,36 @@
 
 {
   "$schema": "https://www.schemastore.org/wrangler.json",
+
+  // =========================================
+  // CINEVAULT WORKER CONFIGURATION
+  // =========================================
+
   "name": "cinevault-website",
+
   "main": "src/index.js",
+
+  // Keep the currently working compatibility baseline.
   "compatibility_date": "2026-11-23",
+
+  // =========================================
+  // CLOUDFLARE STATIC ASSETS
+  // =========================================
+
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*"]
+
+    // API requests must reach the Worker first.
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
+
+  // =========================================
+  // CLOUDFLARE D1 DATABASE
+  // =========================================
+
   "d1_databases": [
     {
       "binding": "DB",
