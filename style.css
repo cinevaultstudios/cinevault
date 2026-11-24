@@ -528,7 +528,7 @@ button:disabled {
   pointer-events: auto;
 }
 
-/* Slide overlay */
+/* Slide overlay — FIXED */
 
 .hero-slide > .hero-overlay {
   position: absolute;
@@ -547,7 +547,8 @@ button:disabled {
     rgba(8,10,15,.22) 100%
   );
 
-  opacity: var(--hero-overlay,.85);
+  /* API overlay value 45 becomes CSS opacity 0.45 */
+  opacity: calc(var(--hero-overlay, 85) / 100);
 }
 
 /* Slide content */
