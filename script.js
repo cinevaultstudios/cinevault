@@ -1,24 +1,27 @@
 
-/* =========================================
+/* =========================================================
    CINEVAULT — MAIN APPLICATION
-   CLOUDFLARE D1 DATABASE
-   DYNAMIC HERO • COLLECTIONS • SETTINGS
-   SECTION LINKS • COLLECTION LINKS
-   SEARCH • FILTER • SORT • WATCHLIST
-   PAGINATION • MOBILE RESPONSIVE
-   ========================================= */
+   CLOUDFLARE WORKERS + D1 DATABASE
+   DYNAMIC SETTINGS • HERO • COLLECTIONS
+   MOVIES • SEARCH • FILTER • SORT
+   WATCHLIST • PAGINATION • RESPONSIVE NAVIGATION
+   ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+  "use strict";
 
-  /* =========================================
-     DOM ELEMENTS
-  ========================================= */
+  /* =======================================================
+     DOM HELPERS
+  ======================================================= */
 
   const $ = id => document.getElementById(id);
 
   const movieGrid = $("movieGrid");
+  const collectionGrid = $("collectionGrid");
+
   const watchlistGrid = $("watchlistGrid");
   const watchlistEmpty = $("watchlistEmpty");
+  const watchlistCount = $("watchlistCount");
 
   const searchInput = $("movieSearch");
   const clearSearch = $("clearSearch");
@@ -33,17 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterToggle = $("filterToggle");
 
   const resultsCount = $("resultsCount");
+  const resultsLabel = $("resultsLabel");
   const emptyState = $("emptyState");
   const pagination = $("pagination");
 
-  const watchlistCount = $("watchlistCount");
-  const collectionGrid = $("collectionGrid");
+  const menuToggle = $("menuToggle");
+  const mainNav = $("mainNav");
 
   const PAGE_SIZE = 40;
 
-  /* =========================================
-     APPLICATION DATA
-  ========================================= */
+  /* =======================================================
+     APPLICATION STATE
+  ======================================================= */
 
   let movies = [];
   let collections = [];
@@ -51,11 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPage = 1;
   let currentMovies = [];
 
+  let settings = {};
+
   let watchlist = loadWatchlist();
 
-  /* =========================================
-     SAFE HTML
-  ========================================= */
+  /* =======================================================
+     SAFE TEXT / HTML
+  ======================================================= */
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -67,31 +73,51 @@ document.addEventListener("DOMContentLoaded", () => {
     })[char]);
   }
 
-  /* =========================================
+  function textValue(value, fallback = "") {
+    const result = String(value ?? "").trim();
+    return result || fallback;
+  }
+
+  /* =======================================================
      SAFE URL VALIDATION
-  ========================================= */
+  ======================================================= */
 
   function safeLink(value, fallback = "") {
-
     const link = String(value ?? "").trim();
 
-    if (!link) return fallback;
-
-    if (/[\u0000-\u001F]/.test(link)) {
+    if (!link || /[\u0000-\u001F\u007F]/.test(link)) {
       return fallback;
     }
 
-    if (
-      link.startsWith("#") ||
-      link.startsWith("/") ||
-      link.startsWith("./") ||
-      link.startsWith("../")
-    ) {
+    // Allow page anchors.
+    if (link.startsWith("#")) {
       return link;
     }
 
-    try {
+    // Allow root-relative paths, but reject protocol-relative URLs.
+    if (link.startsWith("/") && !link.startsWith("//")) {
+      return link;
+    }
 
+    // Allow normal relative paths such as about.html.
+    if (
+      link.startsWith("./") ||
+      link.startsWith("../") ||
+      /^[a-zA-Z0-9._~%-]+(?:\/[a-zA-Z0-9._~%-]*)*(?:[?#].*)?$/.test(link)
+    ) {
+      try {
+        const parsed = new URL(link, window.location.href);
+
+        if (parsed.origin === window.location.origin) {
+          return link;
+        }
+      } catch {
+        return fallback;
+      }
+    }
+
+    // Allow only HTTP and HTTPS absolute URLs.
+    try {
       const parsed = new URL(link);
 
       if (
@@ -100,7 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ) {
         return parsed.href;
       }
-
     } catch {
       return fallback;
     }
@@ -109,14 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function safeImageURL(value) {
+    const image = String(value ?? "").trim();
 
-    const url = String(value || "").trim();
-
-    if (!url) return "";
+    if (!image || /[\u0000-\u001F\u007F]/.test(image)) {
+      return "";
+    }
 
     try {
-
-      const parsed = new URL(url, window.location.origin);
+      const parsed = new URL(image, window.location.origin);
 
       if (
         parsed.protocol === "https:" ||
@@ -124,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ) {
         return parsed.href;
       }
-
     } catch {
       return "";
     }
@@ -132,174 +156,69 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
-  /* =========================================
+  /* =======================================================
      API HELPER
-  ========================================= */
+  ======================================================= */
 
-  async function apiRequest(url) {
-
+  async function apiRequest(url, options = {}) {
     const response = await fetch(url, {
-      method: "GET",
+      method: options.method || "GET",
       headers: {
-        Accept: "application/json"
+        Accept: "application/json",
+        ...(options.headers || {})
       },
-      cache: "no-store"
+      cache: "no-store",
+      credentials: "same-origin",
+      ...options
     });
 
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.status}`);
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server returned an invalid response.");
     }
 
-    const data = await response.json();
-
-    if (!data || data.success !== true) {
-      throw new Error(data?.message || "Invalid API response");
+    if (!response.ok || data?.success !== true) {
+      throw new Error(
+        data?.message || `Request failed (${response.status})`
+      );
     }
 
     return data;
   }
 
-  /* =========================================
-     LINK HELPERS
-  ========================================= */
-
-  function makeLink(content, url, className = "") {
-
-    const link = safeLink(url);
-
-    if (!link) {
-      return content;
-    }
-
-    return `
-      <a
-        href="${escapeHTML(link)}"
-        ${className ? `class="${escapeHTML(className)}"` : ""}
-      >${content}</a>
-    `;
-  }
-
-  function setLinkedText(element, text, url) {
-
-    if (!element) return;
-
-    const safeText = String(text ?? "");
-    const link = safeLink(url);
-
-    element.replaceChildren();
-
-    if (!link) {
-      element.textContent = safeText;
-      return;
-    }
-
-    const anchor = document.createElement("a");
-
-    anchor.href = link;
-    anchor.textContent = safeText;
-    anchor.className = "content-link";
-
-    element.appendChild(anchor);
-  }
-
-  function setLinkedNodes(element, nodes, url) {
-
-    if (!element) return;
-
-    const link = safeLink(url);
-
-    element.replaceChildren();
-
-    if (link) {
-
-      const anchor = document.createElement("a");
-
-      anchor.href = link;
-      anchor.className = "content-link";
-
-      nodes.forEach(node => anchor.appendChild(node));
-
-      element.appendChild(anchor);
-
-    } else {
-
-      nodes.forEach(node => element.appendChild(node));
-
-    }
-  }
-
-  /* =========================================
-     POSTER FALLBACK
-  ========================================= */
-
-  function fallbackPoster(title) {
-
-    const safeTitle = escapeHTML(title);
-
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="500" height="750">
-        <rect width="100%" height="100%" fill="#111722"/>
-        <circle cx="250" cy="290" r="110"
-          fill="#d6b36a" opacity=".10"/>
-        <text x="50%" y="45%" fill="#d6b36a"
-          font-size="34" font-family="Arial"
-          text-anchor="middle">CINEVAULT</text>
-        <text x="50%" y="55%" fill="#ffffff"
-          font-size="24" font-family="Arial"
-          text-anchor="middle">${safeTitle}</text>
-        <text x="50%" y="92%" fill="#9ba3b1"
-          font-size="18" font-family="Arial"
-          text-anchor="middle">MOVIE POSTER</text>
-      </svg>
-    `;
-
-    return "data:image/svg+xml;charset=UTF-8," +
-      encodeURIComponent(svg);
-  }
-
-  function posterURL(movie) {
-
-    const url = safeImageURL(movie.poster);
-
-    if (url && !url.includes("placeholder.jpg")) {
-      return url;
-    }
-
-    return fallbackPoster(movie.title);
-  }
-
-  /* =========================================
+  /* =======================================================
      WATCHLIST STORAGE
-  ========================================= */
+  ======================================================= */
 
   function loadWatchlist() {
-
     try {
-
       const saved = JSON.parse(
         localStorage.getItem("cinevault_watchlist") || "[]"
       );
 
-      return Array.isArray(saved)
-        ? saved.map(Number).filter(Number.isFinite)
-        : [];
+      if (!Array.isArray(saved)) return [];
 
+      return [...new Set(
+        saved
+          .map(Number)
+          .filter(id => Number.isSafeInteger(id) && id > 0)
+      )];
     } catch {
       return [];
     }
   }
 
   function saveWatchlist() {
-
     try {
-
       localStorage.setItem(
         "cinevault_watchlist",
         JSON.stringify(watchlist)
       );
-
     } catch (error) {
-      console.error("Watchlist storage error:", error);
+      console.warn("Watchlist storage unavailable:", error);
     }
   }
 
@@ -307,67 +226,159 @@ document.addEventListener("DOMContentLoaded", () => {
     return watchlist.includes(Number(id));
   }
 
-  /* =========================================
+  /* =======================================================
      NORMALIZE MOVIE DATA
-  ========================================= */
+  ======================================================= */
 
   function normalizeMovie(movie) {
+    const item = movie || {};
 
     return {
-      ...movie,
+      ...item,
 
-      id: Number(movie.id),
-      title: movie.title || "Untitled",
-      year: Number(movie.year) || "",
-      genre: movie.genre || "",
-      language: movie.language || "",
-      country: movie.country || "",
-      rating: Number(movie.rating) || 0,
-      duration: movie.duration || "",
-      director: movie.director || "",
-      poster: movie.poster || "",
-      backdrop: movie.backdrop || "",
-      description: movie.description || "",
+      id: Number(item.id),
 
-      watchUrl: movie.watchUrl || movie.watch_url || "",
+      title: textValue(item.title, "Untitled"),
+      slug: textValue(item.slug),
 
-      downloadUrl:
-        movie.downloadUrl || movie.download_url || "",
+      description: textValue(item.description),
 
-      downloadUrl2:
-        movie.downloadUrl2 || movie.download_url_2 || ""
+      poster: textValue(item.poster),
+      backdrop: textValue(item.backdrop),
+
+      year: Number(item.year) || "",
+      genre: textValue(item.genre),
+      language: textValue(item.language),
+      country: textValue(item.country),
+
+      rating: Number(item.rating) || 0,
+
+      duration: textValue(item.duration),
+      director: textValue(item.director),
+      quality: textValue(item.quality),
+
+      watchUrl: textValue(
+        item.watchUrl || item.watch_url
+      ),
+
+      downloadUrl: textValue(
+        item.downloadUrl || item.download_url
+      ),
+
+      downloadUrl2: textValue(
+        item.downloadUrl2 || item.download_url_2
+      ),
+
+      adUrl: textValue(
+        item.adUrl || item.ad_url
+      ),
+
+      adCount: Math.max(
+        4,
+        Number(item.adCount || item.ad_count) || 4
+      )
     };
   }
 
-  /* =========================================
+  /* =======================================================
+     NORMALIZE COLLECTION DATA
+  ======================================================= */
+
+  function normalizeCollection(collection) {
+    const item = collection || {};
+
+    return {
+      ...item,
+
+      id: Number(item.id),
+
+      name: textValue(item.name, "Collection"),
+      description: textValue(item.description),
+
+      image: textValue(item.image),
+      icon: textValue(item.icon, "✧"),
+
+      genre: textValue(
+        item.genre || item.name
+      ),
+
+      linkUrl: textValue(
+        item.linkUrl || item.link_url
+      ),
+
+      sortOrder: Number(
+        item.sortOrder ?? item.sort_order ?? 0
+      )
+    };
+  }
+
+  /* =======================================================
+     LINKED TEXT HELPERS
+  ======================================================= */
+
+  function setLinkedText(element, value, url) {
+    if (!element) return;
+
+    const content = String(value ?? "");
+    const link = safeLink(url);
+
+    element.replaceChildren();
+
+    if (!link) {
+      element.textContent = content;
+      return;
+    }
+
+    const anchor = document.createElement("a");
+
+    anchor.href = link;
+    anchor.textContent = content;
+    anchor.className = "content-link";
+
+    element.appendChild(anchor);
+  }
+
+  function setLinkedNodes(element, nodes, url) {
+    if (!element) return;
+
+    const link = safeLink(url);
+
+    element.replaceChildren();
+
+    if (!link) {
+      nodes.forEach(node => element.appendChild(node));
+      return;
+    }
+
+    const anchor = document.createElement("a");
+
+    anchor.href = link;
+    anchor.className = "content-link";
+
+    nodes.forEach(node => anchor.appendChild(node));
+
+    element.appendChild(anchor);
+  }
+
+  /* =======================================================
      DYNAMIC LOGO
-  ========================================= */
+  ======================================================= */
 
-  function updateLogo(settings) {
+  function updateLogo(data) {
+    const siteName = textValue(data.siteName, "CINEVAULT");
+    const logoText = textValue(data.logoText, "C");
 
-    const logoText = settings.logoText || "C";
-    const siteName = settings.siteName || "CINEVAULT";
-
-    const iconElements = [
+    [
       $("headerLogoIcon"),
       $("footerLogoIcon")
-    ];
-
-    const textElements = [
-      $("headerLogoText"),
-      $("footerLogoText")
-    ];
-
-    iconElements.forEach(element => {
-
-      if (element) {
-        element.textContent = logoText;
-      }
-
+    ].forEach(element => {
+      if (element) element.textContent = logoText;
     });
 
-    textElements.forEach(element => {
-
+    [
+      $("headerLogoText"),
+      $("footerLogoText")
+    ].forEach(element => {
       if (!element) return;
 
       const splitAt = Math.max(
@@ -385,396 +396,300 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (secondPart) {
+        const span = document.createElement("span");
 
-        const gold = document.createElement("span");
+        span.className = "gold-text";
+        span.textContent = secondPart;
 
-        gold.className = "gold-text";
-        gold.textContent = secondPart;
-
-        element.appendChild(gold);
+        element.appendChild(span);
       }
-
     });
 
     document.title =
       `${siteName} — Discover Movies & Entertainment`;
-
   }
 
-  /* =========================================
+  /* =======================================================
      DYNAMIC HERO
-  ========================================= */
+  ======================================================= */
 
-  function updateHero(settings) {
-
-    const eyebrow = $("heroEyebrow");
-    const title = $("heroTitle");
-    const description = $("heroDescription");
-
-    const button1 = $("heroButton1");
-    const button1Text = $("heroButton1Text");
-    const button2 = $("heroButton2");
-
-    /* Eyebrow */
-
+  function updateHero(data) {
     setLinkedText(
-      eyebrow,
-      settings.heroEyebrow || "YOUR WORLD OF CINEMA",
-      settings.heroEyebrowUrl
+      $("heroEyebrow"),
+      data.heroEyebrow || "YOUR WORLD OF CINEMA",
+      data.heroEyebrowUrl
     );
 
-    /* Main title */
+    const heroTitle = $("heroTitle");
 
-    if (title) {
-
-      const mainTitle = document.createElement("span");
-
-      mainTitle.textContent =
-        settings.heroTitle || "Discover Stories.";
+    if (heroTitle) {
+      const main = document.createElement("span");
+      main.textContent =
+        data.heroTitle || "Discover Stories.";
 
       const highlight = document.createElement("span");
-
       highlight.className = "gold-text";
       highlight.textContent =
-        settings.heroHighlight || "Experience Cinema.";
-
-      const breakElement = document.createElement("br");
-
-      const mainLink = safeLink(settings.heroTitleUrl);
-      const highlightLink = safeLink(settings.heroHighlightUrl);
+        data.heroHighlight || "Experience Cinema.";
 
       const nodes = [];
 
+      const mainLink = safeLink(data.heroTitleUrl);
+      const highlightLink = safeLink(data.heroHighlightUrl);
+
       if (mainLink) {
-
         const anchor = document.createElement("a");
-
         anchor.href = mainLink;
         anchor.className = "content-link";
-        anchor.appendChild(mainTitle);
-
+        anchor.appendChild(main);
         nodes.push(anchor);
-
       } else {
-
-        nodes.push(mainTitle);
-
+        nodes.push(main);
       }
 
-      nodes.push(breakElement);
+      nodes.push(document.createElement("br"));
 
       if (highlightLink) {
-
         const anchor = document.createElement("a");
-
         anchor.href = highlightLink;
         anchor.className = "content-link";
         anchor.appendChild(highlight);
-
         nodes.push(anchor);
-
       } else {
-
         nodes.push(highlight);
-
       }
 
-      title.replaceChildren(...nodes);
-
+      heroTitle.replaceChildren(...nodes);
     }
-
-    /* Description */
 
     setLinkedText(
-      description,
-      settings.heroDescription || "",
-      settings.heroDescriptionUrl
+      $("heroDescription"),
+      data.heroDescription || "",
+      data.heroDescriptionUrl
     );
 
-    /* Button 1 */
-
-    if (button1Text) {
-
-      button1Text.textContent =
-        settings.heroButton1Text || "Explore Movies";
-
-    }
+    const button1 = $("heroButton1");
+    const button1Text = $("heroButton1Text");
 
     if (button1) {
-
       button1.href = safeLink(
-        settings.heroButton1Url,
+        data.heroButton1Url,
         "#movies"
       );
-
     }
 
-    /* Button 2 */
+    if (button1Text) {
+      button1Text.textContent =
+        data.heroButton1Text || "Explore Movies";
+    }
+
+    const button2 = $("heroButton2");
 
     if (button2) {
-
       button2.textContent =
-        settings.heroButton2Text || "Browse Collections";
+        data.heroButton2Text || "Browse Collections";
 
       button2.href = safeLink(
-        settings.heroButton2Url,
+        data.heroButton2Url,
         "#collections"
       );
-
     }
 
-    /* Background image */
-
-    const heroImage = safeImageURL(settings.heroImage);
-
-    const heroSection =
-      document.querySelector(".hero-section");
+    const heroImage = safeImageURL(data.heroImage);
+    const heroSection = document.querySelector(".hero-section");
 
     if (heroSection && heroImage) {
-
-      heroSection.style.backgroundImage = `
-        linear-gradient(
-          110deg,
-          rgba(8,10,15,.94) 10%,
-          rgba(17,23,34,.78) 65%,
-          rgba(8,10,15,.88)
-        ),
-        url("${heroImage.replace(/["\\]/g, "")}")
-      `;
+      heroSection.style.backgroundImage = [
+        "linear-gradient(110deg, rgba(8,10,15,.94) 10%, rgba(17,23,34,.78) 65%, rgba(8,10,15,.88))",
+        `url(${JSON.stringify(heroImage)})`
+      ].join(", ");
 
       heroSection.style.backgroundSize = "cover";
       heroSection.style.backgroundPosition = "center";
-
     }
-
   }
 
-  /* =========================================
+  /* =======================================================
      DYNAMIC SECTION HEADINGS
-  ========================================= */
+  ======================================================= */
 
-  function updateSectionHeadings(settings) {
-
-    /* COLLECTIONS EYEBROW */
-
+  function updateSectionHeadings(data) {
     setLinkedText(
       $("collectionsEyebrow"),
-      settings.collectionsEyebrow || "EXPLORE BY CATEGORY",
-      settings.collectionsEyebrowUrl
+      data.collectionsEyebrow || "EXPLORE BY CATEGORY",
+      data.collectionsEyebrowUrl
     );
-
-    /* COLLECTIONS HEADING */
 
     const collectionsHeading = $("collectionsHeading");
 
     if (collectionsHeading) {
-
       const main = document.createElement("span");
-
       main.id = "collectionsHeadingText";
-      main.textContent =
-        settings.collectionsHeading || "Movie";
+      main.textContent = data.collectionsHeading || "Movie";
 
       const highlight = document.createElement("span");
-
       highlight.id = "collectionsHeadingHighlight";
       highlight.className = "gold-text";
       highlight.textContent =
-        settings.collectionsHeadingHighlight || "Collections";
+        data.collectionsHeadingHighlight || "Collections";
 
       setLinkedNodes(
         collectionsHeading,
         [main, document.createTextNode(" "), highlight],
-        settings.collectionsHeadingUrl
+        data.collectionsHeadingUrl
       );
-
     }
-
-    /* COLLECTIONS DESCRIPTION */
 
     setLinkedText(
       $("collectionsDescription"),
-      settings.collectionsDescription ||
+      data.collectionsDescription ||
         "Discover movies from your favourite genres.",
-      settings.collectionsDescriptionUrl
+      data.collectionsDescriptionUrl
     );
-
-    /* MOVIES EYEBROW */
 
     setLinkedText(
       $("moviesEyebrow"),
-      settings.moviesEyebrow || "YOUR NEXT WATCH",
-      settings.moviesEyebrowUrl
+      data.moviesEyebrow || "YOUR NEXT WATCH",
+      data.moviesEyebrowUrl
     );
-
-    /* MOVIES HEADING */
 
     const moviesHeading = $("moviesHeading");
 
     if (moviesHeading) {
-
       const main = document.createElement("span");
-
       main.id = "moviesHeadingText";
-      main.textContent =
-        settings.moviesHeading || "Explore";
+      main.textContent = data.moviesHeading || "Explore";
 
       const highlight = document.createElement("span");
-
       highlight.id = "moviesHeadingHighlight";
       highlight.className = "gold-text";
       highlight.textContent =
-        settings.moviesHeadingHighlight || "Movies";
+        data.moviesHeadingHighlight || "Movies";
 
       setLinkedNodes(
         moviesHeading,
         [main, document.createTextNode(" "), highlight],
-        settings.moviesHeadingUrl
+        data.moviesHeadingUrl
       );
-
     }
-
-    /* MOVIES DESCRIPTION */
 
     setLinkedText(
       $("moviesDescription"),
-      settings.moviesDescription ||
+      data.moviesDescription ||
         "Browse the latest additions and discover your next favourite movie.",
-      settings.moviesDescriptionUrl
+      data.moviesDescriptionUrl
     );
-
   }
 
-  /* =========================================
+  /* =======================================================
      DYNAMIC ABOUT SECTION
-  ========================================= */
+  ======================================================= */
 
-  function updateAbout(settings) {
-
+  function updateAbout(data) {
     setLinkedText(
       $("aboutEyebrow"),
-      settings.aboutEyebrow || "WELCOME TO CINEVAULT",
-      settings.aboutEyebrowUrl
+      data.aboutEyebrow || "WELCOME TO CINEVAULT",
+      data.aboutEyebrowUrl
     );
 
     const title = $("aboutTitle");
 
     if (title) {
-
       const main = document.createElement("span");
-
       main.textContent =
-        settings.aboutTitle || "More Than Movies.";
+        data.aboutTitle || "More Than Movies.";
 
       const highlight = document.createElement("span");
-
       highlight.className = "gold-text";
       highlight.textContent =
-        settings.aboutHighlight || "A Cinema Experience.";
+        data.aboutHighlight || "A Cinema Experience.";
 
-      const nodes = [
-        main,
-        document.createElement("br"),
-        highlight
-      ];
+      const mainLink = safeLink(data.aboutTitleUrl);
+      const highlightLink = safeLink(data.aboutHighlightUrl);
 
-      const mainLink = safeLink(settings.aboutTitleUrl);
-      const highlightLink = safeLink(settings.aboutHighlightUrl);
+      const nodes = [];
 
       if (mainLink) {
-
         const anchor = document.createElement("a");
-
         anchor.href = mainLink;
         anchor.className = "content-link";
         anchor.appendChild(main);
-
-        nodes[0] = anchor;
-
+        nodes.push(anchor);
+      } else {
+        nodes.push(main);
       }
 
+      nodes.push(document.createElement("br"));
+
       if (highlightLink) {
-
         const anchor = document.createElement("a");
-
         anchor.href = highlightLink;
         anchor.className = "content-link";
         anchor.appendChild(highlight);
-
-        nodes[2] = anchor;
-
+        nodes.push(anchor);
+      } else {
+        nodes.push(highlight);
       }
 
       title.replaceChildren(...nodes);
-
     }
 
     setLinkedText(
       $("aboutDescription"),
-      settings.aboutDescription || "",
-      settings.aboutDescriptionUrl
+      data.aboutDescription || "",
+      data.aboutDescriptionUrl
     );
 
     const aboutButton = $("aboutButton");
 
     if (aboutButton) {
-
-      const buttonText =
-        settings.aboutButtonText || "Discover Movies";
-
-      const buttonLink = safeLink(
-        settings.aboutButtonUrl,
+      aboutButton.href = safeLink(
+        data.aboutButtonUrl,
         "#movies"
       );
 
-      aboutButton.href = buttonLink;
+      const buttonText = $("aboutButtonText");
 
-      const textElement = $("aboutButtonText");
-
-      if (textElement) {
-        textElement.textContent = buttonText;
+      if (buttonText) {
+        buttonText.textContent =
+          data.aboutButtonText || "Discover Movies";
       } else {
-        aboutButton.textContent = buttonText;
+        aboutButton.textContent =
+          data.aboutButtonText || "Discover Movies";
       }
-
     }
-
   }
 
-  /* =========================================
+  /* =======================================================
      DYNAMIC FOOTER
-  ========================================= */
+  ======================================================= */
 
-  function updateFooter(settings) {
-
+  function updateFooter(data) {
     setLinkedText(
       $("footerDescription"),
-      settings.footerDescription ||
+      data.footerDescription ||
         "Discover cinema. Explore stories. Build your collection.",
-      settings.footerDescriptionUrl
+      data.footerDescriptionUrl
     );
 
     setLinkedText(
       $("footerTagline"),
-      settings.footerTagline || "Made for movie lovers.",
-      settings.footerTaglineUrl
+      data.footerTagline || "Made for movie lovers.",
+      data.footerTaglineUrl
     );
+
+    const year = new Date().getFullYear();
 
     const copyright = $("copyrightText");
 
     if (copyright) {
-
-      const year = new Date().getFullYear();
-
-      const siteName =
-        settings.siteName || "CINEVAULT";
-
-      const copyrightText =
-        settings.copyrightText || "All rights reserved.";
-
-      const copyrightLink = safeLink(
-        settings.copyrightUrl
+      const siteName = textValue(data.siteName, "CINEVAULT");
+      const copyrightText = textValue(
+        data.copyrightText,
+        "All rights reserved."
       );
+
+      const link = safeLink(data.copyrightUrl);
 
       copyright.replaceChildren();
 
@@ -782,50 +697,41 @@ document.addEventListener("DOMContentLoaded", () => {
         document.createTextNode(`© ${year} `)
       );
 
-      if (copyrightLink) {
-
+      if (link) {
         const anchor = document.createElement("a");
-
-        anchor.href = copyrightLink;
-        anchor.textContent = `${siteName}. ${copyrightText}`;
-
+        anchor.href = link;
+        anchor.textContent =
+          `${siteName}. ${copyrightText}`;
         copyright.appendChild(anchor);
-
       } else {
-
         copyright.appendChild(
           document.createTextNode(
             `${siteName}. ${copyrightText}`
           )
         );
-
       }
-
     }
 
     const currentYear = $("currentYear");
 
     if (currentYear) {
-      currentYear.textContent = new Date().getFullYear();
+      currentYear.textContent = year;
     }
-
   }
 
-  /* =========================================
-     LOAD WEBSITE SETTINGS
-  ========================================= */
+  /* =======================================================
+     LOAD SETTINGS FROM D1
+  ======================================================= */
 
   async function loadSettings() {
-
     try {
+      const response = await apiRequest("/api/settings");
 
-      const data = await apiRequest("/api/settings");
-
-      if (!data.settings) {
-        throw new Error("Website settings not found");
+      if (!response.settings) {
+        throw new Error("Website settings not found.");
       }
 
-      const settings = data.settings;
+      settings = response.settings;
 
       updateLogo(settings);
       updateHero(settings);
@@ -834,182 +740,229 @@ document.addEventListener("DOMContentLoaded", () => {
       updateFooter(settings);
 
     } catch (error) {
-
-      console.error(
-        "CineVault Settings Loading Error:",
-        error
-      );
-
+      console.error("CineVault Settings Error:", error);
     }
-
   }
 
-  /* =========================================
-     NORMALIZE COLLECTION DATA
-  ========================================= */
+  /* =======================================================
+     FILTER OPTION HELPERS
+  ======================================================= */
 
-  function normalizeCollection(collection) {
+  function populateSelect(select, values, firstLabel, selectedValue) {
+    if (!select) return;
 
-    return {
+    const uniqueValues = [...new Set(
+      values
+        .map(value => String(value ?? "").trim())
+        .filter(Boolean)
+    )];
 
-      ...collection,
-
-      id: Number(collection.id),
-
-      name: collection.name || "Collection",
-
-      description: collection.description || "",
-
-      image: collection.image || "",
-
-      icon: collection.icon || "✧",
-
-      genre: collection.genre || collection.name || "",
-
-      linkUrl:
-        collection.linkUrl || collection.link_url || "",
-
-      sortOrder: Number(
-        collection.sortOrder ??
-        collection.sort_order ??
-        0
+    const options = [
+      `<option value="">${escapeHTML(firstLabel)}</option>`,
+      ...uniqueValues.map(value =>
+        `<option value="${escapeHTML(value)}">${escapeHTML(value)}</option>`
       )
+    ];
 
-    };
+    select.innerHTML = options.join("");
 
+    if (uniqueValues.includes(selectedValue)) {
+      select.value = selectedValue;
+    }
   }
 
-  /* =========================================
-     RENDER COLLECTIONS
-  ========================================= */
+  function populateFilters() {
+    const selectedGenre = genreFilter?.value || "";
+    const selectedLanguage = languageFilter?.value || "";
+    const selectedYear = yearFilter?.value || "";
+
+    const genres = movies.flatMap(movie =>
+      movie.genre.split(",").map(value => value.trim())
+    );
+
+    const languages = movies.map(movie => movie.language);
+    const years = movies.map(movie => movie.year).filter(Boolean);
+
+    populateSelect(
+      genreFilter,
+      genres,
+      "All Genres",
+      selectedGenre
+    );
+
+    populateSelect(
+      languageFilter,
+      languages,
+      "All Languages",
+      selectedLanguage
+    );
+
+    const sortedYears = [...new Set(years)]
+      .sort((a, b) => b - a)
+      .map(String);
+
+    populateSelect(
+      yearFilter,
+      sortedYears,
+      "All Years",
+      selectedYear
+    );
+  }
+
+  /* =======================================================
+     COLLECTION RENDERING
+  ======================================================= */
 
   function renderCollections() {
-
     if (!collectionGrid) return;
 
     if (!collections.length) {
-
       collectionGrid.innerHTML = `
         <p class="loading-message">
           No collections available.
         </p>
       `;
-
       return;
     }
 
-    collectionGrid.innerHTML = collections
-      .map(collection => {
+    collectionGrid.innerHTML = collections.map(collection => {
+      const image = safeImageURL(collection.image);
+      const link = safeLink(collection.linkUrl);
 
-        const image = safeImageURL(collection.image);
-
-        const visual = image
-          ? `
-            <span class="collection-icon">
-              <img
-                src="${escapeHTML(image)}"
-                alt=""
-                loading="lazy"
-                style="width:42px;height:42px;object-fit:cover;border-radius:8px;"
-              >
-            </span>
-          `
-          : `
-            <span class="collection-icon">
-              ${escapeHTML(collection.icon)}
-            </span>
-          `;
-
-        const link = safeLink(collection.linkUrl);
-
-        const tag = link ? "a" : "button";
-
-        const attributes = link
-          ? `href="${escapeHTML(link)}"`
-          : `type="button" data-genre="${escapeHTML(collection.genre)}"`;
-
-        return `
-          <${tag}
-            class="collection-card"
-            ${attributes}
-            data-collection-id="${collection.id}"
-          >
-
-            ${visual}
-
-            <strong>
-              ${escapeHTML(collection.name)}
-            </strong>
-
-            <span>
-              ${escapeHTML(collection.description)}
-            </span>
-
-          </${tag}>
+      const visual = image
+        ? `
+          <span class="collection-icon">
+            <img
+              src="${escapeHTML(image)}"
+              alt=""
+              loading="lazy"
+              width="42"
+              height="42"
+            >
+          </span>
+        `
+        : `
+          <span class="collection-icon">
+            ${escapeHTML(collection.icon)}
+          </span>
         `;
 
-      })
-      .join("");
+      const tag = link ? "a" : "button";
 
+      const attributes = link
+        ? `href="${escapeHTML(link)}"`
+        : `type="button" data-genre="${escapeHTML(collection.genre)}"`;
+
+      return `
+        <${tag}
+          class="collection-card"
+          ${attributes}
+          data-collection-id="${Number(collection.id)}"
+        >
+          ${visual}
+
+          <strong>
+            ${escapeHTML(collection.name)}
+          </strong>
+
+          <span>
+            ${escapeHTML(collection.description)}
+          </span>
+        </${tag}>
+      `;
+    }).join("");
   }
 
-  /* =========================================
+  /* =======================================================
      LOAD COLLECTIONS FROM D1
-  ========================================= */
+  ======================================================= */
 
   async function loadCollections() {
-
     if (collectionGrid) {
-
       collectionGrid.innerHTML = `
         <p class="loading-message">
           Loading collections...
         </p>
       `;
-
     }
 
     try {
+      const response = await apiRequest("/api/collections");
 
-      const data = await apiRequest("/api/collections");
-
-      if (!Array.isArray(data.collections)) {
-        throw new Error("Invalid collections response");
+      if (!Array.isArray(response.collections)) {
+        throw new Error("Invalid collections response.");
       }
 
-      collections = data.collections
+      collections = response.collections
         .map(normalizeCollection)
+        .filter(item => Number.isFinite(item.id))
         .sort((a, b) => a.sortOrder - b.sortOrder);
 
       renderCollections();
 
     } catch (error) {
-
-      console.error(
-        "CineVault Collections Loading Error:",
-        error
-      );
+      console.error("CineVault Collections Error:", error);
 
       if (collectionGrid) {
-
         collectionGrid.innerHTML = `
           <p class="loading-message">
             Unable to load collections.
           </p>
         `;
-
       }
-
     }
-
   }
 
-  /* =========================================
+  /* =======================================================
+     POSTER FALLBACK
+  ======================================================= */
+
+  function fallbackPoster(title) {
+    const safeTitle = escapeHTML(title).slice(0, 45);
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="500" height="750" viewBox="0 0 500 750">
+        <rect width="500" height="750" fill="#111722"/>
+        <circle cx="250" cy="290" r="110"
+                fill="#d6b36a" opacity=".10"/>
+        <text x="250" y="340"
+              fill="#d6b36a"
+              font-size="34"
+              font-family="Arial"
+              text-anchor="middle">CINEVAULT</text>
+        <text x="250" y="415"
+              fill="#ffffff"
+              font-size="22"
+              font-family="Arial"
+              text-anchor="middle">${safeTitle}</text>
+        <text x="250" y="690"
+              fill="#9ba3b1"
+              font-size="18"
+              font-family="Arial"
+              text-anchor="middle">MOVIE POSTER</text>
+      </svg>
+    `;
+
+    return "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(svg);
+  }
+
+  function posterURL(movie) {
+    const image = safeImageURL(movie.poster);
+
+    if (image && !image.includes("placeholder.jpg")) {
+      return image;
+    }
+
+    return fallbackPoster(movie.title);
+  }
+
+  /* =======================================================
      MOVIE CARD
-  ========================================= */
+  ======================================================= */
 
   function movieCard(movie) {
-
     const active = isInWatchlist(movie.id);
 
     return `
@@ -1020,24 +973,25 @@ document.addEventListener("DOMContentLoaded", () => {
         role="link"
         aria-label="View ${escapeHTML(movie.title)}"
       >
-
         <div class="movie-poster">
 
           <img
             src="${escapeHTML(posterURL(movie))}"
             alt="${escapeHTML(movie.title)} poster"
             loading="lazy"
-            onerror="this.onerror=null;this.src='${escapeHTML(fallbackPoster(movie.title))}'"
+            data-poster-fallback="${Number(movie.id)}"
           >
 
           <span class="movie-rating">
-            ★ ${escapeHTML(movie.rating)}
+            ★ ${escapeHTML(movie.rating.toFixed(1))}
           </span>
 
           <button
+            type="button"
             class="watchlist-btn ${active ? "active" : ""}"
             data-watchlist-id="${Number(movie.id)}"
-            aria-label="Toggle watchlist"
+            aria-label="${active ? "Remove from watchlist" : "Add to watchlist"}"
+            aria-pressed="${active ? "true" : "false"}"
             title="${active ? "Remove from watchlist" : "Add to watchlist"}"
           >
             ${active ? "♥" : "♡"}
@@ -1059,57 +1013,44 @@ document.addEventListener("DOMContentLoaded", () => {
           </span>
 
         </div>
-
       </article>
     `;
-
   }
 
-  /* =========================================
-     FILTER OPTIONS
-  ========================================= */
+  /* =======================================================
+     MOVIE POSTER ERROR HANDLING
+  ======================================================= */
 
-  function populateYears() {
+  function handlePosterErrors(container) {
+    if (!container) return;
 
-    if (!yearFilter) return;
+    container.querySelectorAll("img[data-poster-fallback]")
+      .forEach(image => {
+        image.addEventListener("error", () => {
+          const movie = movies.find(
+            item => item.id === Number(image.dataset.posterFallback)
+          );
 
-    const selectedYear = yearFilter.value;
+          image.onerror = null;
 
-    const years = [
-      ...new Set(
-        movies
-          .map(movie => Number(movie.year))
-          .filter(Boolean)
-      )
-    ].sort((a, b) => b - a);
-
-    yearFilter.innerHTML =
-      '<option value="">All Years</option>' +
-      years.map(year =>
-        `<option value="${year}">${year}</option>`
-      ).join("");
-
-    if (years.includes(Number(selectedYear))) {
-      yearFilter.value = selectedYear;
-    }
-
+          if (movie) {
+            image.src = fallbackPoster(movie.title);
+          }
+        }, { once: true });
+      });
   }
 
-  /* =========================================
+  /* =======================================================
      SEARCH + FILTER + SORT
-  ========================================= */
+  ======================================================= */
 
   function getFilteredMovies() {
-
     let result = [...movies];
 
-    const search =
-      searchInput?.value.trim().toLowerCase() || "";
+    const search = searchInput?.value.trim().toLowerCase() || "";
 
     if (search) {
-
       result = result.filter(movie => {
-
         const searchable = [
           movie.title,
           movie.genre,
@@ -1117,58 +1058,50 @@ document.addEventListener("DOMContentLoaded", () => {
           movie.country,
           movie.director,
           movie.description,
-          movie.year
+          movie.year,
+          movie.quality
         ].join(" ").toLowerCase();
 
         return searchable.includes(search);
-
       });
-
     }
 
     if (genreFilter?.value) {
+      const selected = genreFilter.value.toLowerCase();
 
       result = result.filter(movie =>
-        movie.genre.toLowerCase() ===
-        genreFilter.value.toLowerCase()
+        movie.genre
+          .split(",")
+          .some(value => value.trim().toLowerCase() === selected)
       );
-
     }
 
     if (languageFilter?.value) {
-
       result = result.filter(movie =>
         movie.language.toLowerCase() ===
         languageFilter.value.toLowerCase()
       );
-
     }
 
     if (yearFilter?.value) {
-
       result = result.filter(movie =>
         String(movie.year) === yearFilter.value
       );
-
     }
 
     if (ratingFilter?.value) {
-
       result = result.filter(movie =>
-        Number(movie.rating) >=
-        Number(ratingFilter.value)
+        movie.rating >= Number(ratingFilter.value)
       );
-
     }
 
     switch (sortSelect?.value) {
-
       case "newest":
-        result.sort((a, b) => b.year - a.year);
+        result.sort((a, b) => b.id - a.id);
         break;
 
       case "oldest":
-        result.sort((a, b) => a.year - b.year);
+        result.sort((a, b) => a.id - b.id);
         break;
 
       case "rating":
@@ -1181,86 +1114,109 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         break;
 
+      case "za":
+        result.sort((a, b) =>
+          b.title.localeCompare(a.title)
+        );
+        break;
+
+      case "year":
+        result.sort((a, b) => b.year - a.year);
+        break;
+
       default:
         result.sort((a, b) => b.id - a.id);
-
     }
 
     return result;
-
   }
 
-  /* =========================================
+  /* =======================================================
      PAGINATION
-  ========================================= */
+  ======================================================= */
 
   function renderPagination(totalPages) {
-
     if (!pagination) return;
 
-    pagination.innerHTML = "";
+    pagination.replaceChildren();
 
     if (totalPages <= 1) return;
 
-    const createPageButton = (label, page, active = false) => {
-
+    function addButton(label, page, active = false, disabled = false) {
       const button = document.createElement("button");
 
       button.type = "button";
       button.textContent = label;
+      button.disabled = disabled;
 
       if (active) {
         button.classList.add("active");
+        button.setAttribute("aria-current", "page");
       }
 
       button.addEventListener("click", () => {
+        if (page === currentPage || page < 1 || page > totalPages) {
+          return;
+        }
 
         currentPage = page;
-
         renderMovies();
 
         $("movies")?.scrollIntoView({
-          behavior: "smooth"
+          behavior: "smooth",
+          block: "start"
         });
-
       });
 
       pagination.appendChild(button);
-
-    };
-
-    if (currentPage > 1) {
-      createPageButton("‹", currentPage - 1);
     }
 
-    for (let page = 1; page <= totalPages; page++) {
+    addButton("‹", currentPage - 1, false, currentPage === 1);
 
-      createPageButton(
+    const pages = new Set([1, totalPages]);
+
+    for (
+      let page = Math.max(1, currentPage - 2);
+      page <= Math.min(totalPages, currentPage + 2);
+      page++
+    ) {
+      pages.add(page);
+    }
+
+    const sortedPages = [...pages].sort((a, b) => a - b);
+
+    let previous = 0;
+
+    sortedPages.forEach(page => {
+      if (previous && page - previous > 1) {
+        const dots = document.createElement("span");
+        dots.className = "pagination-dots";
+        dots.textContent = "…";
+        pagination.appendChild(dots);
+      }
+
+      addButton(
         String(page),
         page,
         page === currentPage
       );
 
-    }
+      previous = page;
+    });
 
-    if (currentPage < totalPages) {
-      createPageButton("›", currentPage + 1);
-    }
-
+    addButton("›", currentPage + 1, false, currentPage === totalPages);
   }
 
-  /* =========================================
+  /* =======================================================
      MAIN MOVIE RENDER
-  ========================================= */
+  ======================================================= */
 
   function renderMovies() {
-
     if (!movieGrid) return;
 
     currentMovies = getFilteredMovies();
 
     const total = currentMovies.length;
-
     const totalPages = Math.ceil(total / PAGE_SIZE);
 
     if (currentPage > totalPages) {
@@ -1278,17 +1234,16 @@ document.addEventListener("DOMContentLoaded", () => {
       .map(movieCard)
       .join("");
 
-    if (resultsCount) {
+    handlePosterErrors(movieGrid);
 
+    if (resultsCount) {
       resultsCount.textContent =
         `Showing ${visibleMovies.length} of ${total} movies`;
-
     }
 
-    const resultsLabel = $("resultsLabel");
-
     if (resultsLabel) {
-      resultsLabel.textContent = `${PAGE_SIZE} MOVIES PER PAGE`;
+      resultsLabel.textContent =
+        `${PAGE_SIZE} MOVIES PER PAGE`;
     }
 
     if (emptyState) {
@@ -1297,23 +1252,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderPagination(totalPages);
 
+    if (clearSearch) {
+      clearSearch.hidden = !searchInput?.value;
+    }
   }
 
-  /* =========================================
+  /* =======================================================
      WATCHLIST RENDER
-  ========================================= */
+  ======================================================= */
 
   function renderWatchlist() {
-
-    if (!watchlistGrid) return;
-
     const savedMovies = movies.filter(movie =>
-      watchlist.includes(Number(movie.id))
+      isInWatchlist(movie.id)
     );
 
-    watchlistGrid.innerHTML = savedMovies
-      .map(movieCard)
-      .join("");
+    if (watchlistGrid) {
+      watchlistGrid.innerHTML = savedMovies
+        .map(movieCard)
+        .join("");
+
+      handlePosterErrors(watchlistGrid);
+    }
 
     if (watchlistEmpty) {
       watchlistEmpty.hidden = savedMovies.length > 0;
@@ -1322,69 +1281,59 @@ document.addEventListener("DOMContentLoaded", () => {
     if (watchlistCount) {
       watchlistCount.textContent = savedMovies.length;
     }
-
   }
 
-  /* =========================================
+  /* =======================================================
      WATCHLIST TOGGLE
-  ========================================= */
+  ======================================================= */
 
   function toggleWatchlist(id) {
+    const movieId = Number(id);
 
-    id = Number(id);
+    if (!Number.isSafeInteger(movieId) || movieId <= 0) {
+      return;
+    }
 
-    if (!Number.isFinite(id)) return;
-
-    if (isInWatchlist(id)) {
-
-      watchlist = watchlist.filter(item => item !== id);
-
+    if (isInWatchlist(movieId)) {
+      watchlist = watchlist.filter(item => item !== movieId);
     } else {
-
-      watchlist.push(id);
-
+      watchlist.push(movieId);
     }
 
     saveWatchlist();
 
     renderMovies();
     renderWatchlist();
-
   }
 
-  /* =========================================
+  /* =======================================================
      LOAD MOVIES FROM D1
-  ========================================= */
+  ======================================================= */
 
   async function loadMovies() {
-
     if (movieGrid) {
-
       movieGrid.innerHTML = `
         <p class="loading-message">
           Loading movies...
         </p>
       `;
-
     }
 
     try {
+      // D1 is the only movie source.
+      const response = await apiRequest("/api/movies");
 
-      const data = await apiRequest("/api/movies");
-
-      if (!Array.isArray(data.movies)) {
-        throw new Error("Invalid movie database response");
+      if (!Array.isArray(response.movies)) {
+        throw new Error("Invalid movie database response.");
       }
 
-      /* D1 IS THE ONLY MOVIE SOURCE */
-
-      movies = data.movies
+      movies = response.movies
         .map(normalizeMovie)
         .filter(movie =>
-          Number.isFinite(movie.id) && movie.id > 0
+          Number.isSafeInteger(movie.id) && movie.id > 0
         );
 
-      populateYears();
+      populateFilters();
 
       currentPage = 1;
 
@@ -1394,33 +1343,39 @@ document.addEventListener("DOMContentLoaded", () => {
       const totalMoviesElement = $("totalMovies");
 
       if (totalMoviesElement) {
-        totalMoviesElement.textContent = movies.length;
+        totalMoviesElement.textContent =
+          Number(response.total ?? movies.length).toLocaleString();
       }
 
     } catch (error) {
-
-      console.error(
-        "CineVault Movie Loading Error:",
-        error
-      );
+      console.error("CineVault Movie Loading Error:", error);
 
       movies = [];
 
-      populateYears();
-
-      renderMovies();
-      renderWatchlist();
+      populateFilters();
 
       if (resultsCount) {
         resultsCount.textContent = "Unable to load movies";
       }
 
       if (movieGrid) {
-        movieGrid.innerHTML = "";
+        movieGrid.replaceChildren();
       }
 
       if (emptyState) {
         emptyState.hidden = false;
+      }
+
+      if (watchlistGrid) {
+        watchlistGrid.replaceChildren();
+      }
+
+      if (watchlistEmpty) {
+        watchlistEmpty.hidden = false;
+      }
+
+      if (watchlistCount) {
+        watchlistCount.textContent = "0";
       }
 
       const totalMoviesElement = $("totalMovies");
@@ -1428,70 +1383,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (totalMoviesElement) {
         totalMoviesElement.textContent = "0";
       }
-
     }
-
   }
 
-  /* =========================================
-     SEARCH EVENTS
-  ========================================= */
-
-  searchInput?.addEventListener("input", () => {
-
-    currentPage = 1;
-    renderMovies();
-
-  });
-
-  clearSearch?.addEventListener("click", () => {
-
-    if (searchInput) {
-      searchInput.value = "";
-    }
-
-    currentPage = 1;
-
-    renderMovies();
-
-    searchInput?.focus();
-
-  });
-
-  /* =========================================
-     FILTER EVENTS
-  ========================================= */
-
-  [
-    sortSelect,
-    genreFilter,
-    languageFilter,
-    yearFilter,
-    ratingFilter
-
-  ].filter(Boolean).forEach(element => {
-
-    element.addEventListener("change", () => {
-
-      currentPage = 1;
-      renderMovies();
-
-    });
-
-  });
-
-  filterToggle?.addEventListener("click", () => {
-
-    filterPanel?.classList.toggle("open");
-
-  });
-
-  /* =========================================
+  /* =======================================================
      RESET FILTERS
-  ========================================= */
+  ======================================================= */
 
   function resetFilters() {
-
     if (searchInput) searchInput.value = "";
     if (genreFilter) genreFilter.value = "";
     if (languageFilter) languageFilter.value = "";
@@ -1505,42 +1404,79 @@ document.addEventListener("DOMContentLoaded", () => {
     currentPage = 1;
 
     renderMovies();
-
   }
 
-  $("resetFilters")?.addEventListener("click", resetFilters);
+  /* =======================================================
+     SEARCH EVENTS
+  ======================================================= */
 
+  searchInput?.addEventListener("input", () => {
+    currentPage = 1;
+    renderMovies();
+  });
+
+  clearSearch?.addEventListener("click", () => {
+    if (searchInput) {
+      searchInput.value = "";
+    }
+
+    currentPage = 1;
+    renderMovies();
+
+    searchInput?.focus();
+  });
+
+  /* =======================================================
+     FILTER EVENTS
+  ======================================================= */
+
+  [
+    sortSelect,
+    genreFilter,
+    languageFilter,
+    yearFilter,
+    ratingFilter
+  ].filter(Boolean).forEach(element => {
+    element.addEventListener("change", () => {
+      currentPage = 1;
+      renderMovies();
+    });
+  });
+
+  filterToggle?.addEventListener("click", () => {
+    const isOpen = filterPanel?.classList.toggle("open");
+
+    filterToggle.setAttribute(
+      "aria-expanded",
+      isOpen ? "true" : "false"
+    );
+  });
+
+  $("resetFilters")?.addEventListener("click", resetFilters);
   $("emptyReset")?.addEventListener("click", resetFilters);
 
-  /* =========================================
+  /* =======================================================
      COLLECTION CLICK
-  ========================================= */
+  ======================================================= */
 
   collectionGrid?.addEventListener("click", event => {
-
     const card = event.target.closest(".collection-card");
 
     if (!card) return;
 
-    // A collection with its own URL follows that URL.
-    if (card.tagName === "A") {
-      return;
-    }
+    // Links with their own destination are handled normally.
+    if (card.tagName === "A") return;
 
     const genre = card.dataset.genre || "";
 
     if (genreFilter) {
-
-      const matchingOption = [
-        ...genreFilter.options
-      ].find(option =>
+      const matchingOption = [...genreFilter.options].find(option =>
         option.value.toLowerCase() === genre.toLowerCase()
       );
 
       genreFilter.value = matchingOption
         ? matchingOption.value
         : "";
-
     }
 
     if (searchInput) {
@@ -1548,70 +1484,62 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentPage = 1;
-
     renderMovies();
 
     $("movies")?.scrollIntoView({
-      behavior: "smooth"
+      behavior: "smooth",
+      block: "start"
     });
-
   });
 
-  /* =========================================
-     MOVIE CARD CLICK
-  ========================================= */
+  /* =======================================================
+     MOVIE CARD + WATCHLIST CLICK HANDLING
+  ======================================================= */
 
   document.addEventListener("click", event => {
-
-    const watchButton = event.target.closest(
-      "[data-watchlist-id]"
-    );
+    const watchButton = event.target.closest("[data-watchlist-id]");
 
     if (watchButton) {
-
       event.preventDefault();
       event.stopPropagation();
 
-      toggleWatchlist(
-        watchButton.dataset.watchlistId
-      );
-
-      return;
-
-    }
-
-    const movieCardElement = event.target.closest(
-      "[data-movie-id]"
-    );
-
-    if (movieCardElement) {
-
-      const movieId =
-        movieCardElement.dataset.movieId;
-
-      if (!movieId) return;
-
-      window.location.href =
-        `movie.html?id=${encodeURIComponent(movieId)}`;
-
-    }
-
-  });
-
-  /* Keyboard access for movie cards */
-
-  document.addEventListener("keydown", event => {
-
-    if (
-      event.key !== "Enter" &&
-      event.key !== " "
-    ) {
+      toggleWatchlist(watchButton.dataset.watchlistId);
       return;
     }
 
     const card = event.target.closest("[data-movie-id]");
 
-    if (!card || event.target.closest("button")) return;
+    if (!card) return;
+
+    // Do not hijack clicks on actual interactive elements.
+    if (event.target.closest("a, button, input, select, textarea")) {
+      return;
+    }
+
+    const movieId = card.dataset.movieId;
+
+    if (!movieId) return;
+
+    window.location.href =
+      `movie.html?id=${encodeURIComponent(movieId)}`;
+  });
+
+  /* =======================================================
+     KEYBOARD ACCESSIBILITY
+  ======================================================= */
+
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    const card = event.target.closest("[data-movie-id]");
+
+    if (!card) return;
+
+    if (event.target.closest("button, a, input, select, textarea")) {
+      return;
+    }
 
     event.preventDefault();
 
@@ -1621,62 +1549,68 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href =
         `movie.html?id=${encodeURIComponent(movieId)}`;
     }
-
   });
 
-  /* =========================================
-     MOBILE MENU
-  ========================================= */
+  /* =======================================================
+     MOBILE NAVIGATION
+  ======================================================= */
 
-  const menuToggle = $("menuToggle");
-  const mainNav = $("mainNav");
+  function closeMobileMenu() {
+    mainNav?.classList.remove("open");
+    menuToggle?.setAttribute("aria-expanded", "false");
+  }
 
   menuToggle?.addEventListener("click", () => {
+    const isOpen = mainNav?.classList.toggle("open");
 
-    mainNav?.classList.toggle("open");
-
+    menuToggle.setAttribute(
+      "aria-expanded",
+      isOpen ? "true" : "false"
+    );
   });
 
   mainNav?.querySelectorAll("a").forEach(link => {
-
-    link.addEventListener("click", () => {
-
-      mainNav.classList.remove("open");
-
-    });
-
+    link.addEventListener("click", closeMobileMenu);
   });
 
-  /* =========================================
+  document.addEventListener("click", event => {
+    if (!mainNav || !menuToggle) return;
+
+    if (
+      !mainNav.contains(event.target) &&
+      !menuToggle.contains(event.target)
+    ) {
+      closeMobileMenu();
+    }
+  });
+
+  /* =======================================================
      SEARCH ICON
-  ========================================= */
+  ======================================================= */
 
   $("searchToggle")?.addEventListener("click", () => {
-
     searchInput?.focus();
 
     $("movies")?.scrollIntoView({
-      behavior: "smooth"
+      behavior: "smooth",
+      block: "start"
     });
-
   });
 
-  /* =========================================
+  /* =======================================================
      CURRENT YEAR
-  ========================================= */
+  ======================================================= */
 
   const currentYearElement = $("currentYear");
 
   if (currentYearElement) {
-
     currentYearElement.textContent =
       new Date().getFullYear();
-
   }
 
-  /* =========================================
+  /* =======================================================
      INITIALIZE APPLICATION
-  ========================================= */
+  ======================================================= */
 
   loadSettings();
   loadCollections();
