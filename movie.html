@@ -4,8 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080a0f">
 
-  <meta name="description" content="Explore movie details, ratings, cast information and authorised viewing options on CineVault.">
+  <meta name="description" content="Explore movie details, ratings, descriptions and viewing options on CineVault.">
   <meta name="robots" content="index, follow">
 
   <title>Movie Details | CineVault</title>
@@ -24,8 +25,7 @@
       display: flex;
       align-items: end;
       padding: 55px 6%;
-      background: linear-gradient(0deg, #080a0f 5%, rgba(8,10,15,.55) 65%, rgba(8,10,15,.25)),
-                  linear-gradient(90deg, #080a0f, transparent);
+      background-color: #080a0f;
       background-size: cover;
       background-position: center;
     }
@@ -42,6 +42,7 @@
       font-size: clamp(32px, 5vw, 58px);
       margin: 12px 0;
       color: #fff;
+      overflow-wrap: anywhere;
     }
 
     .movie-detail-meta {
@@ -61,19 +62,21 @@
       margin: 45px auto;
       padding: 0 6%;
       display: grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 280px minmax(0, 1fr);
       gap: 42px;
     }
 
     .movie-detail-poster {
       width: 100%;
+      aspect-ratio: 2 / 3;
       border-radius: 12px;
       object-fit: cover;
       background: #171a20;
       box-shadow: 0 12px 35px rgba(0,0,0,.4);
     }
 
-    .movie-detail-info h2 {
+    .movie-detail-info h2,
+    .similar-movies h2 {
       color: #d6b36a;
       margin: 0 0 18px;
     }
@@ -83,6 +86,7 @@
       line-height: 1.9;
       margin-bottom: 25px;
       white-space: pre-line;
+      overflow-wrap: anywhere;
     }
 
     .movie-info-list {
@@ -97,6 +101,7 @@
       padding: 15px;
       border: 1px solid rgba(214,179,106,.13);
       border-radius: 9px;
+      min-width: 0;
     }
 
     .movie-info-item small {
@@ -154,11 +159,6 @@
       padding: 0 6%;
     }
 
-    .similar-movies h2 {
-      color: #d6b36a;
-      margin-bottom: 22px;
-    }
-
     .similar-movies-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -173,7 +173,7 @@
 
     .similar-movie-card img {
       width: 100%;
-      aspect-ratio: 2/3;
+      aspect-ratio: 2 / 3;
       object-fit: cover;
       border-radius: 8px;
       background: #171a20;
@@ -182,6 +182,7 @@
     .similar-movie-card h3 {
       font-size: 14px;
       margin: 9px 0 4px;
+      overflow-wrap: anywhere;
     }
 
     .similar-movie-card p {
@@ -210,6 +211,12 @@
       padding: 100px 20px;
     }
 
+    @media (max-width: 900px) {
+      .similar-movies-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
     @media (max-width: 700px) {
       .movie-backdrop {
         min-height: 330px;
@@ -236,7 +243,13 @@
       }
 
       .movie-action-buttons a {
-        flex: 1;
+        flex: 1 1 130px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .movie-info-list {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -245,7 +258,7 @@
 <body>
 
 <header class="site-header">
-  <a class="brand" href="index.html">
+  <a class="brand" href="index.html" aria-label="CineVault Home">
     <span class="brand-mark">C</span>
     <span>CINE<span>VAULT</span></span>
   </a>
@@ -263,11 +276,11 @@
 <footer class="site-footer">
   <div class="footer-bottom">
     <span>© <span id="year"></span> CineVault</span>
+
     <div class="footer-links">
       <a href="about.html">About</a>
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
-      <a href="dmca.html">DMCA</a>
     </div>
   </div>
 </footer>
@@ -281,7 +294,10 @@
   document.getElementById("year").textContent =
     new Date().getFullYear();
 
-  let movies = [];
+  const params = new URLSearchParams(window.location.search);
+
+  const requestedId = params.get("id");
+  const requestedSlug = params.get("title");
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -295,22 +311,13 @@
     });
   }
 
-  function slugify(value) {
-    return String(value || "")
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-
   function validURL(value) {
     if (!value) return "";
 
     try {
       const parsed = new URL(value);
 
-      if (parsed.protocol !== "https:" &&
-          parsed.protocol !== "http:") {
+      if (!["https:", "http:"].includes(parsed.protocol)) {
         return "";
       }
 
@@ -320,54 +327,87 @@
     }
   }
 
-  function validImage(url) {
-    if (!url || url === "placeholder.jpg") return "";
-
-    try {
-      const parsed = new URL(url, window.location.href);
-
-      if (parsed.protocol !== "https:" &&
-          parsed.protocol !== "http:") {
-        return "";
-      }
-
-      return parsed.href;
-    } catch {
-      return "";
-    }
+  function validImage(value) {
+    return validURL(value);
   }
 
   function fallbackArtwork(title) {
     const safeTitle = escapeHTML(title || "CineVault");
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750">
-      <rect width="100%" height="100%" fill="#11151d"/>
-      <text x="50%" y="47%" fill="#d6b36a" font-size="30" text-anchor="middle" font-family="Arial">CINEVAULT</text>
-      <text x="50%" y="55%" fill="#ffffff" font-size="22" text-anchor="middle" font-family="Arial">${safeTitle}</text>
-    </svg>`;
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="500" height="750">
+        <rect width="100%" height="100%" fill="#11151d"/>
+        <text x="50%" y="47%"
+              fill="#d6b36a"
+              font-size="30"
+              text-anchor="middle"
+              font-family="Arial">CINEVAULT</text>
+        <text x="50%" y="55%"
+              fill="#ffffff"
+              font-size="22"
+              text-anchor="middle"
+              font-family="Arial">${safeTitle}</text>
+      </svg>
+    `;
 
     return "data:image/svg+xml;charset=UTF-8," +
       encodeURIComponent(svg);
   }
 
-  function getMovie() {
-    const params = new URLSearchParams(window.location.search);
-
-    const requestedId = params.get("id");
-    const requestedSlug = params.get("title");
-
-    return movies.find(function (movie) {
-      return (
-        (requestedId &&
-          String(movie.id) === String(requestedId)) ||
-
-        (requestedSlug &&
-          slugify(movie.title) === requestedSlug)
-      );
-    }) || null;
+  function normalizeMovie(movie) {
+    return {
+      ...movie,
+      id: movie.id,
+      title: movie.title || "Untitled Movie",
+      poster: movie.poster || "",
+      backdrop: movie.backdrop || "",
+      description: movie.description || "",
+      year: movie.year || "",
+      genre: movie.genre || "",
+      rating: movie.rating ?? "",
+      duration: movie.duration || "",
+      language: movie.language || "",
+      country: movie.country || "",
+      director: movie.director || "",
+      quality: movie.quality || "",
+      watchUrl: movie.watchUrl || movie.watch_url || "",
+      downloadUrl: movie.downloadUrl || movie.download_url || "",
+      downloadUrl2: movie.downloadUrl2 || movie.download_url_2 || ""
+    };
   }
 
-  function renderMovie(movie) {
+  function createInfoItem(label, value) {
+    return `
+      <div class="movie-info-item">
+        <small>${escapeHTML(label)}</small>
+        <strong>${escapeHTML(value || "N/A")}</strong>
+      </div>
+    `;
+  }
+
+  function createMovieCard(movie) {
+    const poster =
+      validImage(movie.poster) ||
+      fallbackArtwork(movie.title);
+
+    return `
+      <a class="similar-movie-card"
+         href="movie.html?id=${encodeURIComponent(movie.id)}">
+
+        <img
+          src="${escapeHTML(poster)}"
+          alt="${escapeHTML(movie.title)} poster"
+          loading="lazy"
+          data-fallback="${escapeHTML(fallbackArtwork(movie.title))}">
+
+        <h3>${escapeHTML(movie.title)}</h3>
+        <p>${escapeHTML(movie.year || "Year unavailable")}</p>
+      </a>
+    `;
+  }
+
+  function renderMovie(movie, similarMovies) {
     const poster =
       validImage(movie.poster) ||
       fallbackArtwork(movie.title);
@@ -375,69 +415,59 @@
     const backdrop =
       validImage(movie.backdrop) || poster;
 
-    document.title = movie.title + " | CineVault";
-
     const watchUrl = validURL(movie.watchUrl);
     const downloadUrl = validURL(movie.downloadUrl);
     const downloadUrl2 = validURL(movie.downloadUrl2);
 
-    const watchButton = watchUrl
-      ? `<a class="watch-button"
-             href="${escapeHTML(watchUrl)}"
-             target="_blank"
-             rel="noopener noreferrer">▶ WATCH NOW</a>`
-      : "";
+    document.title = movie.title + " | CineVault";
 
-    const downloadButton1 = downloadUrl
-      ? `<a class="download-button"
-             href="${escapeHTML(downloadUrl)}"
-             target="_blank"
-             rel="noopener noreferrer">↓ DOWNLOAD 1</a>`
-      : "";
+    const description = movie.description ||
+      "Movie description is not available yet.";
 
-    const downloadButton2 = downloadUrl2
-      ? `<a class="download-button"
-             href="${escapeHTML(downloadUrl2)}"
-             target="_blank"
-             rel="noopener noreferrer">↓ DOWNLOAD 2</a>`
-      : "";
+    const buttons = [];
 
-    const similar = movies
-      .filter(function (item) {
-        return String(item.id) !== String(movie.id);
-      })
-      .filter(function (item) {
-        return item.genre && movie.genre &&
-          item.genre.toLowerCase() ===
-          movie.genre.toLowerCase();
-      })
-      .slice(0, 5);
-
-    const similarHTML = similar.map(function (item) {
-      const image =
-        validImage(item.poster) ||
-        fallbackArtwork(item.title);
-
-      return `
-        <a class="similar-movie-card"
-           href="movie.html?id=${encodeURIComponent(item.id)}">
-
-          <img src="${escapeHTML(image)}"
-               alt="${escapeHTML(item.title)}"
-               loading="lazy">
-
-          <h3>${escapeHTML(item.title)}</h3>
-          <p>${escapeHTML(item.year || "")}</p>
+    if (watchUrl) {
+      buttons.push(`
+        <a class="watch-button"
+           href="${escapeHTML(watchUrl)}"
+           target="_blank"
+           rel="noopener noreferrer">
+          ▶ WATCH NOW
         </a>
-      `;
-    }).join("");
+      `);
+    }
+
+    if (downloadUrl) {
+      buttons.push(`
+        <a class="download-button"
+           href="${escapeHTML(downloadUrl)}"
+           target="_blank"
+           rel="noopener noreferrer">
+          ↓ DOWNLOAD 1
+        </a>
+      `);
+    }
+
+    if (downloadUrl2) {
+      buttons.push(`
+        <a class="download-button"
+           href="${escapeHTML(downloadUrl2)}"
+           target="_blank"
+           rel="noopener noreferrer">
+          ↓ DOWNLOAD 2
+        </a>
+      `);
+    }
+
+    const similar = Array.isArray(similarMovies)
+      ? similarMovies
+          .filter(item => String(item.id) !== String(movie.id))
+          .slice(0, 8)
+          .map(normalizeMovie)
+      : [];
 
     container.innerHTML = `
-      <section class="movie-backdrop"
-        style="background-image:
-        linear-gradient(0deg,#080a0f 5%,rgba(8,10,15,.55) 65%,rgba(8,10,15,.25)),
-        url('${escapeHTML(backdrop)}')">
-
+      <section class="movie-backdrop" id="movieBackdrop">
         <div class="movie-detail-heading">
           <div class="eyebrow">MOVIE DETAILS</div>
 
@@ -455,9 +485,11 @@
       <section class="movie-detail-layout">
 
         <div>
-          <img class="movie-detail-poster"
-               src="${escapeHTML(poster)}"
-               alt="${escapeHTML(movie.title)} poster">
+          <img
+            class="movie-detail-poster"
+            id="mainMoviePoster"
+            src="${escapeHTML(poster)}"
+            alt="${escapeHTML(movie.title)} poster">
         </div>
 
         <div class="movie-detail-info">
@@ -465,72 +497,81 @@
           <h2>About the Movie</h2>
 
           <p class="movie-detail-description">
-            ${escapeHTML(movie.description ||
-              "Movie description is not available yet.")}
+            ${escapeHTML(description)}
           </p>
 
           <div class="movie-info-list">
-
-            <div class="movie-info-item">
-              <small>Release Year</small>
-              <strong>${escapeHTML(movie.year || "N/A")}</strong>
-            </div>
-
-            <div class="movie-info-item">
-              <small>Genre</small>
-              <strong>${escapeHTML(movie.genre || "N/A")}</strong>
-            </div>
-
-            <div class="movie-info-item">
-              <small>Language</small>
-              <strong>${escapeHTML(movie.language || "N/A")}</strong>
-            </div>
-
-            <div class="movie-info-item">
-              <small>Country</small>
-              <strong>${escapeHTML(movie.country || "N/A")}</strong>
-            </div>
-
-            <div class="movie-info-item">
-              <small>Director</small>
-              <strong>${escapeHTML(movie.director || "N/A")}</strong>
-            </div>
-
-            <div class="movie-info-item">
-              <small>Duration</small>
-              <strong>${escapeHTML(movie.duration || "N/A")}</strong>
-            </div>
-
+            ${createInfoItem("Release Year", movie.year)}
+            ${createInfoItem("Genre", movie.genre)}
+            ${createInfoItem("Language", movie.language)}
+            ${createInfoItem("Country", movie.country)}
+            ${createInfoItem("Director", movie.director)}
+            ${createInfoItem("Duration", movie.duration)}
+            ${createInfoItem("Quality", movie.quality)}
+            ${createInfoItem("Rating", movie.rating)}
           </div>
 
-          <div class="movie-action-buttons">
-            ${watchButton}
-            ${downloadButton1}
-            ${downloadButton2}
-          </div>
-
-          ${!watchUrl && !downloadUrl && !downloadUrl2
-            ? `<p class="movie-unavailable">
-                Viewing and download links have not been added
-                for this movie yet.
-              </p>`
-            : ""}
+          ${
+            buttons.length
+              ? `<div class="movie-action-buttons">${buttons.join("")}</div>`
+              : `<p class="movie-unavailable">
+                   Viewing and download links have not been added
+                   for this movie yet.
+                 </p>`
+          }
 
         </div>
       </section>
 
-      ${similar.length ? `
-        <section class="similar-movies">
-          <h2>Similar Movies</h2>
-          <div class="similar-movies-grid">
-            ${similarHTML}
-          </div>
-        </section>
-      ` : ""}
+      ${
+        similar.length
+          ? `
+            <section class="similar-movies">
+              <h2>Similar Movies</h2>
+
+              <div class="similar-movies-grid">
+                ${similar.map(createMovieCard).join("")}
+              </div>
+            </section>
+          `
+          : ""
+      }
     `;
+
+    const backdropElement =
+      document.getElementById("movieBackdrop");
+
+    if (backdropElement) {
+      backdropElement.style.backgroundImage = `
+        linear-gradient(
+          0deg,
+          #080a0f 5%,
+          rgba(8,10,15,.55) 65%,
+          rgba(8,10,15,.25)
+        ),
+        url("${backdrop.replace(/["\\]/g, "")}")
+      `;
+    }
+
+    const mainPoster =
+      document.getElementById("mainMoviePoster");
+
+    if (mainPoster) {
+      mainPoster.addEventListener("error", function () {
+        this.src = fallbackArtwork(movie.title);
+      }, { once: true });
+    }
+
+    container.querySelectorAll("img[data-fallback]").forEach(img => {
+      img.addEventListener("error", function () {
+        this.src = this.dataset.fallback;
+      }, { once: true });
+    });
   }
 
   function showError(title, message) {
+    document.title = title + " | CineVault";
+
     container.innerHTML = `
       <div class="movie-error">
         <h1>${escapeHTML(title)}</h1>
@@ -541,11 +582,43 @@
   }
 
   async function loadMovie() {
+    const identifier = requestedId || requestedSlug;
+
+    if (!identifier) {
+      showError(
+        "Movie Not Found",
+        "No movie ID or movie title was provided."
+      );
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9-]+$/.test(identifier)) {
+      showError(
+        "Invalid Movie Link",
+        "The movie address is not valid."
+      );
+      return;
+    }
+
     try {
-      const response = await fetch("/api/movies", {
-        method: "GET",
-        cache: "no-store"
-      });
+      const response = await fetch(
+        "/api/movies/" + encodeURIComponent(identifier),
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            "Accept": "application/json"
+          }
+        }
+      );
+
+      if (response.status === 404) {
+        showError(
+          "Movie Not Found",
+          "Sorry, this movie could not be found in our catalogue."
+        );
+        return;
+      }
 
       if (!response.ok) {
         throw new Error("API request failed: " + response.status);
@@ -553,31 +626,17 @@
 
       const data = await response.json();
 
-      if (!data.success || !Array.isArray(data.movies)) {
-        throw new Error("Invalid movie database response.");
+      if (!data.success || !data.movie) {
+        throw new Error("Invalid movie API response.");
       }
 
-      movies = data.movies.map(function (movie) {
-        return {
-          ...movie,
-          watchUrl: movie.watchUrl || movie.watch_url || "",
-          downloadUrl: movie.downloadUrl || movie.download_url || "",
-          downloadUrl2: movie.downloadUrl2 || movie.download_url_2 || "",
-          adUrl: movie.adUrl || movie.ad_url || "",
-          adCount: Number(movie.adCount ?? movie.ad_count ?? 4)
-        };
-      });
+      const movie = normalizeMovie(data.movie);
 
-      const movie = getMovie();
+      const similarMovies = Array.isArray(data.similarMovies)
+        ? data.similarMovies
+        : [];
 
-      if (movie) {
-        renderMovie(movie);
-      } else {
-        showError(
-          "Movie Not Found",
-          "Sorry, this movie could not be found in our catalogue."
-        );
-      }
+      renderMovie(movie, similarMovies);
 
     } catch (error) {
       console.error("CineVault Movie Error:", error);
