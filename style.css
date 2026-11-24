@@ -677,6 +677,16 @@ button:disabled {
   gap: 8px;
 }
 
+
+/* Keep slider controls hidden when JavaScript sets the hidden attribute.
+   This explicit rule protects the controls from display styles above. */
+.hero-slider-navigation[hidden],
+.hero-slider-controls[hidden],
+.hero-slider-dots[hidden],
+.hero-slider-arrow[hidden] {
+  display: none !important;
+}
+
 .hero-slider-dot {
   width: 8px;
   height: 8px;
