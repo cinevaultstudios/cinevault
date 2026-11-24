@@ -1,688 +1,411 @@
 
-/* =========================================
-   CINEVAULT — MOVIE DATABASE
-   40 MOVIES | PREMIUM COLLECTION
-   ========================================= */
+/* =========================================================
+   CINEVAULT — D1 MOVIE API MODULE
+   CLOUDFLARE WORKERS + D1 DATABASE
 
-const movies = [
-  {
-    id: 1,
-    title: "Inception",
-    year: 2010,
-    genre: "Sci-Fi",
-    language: "English",
-    country: "USA",
-    rating: 8.8,
-    duration: "148 min",
-    director: "Christopher Nolan",
-    poster: "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
-    backdrop: "https://image.tmdb.org/t/p/w1280/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
-    description: "A skilled thief enters people's dreams to steal secrets and attempts an extraordinary mission involving the planting of an idea.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 2,
-    title: "Interstellar",
-    year: 2014,
-    genre: "Sci-Fi",
-    language: "English",
-    country: "USA",
-    rating: 8.7,
-    duration: "169 min",
-    director: "Christopher Nolan",
-    poster: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    backdrop: "https://image.tmdb.org/t/p/w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg",
-    description: "A group of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 3,
-    title: "The Dark Knight",
-    year: 2008,
-    genre: "Action",
-    language: "English",
-    country: "USA",
-    rating: 9.0,
-    duration: "152 min",
-    director: "Christopher Nolan",
-    poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-    backdrop: "https://image.tmdb.org/t/p/w1280/hqkIcbrOHL86UncnHIsHVcVmzue.jpg",
-    description: "Batman faces the Joker, a criminal mastermind who creates chaos across Gotham City.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 4,
-    title: "Parasite",
-    year: 2019,
-    genre: "Thriller",
-    language: "Korean",
-    country: "South Korea",
-    rating: 8.5,
-    duration: "132 min",
-    director: "Bong Joon-ho",
-    poster: "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    backdrop: "https://image.tmdb.org/t/p/w1280/ApiBzeaa95TNYliSbQ8pJv4Fje7.jpg",
-    description: "A poor family gradually becomes involved in the lives of a wealthy household, leading to unexpected consequences.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 5,
-    title: "Avengers: Endgame",
-    year: 2019,
-    genre: "Action",
-    language: "English",
-    country: "USA",
-    rating: 8.4,
-    duration: "181 min",
-    director: "Anthony Russo, Joe Russo",
-    poster: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
-    backdrop: "https://image.tmdb.org/t/p/w1280/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",
-    description: "The Avengers assemble once more to reverse the devastation caused by Thanos.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 6,
-    title: "Joker",
-    year: 2019,
-    genre: "Drama",
-    language: "English",
-    country: "USA",
-    rating: 8.4,
-    duration: "122 min",
-    director: "Todd Phillips",
-    poster: "https://image.tmdb.org/t/p/w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg",
-    backdrop: "https://image.tmdb.org/t/p/w1280/n6bUvigpRFqSwmPp1m2YADdbRBc.jpg",
-    description: "A struggling comedian descends into madness as society repeatedly turns against him.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 7,
-    title: "The Shawshank Redemption",
-    year: 1994,
-    genre: "Drama",
-    language: "English",
-    country: "USA",
-    rating: 9.3,
-    duration: "142 min",
-    director: "Frank Darabont",
-    poster: "https://image.tmdb.org/t/p/w500/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg",
-    backdrop: "",
-    description: "Two imprisoned men form a lasting friendship while holding on to hope inside prison walls.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 8,
-    title: "The Godfather",
-    year: 1972,
-    genre: "Crime",
-    language: "English",
-    country: "USA",
-    rating: 9.2,
-    duration: "175 min",
-    director: "Francis Ford Coppola",
-    poster: "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-    backdrop: "",
-    description: "The aging patriarch of a crime dynasty transfers control of his empire to his reluctant son.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 9,
-    title: "Titanic",
-    year: 1997,
-    genre: "Romance",
-    language: "English",
-    country: "USA",
-    rating: 7.9,
-    duration: "194 min",
-    director: "James Cameron",
-    poster: "https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
-    backdrop: "",
-    description: "A young couple from different social backgrounds fall in love aboard the ill-fated RMS Titanic.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 10,
-    title: "Dune: Part Two",
-    year: 2024,
-    genre: "Sci-Fi",
-    language: "English",
-    country: "USA",
-    rating: 8.5,
-    duration: "166 min",
-    director: "Denis Villeneuve",
-    poster: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-    backdrop: "",
-    description: "Paul Atreides joins the Fremen while seeking revenge against those who destroyed his family.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 11,
-    title: "Oppenheimer",
-    year: 2023,
-    genre: "Drama",
-    language: "English",
-    country: "USA",
-    rating: 8.3,
-    duration: "180 min",
-    director: "Christopher Nolan",
-    poster: "https://image.tmdb.org/t/p/w500/ptpr0kGAckfQkJeJIt8st5dglvd.jpg",
-    backdrop: "",
-    description: "The story of J. Robert Oppenheimer and his role in developing the atomic bomb.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 12,
-    title: "Spider-Man: No Way Home",
-    year: 2021,
-    genre: "Action",
-    language: "English",
-    country: "USA",
-    rating: 8.2,
-    duration: "148 min",
-    director: "Jon Watts",
-    poster: "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
-    backdrop: "",
-    description: "Peter Parker faces the consequences of his identity becoming public and encounters visitors from other universes.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 13,
-    title: "Top Gun: Maverick",
-    year: 2022,
-    genre: "Action",
-    language: "English",
-    country: "USA",
-    rating: 8.2,
-    duration: "130 min",
-    director: "Joseph Kosinski",
-    poster: "https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg",
-    backdrop: "",
-    description: "Maverick returns to train a new generation of elite pilots for a dangerous mission.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 14,
-    title: "The Matrix",
-    year: 1999,
-    genre: "Sci-Fi",
-    language: "English",
-    country: "USA",
-    rating: 8.7,
-    duration: "136 min",
-    director: "Lana Wachowski, Lilly Wachowski",
-    poster: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
-    backdrop: "",
-    description: "A computer hacker discovers that reality is a simulated world controlled by machines.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 15,
-    title: "Gladiator",
-    year: 2000,
-    genre: "Action",
-    language: "English",
-    country: "USA",
-    rating: 8.5,
-    duration: "155 min",
-    director: "Ridley Scott",
-    poster: "https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg",
-    backdrop: "",
-    description: "A betrayed Roman general seeks justice after being forced into slavery and combat.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 16,
-    title: "Coco",
-    year: 2017,
-    genre: "Animation",
-    language: "English",
-    country: "USA",
-    rating: 8.4,
-    duration: "105 min",
-    director: "Lee Unkrich",
-    poster: "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg",
-    backdrop: "",
-    description: "A young aspiring musician travels to the Land of the Dead to discover his family's history.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 17,
-    title: "Your Name",
-    year: 2016,
-    genre: "Romance",
-    language: "Japanese",
-    country: "Japan",
-    rating: 8.4,
-    duration: "106 min",
-    director: "Makoto Shinkai",
-    poster: "https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg",
-    backdrop: "",
-    description: "Two teenagers mysteriously begin switching bodies and search for a connection across time and distance.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 18,
-    title: "Train to Busan",
-    year: 2016,
-    genre: "Thriller",
-    language: "Korean",
-    country: "South Korea",
-    rating: 7.6,
-    duration: "118 min",
-    director: "Yeon Sang-ho",
-    poster: "https://image.tmdb.org/t/p/w500/vNVFt6dtcqnI7hqa6LFBUibuFiw.jpg",
-    backdrop: "",
-    description: "Passengers fight to survive during a zombie outbreak aboard a train travelling to Busan.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 19,
-    title: "The Batman",
-    year: 2022,
-    genre: "Crime",
-    language: "English",
-    country: "USA",
-    rating: 7.8,
-    duration: "176 min",
-    director: "Matt Reeves",
-    poster: "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",
-    backdrop: "",
-    description: "Batman investigates a series of murders that expose corruption in Gotham City.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 20,
-    title: "La La Land",
-    year: 2016,
-    genre: "Romance",
-    language: "English",
-    country: "USA",
-    rating: 8.0,
-    duration: "128 min",
-    director: "Damien Chazelle",
-    poster: "https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",
-    backdrop: "",
-    description: "A jazz musician and an aspiring actress pursue their dreams while falling in love in Los Angeles.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 21,
-    title: "The Prestige",
-    year: 2006,
-    genre: "Thriller",
-    language: "English",
-    country: "USA",
-    rating: 8.5,
-    duration: "130 min",
-    director: "Christopher Nolan",
-    poster: "https://image.tmdb.org/t/p/w500/5MXyQfz8xUP3dIFPTubhTsbFY6N.jpg",
-    backdrop: "",
-    description: "Two rival magicians become obsessed with creating the ultimate illusion.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 22,
-    title: "Whiplash",
-    year: 2014,
-    genre: "Drama",
-    language: "English",
-    country: "USA",
-    rating: 8.5,
-    duration: "107 min",
-    director: "Damien Chazelle",
-    poster: "https://image.tmdb.org/t/p/w500/7fn624j5lj3xTme2SgiLCeuedmO.jpg",
-    backdrop: "",
-    description: "A young drummer faces an intense instructor in pursuit of musical excellence.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 23,
-    title: "Forrest Gump",
-    year: 1994,
-    genre: "Drama",
-    language: "English",
-    country: "USA",
-    rating: 8.8,
-    duration: "142 min",
-    director: "Robert Zemeckis",
-    poster: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
-    backdrop: "",
-    description: "A kind-hearted man unexpectedly becomes part of several defining moments in modern American history.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 24,
-    title: "The Lion King",
-    year: 1994,
-    genre: "Animation",
-    language: "English",
-    country: "USA",
-    rating: 8.5,
-    duration: "88 min",
-    director: "Roger Allers, Rob Minkoff",
-    poster: "https://image.tmdb.org/t/p/w500/sKCr78MXSLixwmZ8DyJLrpMsd15.jpg",
-    backdrop: "",
-    description: "A young lion prince learns about responsibility and courage after a family tragedy.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 25,
-    title: "The Wolf of Wall Street",
-    year: 2013,
-    genre: "Crime",
-    language: "English",
-    country: "USA",
-    rating: 8.2,
-    duration: "180 min",
-    director: "Martin Scorsese",
-    poster: "https://image.tmdb.org/t/p/w500/34m2tygAYBGqA9MXKhRDtzYd4MR.jpg",
-    backdrop: "",
-    description: "A stockbroker's rise to wealth and excess leads to fraud, corruption and a dramatic downfall.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 26,
-    title: "The Social Network",
-    year: 2010,
-    genre: "Drama",
-    language: "English",
-    country: "USA",
-    rating: 7.8,
-    duration: "120 min",
-    director: "David Fincher",
-    poster: "https://image.tmdb.org/t/p/w500/n0ybibhJtQ5icDqTp8eRytcIHJx.jpg",
-    backdrop: "",
-    description: "The creation of Facebook brings success, lawsuits and complicated friendships.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 27,
-    title: "Dangal",
-    year: 2016,
-    genre: "Drama",
-    language: "Hindi",
-    country: "India",
-    rating: 8.3,
-    duration: "161 min",
-    director: "Nitesh Tiwari",
-    poster: "https://image.tmdb.org/t/p/w500/cjr4NWURcVN3gW5FlHeabgBHLrY.jpg",
-    backdrop: "",
-    description: "A former wrestler trains his daughters to become champions in competitive wrestling.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 28,
-    title: "3 Idiots",
-    year: 2009,
-    genre: "Comedy",
-    language: "Hindi",
-    country: "India",
-    rating: 8.4,
-    duration: "170 min",
-    director: "Rajkumar Hirani",
-    poster: "https://image.tmdb.org/t/p/w500/66A9MqXOyVFCssoloscw79z8Tew.jpg",
-    backdrop: "",
-    description: "Three engineering students challenge conventional education and rediscover friendship.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 29,
-    title: "Drishyam",
-    year: 2015,
-    genre: "Thriller",
-    language: "Hindi",
-    country: "India",
-    rating: 8.2,
-    duration: "163 min",
-    director: "Nishikant Kamat",
-    poster: "https://image.tmdb.org/t/p/w500/4m6g8l8Y0yQm5vQ5c4Yjv0.jpg",
-    backdrop: "",
-    description: "A family man uses intelligence and careful planning to protect his family from a criminal investigation.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 30,
-    title: "RRR",
-    year: 2022,
-    genre: "Action",
-    language: "Hindi",
-    country: "India",
-    rating: 7.8,
-    duration: "187 min",
-    director: "S. S. Rajamouli",
-    poster: "https://image.tmdb.org/t/p/w500/nEufeZlyAOLqO2brrs0yeF1lgXO.jpg",
-    backdrop: "",
-    description: "Two revolutionaries form an extraordinary friendship during the British colonial era.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 31,
-    title: "Oldboy",
-    year: 2003,
-    genre: "Thriller",
-    language: "Korean",
-    country: "South Korea",
-    rating: 8.3,
-    duration: "120 min",
-    director: "Park Chan-wook",
-    poster: "https://image.tmdb.org/t/p/w500/pWDtjs568ZfOTMbURQBYuT4Qxka.jpg",
-    backdrop: "",
-    description: "A man mysteriously imprisoned for years seeks answers and revenge after his release.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 32,
-    title: "The Handmaiden",
-    year: 2016,
-    genre: "Thriller",
-    language: "Korean",
-    country: "South Korea",
-    rating: 8.1,
-    duration: "145 min",
-    director: "Park Chan-wook",
-    poster: "https://image.tmdb.org/t/p/w500/dLlH4aNHdnmf62umnInL8xPlPzw.jpg",
-    backdrop: "",
-    description: "A young woman becomes involved in a complicated scheme involving deception and unexpected emotions.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 33,
-    title: "Memories of Murder",
-    year: 2003,
-    genre: "Crime",
-    language: "Korean",
-    country: "South Korea",
-    rating: 8.1,
-    duration: "132 min",
-    director: "Bong Joon-ho",
-    poster: "https://image.tmdb.org/t/p/w500/jcgUjx1QcupGzjntTVlnQ15lH5y.jpg",
-    backdrop: "",
-    description: "Detectives investigate a series of murders in a small Korean town.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 34,
-    title: "The Host",
-    year: 2006,
-    genre: "Horror",
-    language: "Korean",
-    country: "South Korea",
-    rating: 7.1,
-    duration: "120 min",
-    director: "Bong Joon-ho",
-    poster: "https://image.tmdb.org/t/p/w500/9rtrRGeRnL0JKtu9IMBWsXo9z7V.jpg",
-    backdrop: "",
-    description: "A family struggles to rescue a loved one after a mysterious creature emerges from a river.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 35,
-    title: "Hawa",
-    year: 2022,
-    genre: "Drama",
-    language: "Bangla",
-    country: "Bangladesh",
-    rating: 7.8,
-    duration: "130 min",
-    director: "Mejbaur Rahman Sumon",
-    poster: "https://image.tmdb.org/t/p/w500/placeholder.jpg",
-    backdrop: "",
-    description: "A mysterious woman joins a fishing crew at sea, changing the lives of everyone aboard.",
-    featured: true,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 36,
-    title: "Monpura",
-    year: 2009,
-    genre: "Romance",
-    language: "Bangla",
-    country: "Bangladesh",
-    rating: 8.0,
-    duration: "130 min",
-    director: "Giasuddin Selim",
-    poster: "https://image.tmdb.org/t/p/w500/placeholder.jpg",
-    backdrop: "",
-    description: "A tragic romantic story unfolds in a remote river island community.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 37,
-    title: "Aynabaji",
-    year: 2016,
-    genre: "Thriller",
-    language: "Bangla",
-    country: "Bangladesh",
-    rating: 8.0,
-    duration: "147 min",
-    director: "Amitabh Reza Chowdhury",
-    poster: "https://image.tmdb.org/t/p/w500/placeholder.jpg",
-    backdrop: "",
-    description: "An actor who impersonates prisoners becomes caught in a dangerous web of deception.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 38,
-    title: "Debi",
-    year: 2018,
-    genre: "Mystery",
-    language: "Bangla",
-    country: "Bangladesh",
-    rating: 7.0,
-    duration: "110 min",
-    director: "Anam Biswas",
-    poster: "https://image.tmdb.org/t/p/w500/placeholder.jpg",
-    backdrop: "",
-    description: "A psychological mystery inspired by a popular Bengali literary character.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 39,
-    title: "K.G.F: Chapter 2",
-    year: 2022,
-    genre: "Action",
-    language: "Hindi",
-    country: "India",
-    rating: 8.2,
-    duration: "168 min",
-    director: "Prashanth Neel",
-    poster: "https://image.tmdb.org/t/p/w500/placeholder.jpg",
-    backdrop: "",
-    description: "Rocky expands his empire while facing powerful enemies and political opposition.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
-  },
-  {
-    id: 40,
-    title: "The Truman Show",
-    year: 1998,
-    genre: "Drama",
-    language: "English",
-    country: "USA",
-    rating: 8.2,
-    duration: "103 min",
-    director: "Peter Weir",
-    poster: "https://image.tmdb.org/t/p/w500/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
-    backdrop: "",
-    description: "A man gradually discovers that his entire life may be part of a television production.",
-    featured: false,
-    watchUrl: "",
-    downloadUrl: ""
+   PURPOSE:
+   - Dynamic movie loading
+   - Server-side pagination
+   - Search and filtering
+   - Movie details by ID or slug
+   - Similar movies
+   - Consistent API response normalization
+
+   IMPORTANT:
+   Cloudflare D1 is the single source of truth.
+   This file does not contain static movie records.
+   ========================================================= */
+
+(function (global) {
+  "use strict";
+
+  /* =======================================================
+     CONFIGURATION
+  ======================================================= */
+
+  const API_BASE = "/api/movies";
+
+  const DEFAULT_PAGE_SIZE = 40;
+  const MAX_PAGE_SIZE = 100;
+
+  const ALLOWED_SORTS = [
+    "newest",
+    "oldest",
+    "rating",
+    "az",
+    "za",
+    "year"
+  ];
+
+  /* =======================================================
+     HELPERS
+  ======================================================= */
+
+  function cleanText(value, fallback = "") {
+    const result = String(value ?? "").trim();
+
+    return result || fallback;
   }
-];
+
+  function safeNumber(value, fallback = 0) {
+    const number = Number(value);
+
+    return Number.isFinite(number)
+      ? number
+      : fallback;
+  }
+
+  function safeInteger(value, fallback, min, max) {
+    const number = Number(value);
+
+    if (!Number.isSafeInteger(number)) {
+      return fallback;
+    }
+
+    return Math.min(max, Math.max(min, number));
+  }
+
+  function normalizeMovie(movie) {
+    if (!movie || typeof movie !== "object") {
+      throw new Error("Invalid movie data.");
+    }
+
+    return {
+      ...movie,
+
+      id: safeNumber(movie.id),
+
+      title: cleanText(
+        movie.title,
+        "Untitled"
+      ),
+
+      slug: cleanText(movie.slug),
+
+      description: cleanText(movie.description),
+
+      poster: cleanText(movie.poster),
+
+      backdrop: cleanText(movie.backdrop),
+
+      year: safeNumber(movie.year, 0) || "",
+
+      genre: cleanText(movie.genre),
+
+      language: cleanText(movie.language),
+
+      country: cleanText(movie.country),
+
+      rating: safeNumber(movie.rating),
+
+      duration: cleanText(movie.duration),
+
+      director: cleanText(movie.director),
+
+      quality: cleanText(movie.quality),
+
+      featured: Boolean(
+        Number(movie.featured) ||
+        movie.featured === true
+      ),
+
+      watchUrl: cleanText(
+        movie.watchUrl ?? movie.watch_url
+      ),
+
+      downloadUrl: cleanText(
+        movie.downloadUrl ?? movie.download_url
+      ),
+
+      downloadUrl2: cleanText(
+        movie.downloadUrl2 ?? movie.download_url_2
+      ),
+
+      adUrl: cleanText(
+        movie.adUrl ?? movie.ad_url
+      ),
+
+      adCount: Math.max(
+        4,
+        safeInteger(
+          movie.adCount ?? movie.ad_count,
+          4,
+          4,
+          1000
+        )
+      )
+    };
+  }
+
+  function normalizeResponse(data) {
+    if (!data || data.success !== true) {
+      throw new Error(
+        data?.message || "Movie API request failed."
+      );
+    }
+
+    return data;
+  }
+
+  /* =======================================================
+     API REQUEST
+  ======================================================= */
+
+  async function request(url) {
+    let response;
+
+    try {
+      response = await fetch(url, {
+        method: "GET",
+
+        headers: {
+          Accept: "application/json"
+        },
+
+        cache: "no-store",
+
+        credentials: "same-origin"
+      });
+    } catch {
+      throw new Error(
+        "Unable to connect to CineVault. Check your internet connection."
+      );
+    }
+
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error(
+        "The server returned an invalid response."
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data?.message ||
+        `Movie request failed (${response.status}).`
+      );
+    }
+
+    return normalizeResponse(data);
+  }
+
+  /* =======================================================
+     BUILD QUERY PARAMETERS
+  ======================================================= */
+
+  function buildQuery(options = {}) {
+    const params = new URLSearchParams();
+
+    const page = safeInteger(
+      options.page,
+      1,
+      1,
+      1000000
+    );
+
+    const limit = safeInteger(
+      options.limit,
+      DEFAULT_PAGE_SIZE,
+      1,
+      MAX_PAGE_SIZE
+    );
+
+    params.set("page", String(page));
+    params.set("limit", String(limit));
+
+    const search = cleanText(
+      options.q ?? options.search
+    );
+
+    if (search) {
+      params.set("q", search.slice(0, 200));
+    }
+
+    const genre = cleanText(options.genre);
+
+    if (genre) {
+      params.set("genre", genre.slice(0, 100));
+    }
+
+    const language = cleanText(options.language);
+
+    if (language) {
+      params.set("language", language.slice(0, 100));
+    }
+
+    const year = Number(options.year);
+
+    if (
+      Number.isInteger(year) &&
+      year >= 1800 &&
+      year <= 3000
+    ) {
+      params.set("year", String(year));
+    }
+
+    if (
+      options.minRating !== undefined &&
+      options.minRating !== null &&
+      options.minRating !== ""
+    ) {
+      const rating = Number(options.minRating);
+
+      if (
+        Number.isFinite(rating) &&
+        rating >= 0 &&
+        rating <= 10
+      ) {
+        params.set("minRating", String(rating));
+      }
+    }
+
+    const sort = cleanText(options.sort);
+
+    if (ALLOWED_SORTS.includes(sort)) {
+      params.set("sort", sort);
+    }
+
+    return params;
+  }
+
+  /* =======================================================
+     GET MOVIES
+  ======================================================= */
+
+  async function getMovies(options = {}) {
+    const params = buildQuery(options);
+
+    const data = await request(
+      `${API_BASE}?${params.toString()}`
+    );
+
+    const movies = Array.isArray(data.movies)
+      ? data.movies.map(normalizeMovie)
+      : [];
+
+    return {
+      success: true,
+
+      total: safeNumber(data.total),
+
+      page: safeNumber(data.page, 1),
+
+      limit: safeNumber(
+        data.limit,
+        DEFAULT_PAGE_SIZE
+      ),
+
+      totalPages: safeNumber(data.totalPages),
+
+      movies
+    };
+  }
+
+  /* =======================================================
+     GET ALL MOVIES
+
+     Fetches all matching records through pagination.
+     Useful for integrations that need the full catalogue.
+  ======================================================= */
+
+  async function getAllMovies(options = {}) {
+    const pageSize = safeInteger(
+      options.limit,
+      MAX_PAGE_SIZE,
+      1,
+      MAX_PAGE_SIZE
+    );
+
+    let page = 1;
+    let totalPages = 1;
+
+    const allMovies = [];
+
+    do {
+      const result = await getMovies({
+        ...options,
+        page,
+        limit: pageSize
+      });
+
+      allMovies.push(...result.movies);
+
+      totalPages = result.totalPages;
+
+      page += 1;
+
+    } while (page <= totalPages);
+
+    return {
+      success: true,
+      total: allMovies.length,
+      movies: allMovies
+    };
+  }
+
+  /* =======================================================
+     GET SINGLE MOVIE
+     Supports numeric ID and alphanumeric slug.
+  ======================================================= */
+
+  async function getMovie(identifier) {
+    const value = cleanText(identifier);
+
+    if (
+      !value ||
+      !/^[a-zA-Z0-9-]+$/.test(value)
+    ) {
+      throw new Error("Invalid movie identifier.");
+    }
+
+    const data = await request(
+      `${API_BASE}/${encodeURIComponent(value)}`
+    );
+
+    if (!data.movie) {
+      throw new Error("Movie not found.");
+    }
+
+    return {
+      success: true,
+
+      movie: normalizeMovie(data.movie),
+
+      similarMovies: Array.isArray(data.similarMovies)
+        ? data.similarMovies.map(normalizeMovie)
+        : []
+    };
+  }
+
+  /* =======================================================
+     PUBLIC API
+  ======================================================= */
+
+  const CineVaultMovies = Object.freeze({
+
+    getMovies,
+
+    getAllMovies,
+
+    getMovie,
+
+    getById: getMovie,
+
+    getBySlug: getMovie,
+
+    version: "2.0.0",
+
+    source: "Cloudflare D1"
+
+  });
+
+  /* =======================================================
+     GLOBAL EXPORT
+  ======================================================= */
+
+  global.CineVaultMovies = CineVaultMovies;
+
+})(window);
