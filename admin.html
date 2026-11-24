@@ -12,23 +12,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root{
-  --gold:#d6b36a;
-  --gold2:#f0d59a;
-  --bg:#080a0f;
-  --panel:#111722;
-  --panel2:#171e2a;
-  --text:#f5f3ed;
-  --muted:#9ba3b1;
-  --line:rgba(255,255,255,.09);
-  --danger:#e05252;
-  --success:#35b779;
+  --gold:#d6b36a;--gold2:#f0d59a;--bg:#080a0f;
+  --panel:#111722;--panel2:#171e2a;--text:#f5f3ed;
+  --muted:#9ba3b1;--line:rgba(255,255,255,.09);
+  --danger:#e05252;--success:#35b779;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Inter,Arial,sans-serif;
-}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}
@@ -36,25 +27,12 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .gold{color:var(--gold)}
 .muted{color:var(--muted)}
 .container{max-width:1320px;margin:auto;padding:24px}
-header{
-  position:sticky;top:0;z-index:20;
-  border-bottom:1px solid var(--line);
-  background:rgba(8,10,15,.95);
-  backdrop-filter:blur(14px);
-}
-.header-inner{
-  max-width:1320px;margin:auto;padding:16px 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  gap:15px;flex-wrap:wrap;
-}
+header{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:rgba(8,10,15,.95);backdrop-filter:blur(14px)}
+.header-inner{max-width:1320px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
 .brand{font-size:23px;font-weight:800;letter-spacing:2px;color:var(--gold)}
 .brand small{display:block;font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:4px}
 .header-right{display:flex;align-items:center;gap:12px}
-.btn{
-  border:1px solid var(--line);border-radius:8px;
-  padding:10px 15px;background:#202938;color:white;
-  font-weight:600;transition:.2s;
-}
+.btn{border:1px solid var(--line);border-radius:8px;padding:10px 15px;background:#202938;color:white;font-weight:600;transition:.2s}
 .btn:hover{border-color:var(--gold);color:var(--gold)}
 .btn-gold{background:linear-gradient(135deg,#b88b35,#f0d59a);color:#111;border:0}
 .btn-gold:hover{color:#111;filter:brightness(1.08)}
@@ -65,91 +43,46 @@ h2{font-size:19px;margin:0 0 15px}
 h3{font-size:15px;margin:0 0 10px}
 .page-subtitle{color:var(--muted);font-size:13px;margin:0;line-height:1.7}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:25px 0}
-.stat-card{
-  background:linear-gradient(145deg,#171e2a,#10151e);
-  border:1px solid var(--line);border-radius:13px;padding:20px;
-}
+.stat-card{background:linear-gradient(145deg,#171e2a,#10151e);border:1px solid var(--line);border-radius:13px;padding:20px}
 .stat-card .label{font-size:11px;color:var(--muted);letter-spacing:.7px}
 .stat-card .number{font-size:29px;font-weight:800;color:var(--gold);margin-top:8px}
-.tabs{
-  display:flex;gap:7px;border-bottom:1px solid var(--line);
-  margin:24px 0 18px;flex-wrap:wrap;overflow-x:auto;
-}
-.tab{
-  border:0;background:transparent;color:var(--muted);
-  padding:12px 14px;border-bottom:2px solid transparent;
-  font-weight:600;white-space:nowrap;
-}
+.tabs{display:flex;gap:7px;border-bottom:1px solid var(--line);margin:24px 0 18px;flex-wrap:wrap;overflow-x:auto}
+.tab{border:0;background:transparent;color:var(--muted);padding:12px 14px;border-bottom:2px solid transparent;font-weight:600;white-space:nowrap}
 .tab.active{color:var(--gold);border-color:var(--gold)}
-.panel{
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:13px;padding:22px;margin-bottom:20px;
-}
-.toolbar{
-  display:flex;gap:12px;justify-content:space-between;
-  align-items:center;flex-wrap:wrap;margin-bottom:16px;
-}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px;margin-bottom:20px}
+.toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 .search{flex:1;min-width:210px;max-width:460px}
-input,textarea,select{
-  width:100%;background:#0b1018;color:white;
-  border:1px solid #303947;border-radius:8px;
-  padding:12px;outline:none;
-}
+input,textarea,select{width:100%;background:#0b1018;color:white;border:1px solid #303947;border-radius:8px;padding:12px;outline:none}
 input:focus,textarea:focus,select:focus{border-color:var(--gold)}
 textarea{min-height:105px;resize:vertical}
 label{display:block;font-size:11px;color:#c1c5cc;margin-bottom:7px;font-weight:700;letter-spacing:.4px}
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .form-group.full{grid-column:1/-1}
 .form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
-.upload-box{
-  background:#0b1018;border:1px dashed #68532d;
-  border-radius:9px;padding:13px;margin-top:9px;
-}
+.upload-box{background:#0b1018;border:1px dashed #68532d;border-radius:9px;padding:13px;margin-top:9px}
 .upload-box input[type=file]{padding:9px;font-size:12px}
 .upload-help{color:#8f98a7;font-size:11px;margin-top:7px;line-height:1.6}
 .upload-status{font-size:12px;margin-top:8px;min-height:17px;color:var(--muted)}
 .upload-status.success{color:#82e2ae}
 .upload-status.error{color:#ff9999}
-.image-preview{
-  display:none;max-width:180px;max-height:230px;
-  object-fit:contain;margin-top:12px;border:1px solid #444;
-  border-radius:7px;background:#171e2a;
-}
+.image-preview{display:none;max-width:180px;max-height:230px;object-fit:contain;margin-top:12px;border:1px solid #444;border-radius:7px;background:#171e2a}
 .image-preview.visible{display:block}
 .wide-preview{max-width:100%;width:330px;max-height:185px;aspect-ratio:16/9}
 .movie-list,.collection-list{display:grid;gap:11px}
-.movie-item,.collection-item{
-  display:grid;grid-template-columns:62px minmax(0,1fr) auto;
-  gap:13px;align-items:center;padding:12px;
-  background:var(--panel2);border:1px solid var(--line);border-radius:10px;
-}
-.movie-poster,.collection-image{
-  width:62px;height:82px;object-fit:cover;
-  border-radius:6px;background:#242b36;
-}
+.movie-item,.collection-item{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:13px;align-items:center;padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:10px}
+.movie-poster,.collection-image{width:62px;height:82px;object-fit:cover;border-radius:6px;background:#242b36}
 .collection-image{height:62px}
 .movie-title{font-weight:700;font-size:13px;overflow-wrap:anywhere}
 .movie-meta{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;overflow-wrap:anywhere}
 .movie-actions{display:flex;gap:6px;flex-wrap:wrap}
-.notice{
-  display:none;padding:12px 14px;border-radius:8px;
-  margin:14px 0;font-size:13px;line-height:1.6;
-}
+.notice{display:none;padding:12px 14px;border-radius:8px;margin:14px 0;font-size:13px;line-height:1.6}
 .notice.show{display:block}
 .notice.error{background:#351919;color:#ff9999}
 .notice.success{background:#123222;color:#82e2ae}
 .empty{text-align:center;padding:32px 14px;color:var(--muted);border:1px dashed #39404c;border-radius:9px}
 .loading{text-align:center;padding:24px;color:var(--gold)}
-.login-wrap{
-  min-height:calc(100vh - 75px);display:flex;
-  align-items:center;justify-content:center;padding:24px;
-}
-.login-card{
-  width:100%;max-width:420px;padding:32px;
-  background:linear-gradient(145deg,#171e2a,#0e131c);
-  border:1px solid #4a3c25;border-radius:15px;
-  box-shadow:0 15px 60px #000;
-}
+.login-wrap{min-height:calc(100vh - 75px);display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{width:100%;max-width:420px;padding:32px;background:linear-gradient(145deg,#171e2a,#0e131c);border:1px solid #4a3c25;border-radius:15px;box-shadow:0 15px 60px #000}
 .login-logo{text-align:center;margin-bottom:25px}
 .login-logo .brand{font-size:30px}
 .login-card h2{text-align:center;margin-bottom:7px}
@@ -157,11 +90,7 @@ label{display:block;font-size:11px;color:#c1c5cc;margin-bottom:7px;font-weight:7
 .login-card .form-group{margin-bottom:16px}
 .login-card .btn{width:100%;padding:13px}
 .login-foot{text-align:center;color:#777;font-size:11px;margin-top:20px}
-.section-note{
-  padding:12px;background:#171e2a;border:1px solid var(--line);
-  border-radius:8px;color:#aab2bf;font-size:12px;
-  line-height:1.7;margin-bottom:18px;
-}
+.section-note{padding:12px;background:#171e2a;border:1px solid var(--line);border-radius:8px;color:#aab2bf;font-size:12px;line-height:1.7;margin-bottom:18px}
 .divider{border:0;border-top:1px solid var(--line);margin:22px 0}
 footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1px solid var(--line);margin-top:30px}
 .pagination{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:18px}
@@ -221,18 +150,9 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
   <div id="mainNotice" class="notice" role="status" aria-live="polite"></div>
 
   <section class="stats">
-    <div class="stat-card">
-      <div class="label">TOTAL MOVIES</div>
-      <div class="number" id="totalMovies">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">TOTAL COLLECTIONS</div>
-      <div class="number" id="totalCollections">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">DATABASE STATUS</div>
-      <div class="number" id="databaseStatus" style="font-size:19px">Checking...</div>
-    </div>
+    <div class="stat-card"><div class="label">TOTAL MOVIES</div><div class="number" id="totalMovies">0</div></div>
+    <div class="stat-card"><div class="label">TOTAL COLLECTIONS</div><div class="number" id="totalCollections">0</div></div>
+    <div class="stat-card"><div class="label">DATABASE STATUS</div><div class="number" id="databaseStatus" style="font-size:19px">Checking...</div></div>
   </section>
 
   <nav class="tabs" aria-label="Admin sections">
@@ -243,13 +163,9 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
     <button class="tab" data-tab="collections">Collections</button>
   </nav>
 
-  <!-- MOVIE LIBRARY -->
   <section id="libraryTab" class="panel">
     <div class="toolbar">
-      <div>
-        <h2>Movie Library</h2>
-        <p class="page-subtitle">Search, edit and delete movies stored in Cloudflare D1.</p>
-      </div>
+      <div><h2>Movie Library</h2><p class="page-subtitle">Search, edit and delete movies stored in Cloudflare D1.</p></div>
       <button class="btn" id="refreshBtn" type="button">Refresh</button>
     </div>
     <div class="toolbar">
@@ -267,53 +183,24 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
     <div id="moviePagination" class="pagination"></div>
   </section>
 
-  <!-- ADD / EDIT MOVIE -->
   <section id="addTab" class="panel hidden">
     <h2 id="formHeading">Add New Movie</h2>
     <p class="page-subtitle" id="formSubtitle">Add a movie to your CineVault database.</p>
     <form id="movieForm">
       <input type="hidden" id="movieId">
       <div class="form-grid">
-        <div class="form-group">
-          <label for="title">MOVIE TITLE *</label>
-          <input id="title" required maxlength="200" placeholder="Movie title">
-        </div>
-        <div class="form-group">
-          <label for="year">RELEASE YEAR</label>
-          <input id="year" type="number" min="1888" max="2100" placeholder="2026">
-        </div>
-        <div class="form-group">
-          <label for="genre">GENRE</label>
-          <input id="genre" placeholder="Action, Drama, Thriller">
-        </div>
-        <div class="form-group">
-          <label for="language">LANGUAGE</label>
-          <input id="language" placeholder="English, Hindi, Bangla">
-        </div>
-        <div class="form-group">
-          <label for="country">COUNTRY</label>
-          <input id="country" placeholder="USA, India, Bangladesh">
-        </div>
-        <div class="form-group">
-          <label for="rating">IMDB RATING</label>
-          <input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5">
-        </div>
-        <div class="form-group">
-          <label for="duration">DURATION</label>
-          <input id="duration" placeholder="2h 15m">
-        </div>
-        <div class="form-group">
-          <label for="director">DIRECTOR</label>
-          <input id="director" placeholder="Director name">
-        </div>
-        <div class="form-group">
-          <label for="quality">VIDEO QUALITY</label>
-          <input id="quality" placeholder="1080p, 720p, 4K">
-        </div>
+        <div class="form-group"><label for="title">MOVIE TITLE *</label><input id="title" required maxlength="200" placeholder="Movie title"></div>
+        <div class="form-group"><label for="year">RELEASE YEAR</label><input id="year" type="number" min="1888" max="2100" placeholder="2026"></div>
+        <div class="form-group"><label for="genre">GENRE</label><input id="genre" placeholder="Action, Drama, Thriller"></div>
+        <div class="form-group"><label for="language">LANGUAGE</label><input id="language" placeholder="English, Hindi, Bangla"></div>
+        <div class="form-group"><label for="country">COUNTRY</label><input id="country" placeholder="USA, India, Bangladesh"></div>
+        <div class="form-group"><label for="rating">IMDB RATING</label><input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5"></div>
+        <div class="form-group"><label for="duration">DURATION</label><input id="duration" placeholder="2h 15m"></div>
+        <div class="form-group"><label for="director">DIRECTOR</label><input id="director" placeholder="Director name"></div>
+        <div class="form-group"><label for="quality">VIDEO QUALITY</label><input id="quality" placeholder="1080p, 720p, 4K"></div>
 
         <div class="form-group full">
-          <label for="poster">POSTER IMAGE URL</label>
-          <input id="poster" type="url" placeholder="https://example.com/poster.jpg">
+          <label for="poster">POSTER IMAGE URL</label><input id="poster" type="url" placeholder="https://example.com/poster.jpg">
           <div class="upload-box">
             <label for="posterFile">UPLOAD POSTER FROM DEVICE</label>
             <input id="posterFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
@@ -324,8 +211,7 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
         </div>
 
         <div class="form-group full">
-          <label for="backdrop">BACKDROP IMAGE URL</label>
-          <input id="backdrop" type="url" placeholder="https://example.com/backdrop.jpg">
+          <label for="backdrop">BACKDROP IMAGE URL</label><input id="backdrop" type="url" placeholder="https://example.com/backdrop.jpg">
           <div class="upload-box">
             <label for="backdropFile">UPLOAD BACKDROP FROM DEVICE</label>
             <input id="backdropFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
@@ -335,34 +221,20 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
           </div>
         </div>
 
+        <div class="form-group full"><label for="description">MOVIE DESCRIPTION</label><textarea id="description" maxlength="20000" placeholder="Write movie description..."></textarea></div>
+        <div class="form-group full"><label for="watchUrl">WATCH URL</label><input id="watchUrl" type="url" placeholder="https://example.com/watch"></div>
+        <div class="form-group full"><label for="downloadUrl">DOWNLOAD URL 1</label><input id="downloadUrl" type="url" placeholder="https://example.com/download-1"></div>
         <div class="form-group full">
-          <label for="description">MOVIE DESCRIPTION</label>
-          <textarea id="description" maxlength="20000" placeholder="Write movie description..."></textarea>
-        </div>
-        <div class="form-group full">
-          <label for="watchUrl">WATCH URL</label>
-          <input id="watchUrl" type="url" placeholder="https://example.com/watch">
-        </div>
-        <div class="form-group full">
-          <label for="downloadUrl">DOWNLOAD URL 1</label>
-          <input id="downloadUrl" type="url" placeholder="https://example.com/download-1">
-        </div>
-        <div class="form-group full">
-          <label for="downloadUrl2">DOWNLOAD URL 2</label>
-          <input id="downloadUrl2" type="url" placeholder="https://example.com/download-2">
+          <label for="downloadUrl2">DOWNLOAD URL 2</label><input id="downloadUrl2" type="url" placeholder="https://example.com/download-2">
           <div class="upload-help">Optional second download link. Stored separately in D1.</div>
         </div>
-        <div class="form-group full">
-          <label for="adUrl">ADVERTISEMENT URL</label>
-          <input id="adUrl" type="url" placeholder="https://example.com/advertisement">
-        </div>
+        <div class="form-group full"><label for="adUrl">ADVERTISEMENT URL</label><input id="adUrl" type="url" placeholder="https://example.com/advertisement"></div>
         <div class="form-group">
           <label for="adCount">ADVERTISEMENT COUNT (MINIMUM 4)</label>
           <input id="adCount" type="number" min="4" max="1000" step="1" value="4" required>
           <div class="upload-help">The count is saved per movie. Existing values are retained when editing.</div>
         </div>
       </div>
-
       <div class="form-actions">
         <button class="btn btn-gold" type="submit" id="saveBtn">Save Movie</button>
         <button class="btn hidden" type="button" id="cancelEditBtn">Cancel Edit</button>
@@ -371,144 +243,48 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
     </form>
   </section>
 
-  <!-- WEBSITE SETTINGS -->
   <section id="settingsTab" class="panel hidden">
     <h2>Website <span class="gold">Settings</span></h2>
     <p class="page-subtitle">Manage website identity, homepage headings, About section and footer text.</p>
-    <div class="section-note">
-      Text URL fields accept HTTP/HTTPS links, relative paths and #anchor links.
-      Leave a URL blank when the related text should not be clickable.
-    </div>
+    <div class="section-note">Text URL fields accept HTTP/HTTPS links, relative paths and #anchor links. Leave a URL blank when the related text should not be clickable.</div>
     <form id="settingsForm">
       <div class="form-grid">
-        <div class="form-group">
-          <label for="siteName">WEBSITE NAME</label>
-          <input id="siteName" placeholder="CineVault">
-        </div>
-        <div class="form-group">
-          <label for="logoText">LOGO TEXT</label>
-          <input id="logoText" placeholder="C">
-        </div>
+        <div class="form-group"><label for="siteName">WEBSITE NAME</label><input id="siteName" placeholder="CineVault"></div>
+        <div class="form-group"><label for="logoText">LOGO TEXT</label><input id="logoText" placeholder="C"></div>
 
         <div class="form-group full"><hr class="divider"><h3>Homepage Collections Heading</h3></div>
-        <div class="form-group">
-          <label for="collectionsEyebrow">COLLECTIONS EYEBROW</label>
-          <input id="collectionsEyebrow" placeholder="EXPLORE BY CATEGORY">
-        </div>
-        <div class="form-group">
-          <label for="collectionsEyebrowUrl">EYEBROW URL</label>
-          <input id="collectionsEyebrowUrl" placeholder="#collections">
-        </div>
-        <div class="form-group">
-          <label for="collectionsHeading">COLLECTIONS HEADING</label>
-          <input id="collectionsHeading" placeholder="Movie">
-        </div>
-        <div class="form-group">
-          <label for="collectionsHeadingHighlight">HEADING HIGHLIGHT</label>
-          <input id="collectionsHeadingHighlight" placeholder="Collections">
-        </div>
-        <div class="form-group full">
-          <label for="collectionsHeadingUrl">HEADING URL</label>
-          <input id="collectionsHeadingUrl" placeholder="#collections">
-        </div>
-        <div class="form-group full">
-          <label for="collectionsDescription">COLLECTIONS DESCRIPTION</label>
-          <textarea id="collectionsDescription" placeholder="Describe the collections section..."></textarea>
-          <label for="collectionsDescriptionUrl">DESCRIPTION URL</label>
-          <input id="collectionsDescriptionUrl" placeholder="#collections">
-        </div>
+        <div class="form-group"><label for="collectionsEyebrow">COLLECTIONS EYEBROW</label><input id="collectionsEyebrow" placeholder="EXPLORE BY CATEGORY"></div>
+        <div class="form-group"><label for="collectionsEyebrowUrl">EYEBROW URL</label><input id="collectionsEyebrowUrl" placeholder="#collections"></div>
+        <div class="form-group"><label for="collectionsHeading">COLLECTIONS HEADING</label><input id="collectionsHeading" placeholder="Movie"></div>
+        <div class="form-group"><label for="collectionsHeadingHighlight">HEADING HIGHLIGHT</label><input id="collectionsHeadingHighlight" placeholder="Collections"></div>
+        <div class="form-group full"><label for="collectionsHeadingUrl">HEADING URL</label><input id="collectionsHeadingUrl" placeholder="#collections"></div>
+        <div class="form-group full"><label for="collectionsDescription">COLLECTIONS DESCRIPTION</label><textarea id="collectionsDescription" placeholder="Describe the collections section..."></textarea><label for="collectionsDescriptionUrl">DESCRIPTION URL</label><input id="collectionsDescriptionUrl" placeholder="#collections"></div>
 
         <div class="form-group full"><hr class="divider"><h3>Explore Movies Heading</h3></div>
-        <div class="form-group">
-          <label for="moviesEyebrow">MOVIES EYEBROW</label>
-          <input id="moviesEyebrow" placeholder="YOUR NEXT WATCH">
-        </div>
-        <div class="form-group">
-          <label for="moviesEyebrowUrl">EYEBROW URL</label>
-          <input id="moviesEyebrowUrl" placeholder="#movies">
-        </div>
-        <div class="form-group">
-          <label for="moviesHeading">MOVIES HEADING</label>
-          <input id="moviesHeading" placeholder="Explore">
-        </div>
-        <div class="form-group">
-          <label for="moviesHeadingHighlight">HEADING HIGHLIGHT</label>
-          <input id="moviesHeadingHighlight" placeholder="Movies">
-        </div>
-        <div class="form-group full">
-          <label for="moviesHeadingUrl">HEADING URL</label>
-          <input id="moviesHeadingUrl" placeholder="#movies">
-        </div>
-        <div class="form-group full">
-          <label for="moviesDescription">MOVIES DESCRIPTION</label>
-          <textarea id="moviesDescription" placeholder="Describe the movie library..."></textarea>
-          <label for="moviesDescriptionUrl">DESCRIPTION URL</label>
-          <input id="moviesDescriptionUrl" placeholder="#movies">
-        </div>
+        <div class="form-group"><label for="moviesEyebrow">MOVIES EYEBROW</label><input id="moviesEyebrow" placeholder="YOUR NEXT WATCH"></div>
+        <div class="form-group"><label for="moviesEyebrowUrl">EYEBROW URL</label><input id="moviesEyebrowUrl" placeholder="#movies"></div>
+        <div class="form-group"><label for="moviesHeading">MOVIES HEADING</label><input id="moviesHeading" placeholder="Explore"></div>
+        <div class="form-group"><label for="moviesHeadingHighlight">HEADING HIGHLIGHT</label><input id="moviesHeadingHighlight" placeholder="Movies"></div>
+        <div class="form-group full"><label for="moviesHeadingUrl">HEADING URL</label><input id="moviesHeadingUrl" placeholder="#movies"></div>
+        <div class="form-group full"><label for="moviesDescription">MOVIES DESCRIPTION</label><textarea id="moviesDescription" placeholder="Describe the movie library..."></textarea><label for="moviesDescriptionUrl">DESCRIPTION URL</label><input id="moviesDescriptionUrl" placeholder="#movies"></div>
 
         <div class="form-group full"><hr class="divider"><h3>About Section</h3></div>
-        <div class="form-group">
-          <label for="aboutEyebrow">ABOUT EYEBROW</label>
-          <input id="aboutEyebrow" placeholder="WELCOME TO CINEVAULT">
-        </div>
-        <div class="form-group">
-          <label for="aboutEyebrowUrl">EYEBROW URL</label>
-          <input id="aboutEyebrowUrl" placeholder="#about">
-        </div>
-        <div class="form-group">
-          <label for="aboutTitle">ABOUT TITLE</label>
-          <input id="aboutTitle" placeholder="More Than Movies.">
-        </div>
-        <div class="form-group">
-          <label for="aboutTitleUrl">TITLE URL</label>
-          <input id="aboutTitleUrl" placeholder="#about">
-        </div>
-        <div class="form-group">
-          <label for="aboutHighlight">ABOUT TITLE HIGHLIGHT</label>
-          <input id="aboutHighlight" placeholder="A Cinema Experience.">
-        </div>
-        <div class="form-group">
-          <label for="aboutHighlightUrl">HIGHLIGHT URL</label>
-          <input id="aboutHighlightUrl" placeholder="#about">
-        </div>
-        <div class="form-group full">
-          <label for="aboutDescription">ABOUT DESCRIPTION</label>
-          <textarea id="aboutDescription" placeholder="Write your About section..."></textarea>
-          <label for="aboutDescriptionUrl">DESCRIPTION URL</label>
-          <input id="aboutDescriptionUrl" placeholder="#about">
-        </div>
-        <div class="form-group">
-          <label for="aboutButtonText">ABOUT BUTTON TEXT</label>
-          <input id="aboutButtonText" placeholder="Discover Movies">
-        </div>
-        <div class="form-group">
-          <label for="aboutButtonUrl">ABOUT BUTTON URL</label>
-          <input id="aboutButtonUrl" placeholder="#movies">
-        </div>
+        <div class="form-group"><label for="aboutEyebrow">ABOUT EYEBROW</label><input id="aboutEyebrow" placeholder="WELCOME TO CINEVAULT"></div>
+        <div class="form-group"><label for="aboutEyebrowUrl">EYEBROW URL</label><input id="aboutEyebrowUrl" placeholder="#about"></div>
+        <div class="form-group"><label for="aboutTitle">ABOUT TITLE</label><input id="aboutTitle" placeholder="More Than Movies."></div>
+        <div class="form-group"><label for="aboutTitleUrl">TITLE URL</label><input id="aboutTitleUrl" placeholder="#about"></div>
+        <div class="form-group"><label for="aboutHighlight">ABOUT TITLE HIGHLIGHT</label><input id="aboutHighlight" placeholder="A Cinema Experience."></div>
+        <div class="form-group"><label for="aboutHighlightUrl">HIGHLIGHT URL</label><input id="aboutHighlightUrl" placeholder="#about"></div>
+        <div class="form-group full"><label for="aboutDescription">ABOUT DESCRIPTION</label><textarea id="aboutDescription" placeholder="Write your About section..."></textarea><label for="aboutDescriptionUrl">DESCRIPTION URL</label><input id="aboutDescriptionUrl" placeholder="#about"></div>
+        <div class="form-group"><label for="aboutButtonText">ABOUT BUTTON TEXT</label><input id="aboutButtonText" placeholder="Discover Movies"></div>
+        <div class="form-group"><label for="aboutButtonUrl">ABOUT BUTTON URL</label><input id="aboutButtonUrl" placeholder="#movies"></div>
 
         <div class="form-group full"><hr class="divider"><h3>Footer Settings</h3></div>
-        <div class="form-group full">
-          <label for="footerDescription">FOOTER DESCRIPTION</label>
-          <textarea id="footerDescription" placeholder="Footer description..."></textarea>
-          <label for="footerDescriptionUrl">DESCRIPTION URL</label>
-          <input id="footerDescriptionUrl" placeholder="https://example.com">
-        </div>
-        <div class="form-group">
-          <label for="footerTagline">FOOTER TAGLINE</label>
-          <input id="footerTagline" placeholder="Made for movie lovers.">
-        </div>
-        <div class="form-group">
-          <label for="footerTaglineUrl">TAGLINE URL</label>
-          <input id="footerTaglineUrl" placeholder="https://example.com">
-        </div>
-        <div class="form-group">
-          <label for="copyrightText">COPYRIGHT TEXT</label>
-          <input id="copyrightText" placeholder="All rights reserved.">
-        </div>
-        <div class="form-group">
-          <label for="copyrightUrl">COPYRIGHT URL</label>
-          <input id="copyrightUrl" placeholder="https://example.com">
-        </div>
+        <div class="form-group full"><label for="footerDescription">FOOTER DESCRIPTION</label><textarea id="footerDescription" placeholder="Footer description..."></textarea><label for="footerDescriptionUrl">DESCRIPTION URL</label><input id="footerDescriptionUrl" placeholder="https://example.com"></div>
+        <div class="form-group"><label for="footerTagline">FOOTER TAGLINE</label><input id="footerTagline" placeholder="Made for movie lovers."></div>
+        <div class="form-group"><label for="footerTaglineUrl">TAGLINE URL</label><input id="footerTaglineUrl" placeholder="https://example.com"></div>
+        <div class="form-group"><label for="copyrightText">COPYRIGHT TEXT</label><input id="copyrightText" placeholder="All rights reserved."></div>
+        <div class="form-group"><label for="copyrightUrl">COPYRIGHT URL</label><input id="copyrightUrl" placeholder="https://example.com"></div>
       </div>
       <div class="form-actions">
         <button class="btn btn-gold" type="submit" id="settingsSaveBtn">Save Website Settings</button>
@@ -517,66 +293,31 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
     </form>
   </section>
 
-  <!-- HERO BANNER -->
   <section id="heroTab" class="panel hidden">
     <h2>Hero <span class="gold">Banner</span></h2>
     <p class="page-subtitle">Edit homepage hero text, background image and buttons.</p>
     <div class="section-note">The homepage reads these values from the public website settings API.</div>
     <form id="heroForm">
       <div class="form-grid">
-        <div class="form-group">
-          <label for="heroEyebrow">EYEBROW TEXT</label>
-          <input id="heroEyebrow" placeholder="YOUR WORLD OF CINEMA">
-          <label for="heroEyebrowUrl">EYEBROW URL</label>
-          <input id="heroEyebrowUrl" placeholder="#movies">
-        </div>
-        <div class="form-group">
-          <label for="heroTitle">MAIN TITLE</label>
-          <input id="heroTitle" placeholder="Discover Stories.">
-          <label for="heroTitleUrl">TITLE URL</label>
-          <input id="heroTitleUrl" placeholder="#movies">
-        </div>
+        <div class="form-group"><label for="heroEyebrow">EYEBROW TEXT</label><input id="heroEyebrow" placeholder="YOUR WORLD OF CINEMA"><label for="heroEyebrowUrl">EYEBROW URL</label><input id="heroEyebrowUrl" placeholder="#movies"></div>
+        <div class="form-group"><label for="heroTitle">MAIN TITLE</label><input id="heroTitle" placeholder="Discover Stories."><label for="heroTitleUrl">TITLE URL</label><input id="heroTitleUrl" placeholder="#movies"></div>
+        <div class="form-group full"><label for="heroHighlight">TITLE HIGHLIGHT</label><input id="heroHighlight" placeholder="Experience Cinema."><label for="heroHighlightUrl">HIGHLIGHT URL</label><input id="heroHighlightUrl" placeholder="#movies"></div>
+        <div class="form-group full"><label for="heroDescription">HERO DESCRIPTION</label><textarea id="heroDescription" placeholder="Write hero banner description..."></textarea><label for="heroDescriptionUrl">DESCRIPTION URL</label><input id="heroDescriptionUrl" placeholder="#movies"></div>
         <div class="form-group full">
-          <label for="heroHighlight">TITLE HIGHLIGHT</label>
-          <input id="heroHighlight" placeholder="Experience Cinema.">
-          <label for="heroHighlightUrl">HIGHLIGHT URL</label>
-          <input id="heroHighlightUrl" placeholder="#movies">
-        </div>
-        <div class="form-group full">
-          <label for="heroDescription">HERO DESCRIPTION</label>
-          <textarea id="heroDescription" placeholder="Write hero banner description..."></textarea>
-          <label for="heroDescriptionUrl">DESCRIPTION URL</label>
-          <input id="heroDescriptionUrl" placeholder="#movies">
-        </div>
-        <div class="form-group full">
-          <label for="heroImage">HERO BACKGROUND IMAGE URL</label>
-          <input id="heroImage" type="url" placeholder="https://example.com/hero.jpg">
+          <label for="heroImage">HERO BACKGROUND IMAGE URL</label><input id="heroImage" type="url" placeholder="https://example.com/hero.jpg">
           <div class="upload-box">
-            <label for="heroFile">UPLOAD HERO IMAGE</label>
-            <input id="heroFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+            <label for="heroFile">UPLOAD HERO IMAGE</label><input id="heroFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
             <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
             <div id="heroStatus" class="upload-status"></div>
             <img id="heroPreview" class="image-preview wide-preview" alt="Hero preview">
           </div>
         </div>
         <div class="form-group full"><hr class="divider"><h3>First Hero Button</h3></div>
-        <div class="form-group">
-          <label for="heroButton1Text">BUTTON 1 TEXT</label>
-          <input id="heroButton1Text" placeholder="Explore Movies">
-        </div>
-        <div class="form-group">
-          <label for="heroButton1Url">BUTTON 1 LINK</label>
-          <input id="heroButton1Url" placeholder="#movies">
-        </div>
+        <div class="form-group"><label for="heroButton1Text">BUTTON 1 TEXT</label><input id="heroButton1Text" placeholder="Explore Movies"></div>
+        <div class="form-group"><label for="heroButton1Url">BUTTON 1 LINK</label><input id="heroButton1Url" placeholder="#movies"></div>
         <div class="form-group full"><hr class="divider"><h3>Second Hero Button</h3></div>
-        <div class="form-group">
-          <label for="heroButton2Text">BUTTON 2 TEXT</label>
-          <input id="heroButton2Text" placeholder="Browse Collections">
-        </div>
-        <div class="form-group">
-          <label for="heroButton2Url">BUTTON 2 LINK</label>
-          <input id="heroButton2Url" placeholder="#collections">
-        </div>
+        <div class="form-group"><label for="heroButton2Text">BUTTON 2 TEXT</label><input id="heroButton2Text" placeholder="Browse Collections"></div>
+        <div class="form-group"><label for="heroButton2Url">BUTTON 2 LINK</label><input id="heroButton2Url" placeholder="#collections"></div>
       </div>
       <div class="form-actions">
         <button class="btn btn-gold" type="submit" id="heroSaveBtn">Save Hero Banner</button>
@@ -585,48 +326,24 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
     </form>
   </section>
 
-  <!-- COLLECTIONS -->
   <section id="collectionsTab" class="panel hidden">
     <h2>Movie <span class="gold">Collections</span></h2>
     <p class="page-subtitle">Create, edit, sort and manage homepage collections.</p>
-    <div class="section-note">
-      Sort Order controls the display order. A smaller number appears earlier.
-      Inactive collections are hidden from the public collections API.
-    </div>
+    <div class="section-note">Sort Order controls the display order. A smaller number appears earlier. Inactive collections are hidden from the public collections API.</div>
     <form id="collectionForm">
       <input type="hidden" id="collectionId">
       <h3 id="collectionFormHeading">Add New Collection</h3>
       <div class="form-grid">
-        <div class="form-group">
-          <label for="collectionName">COLLECTION NAME *</label>
-          <input id="collectionName" required maxlength="150" placeholder="Action Movies">
-        </div>
-        <div class="form-group">
-          <label for="collectionGenre">GENRE / FILTER VALUE</label>
-          <input id="collectionGenre" placeholder="Action">
-        </div>
-        <div class="form-group">
-          <label for="collectionIcon">ICON / EMOJI</label>
-          <input id="collectionIcon" placeholder="🎬">
-        </div>
-        <div class="form-group">
-          <label for="collectionSortOrder">SORT ORDER</label>
-          <input id="collectionSortOrder" type="number" step="1" value="1">
-        </div>
+        <div class="form-group"><label for="collectionName">COLLECTION NAME *</label><input id="collectionName" required maxlength="150" placeholder="Action Movies"></div>
+        <div class="form-group"><label for="collectionGenre">GENRE / FILTER VALUE</label><input id="collectionGenre" placeholder="Action"></div>
+        <div class="form-group"><label for="collectionIcon">ICON / EMOJI</label><input id="collectionIcon" placeholder="🎬"></div>
+        <div class="form-group"><label for="collectionSortOrder">SORT ORDER</label><input id="collectionSortOrder" type="number" step="1" value="1"></div>
+        <div class="form-group full"><label for="collectionDescription">DESCRIPTION</label><textarea id="collectionDescription" placeholder="Collection description..."></textarea></div>
+        <div class="form-group full"><label for="collectionLinkUrl">COLLECTION CLICK URL</label><input id="collectionLinkUrl" placeholder="https://example.com or #movies"></div>
         <div class="form-group full">
-          <label for="collectionDescription">DESCRIPTION</label>
-          <textarea id="collectionDescription" placeholder="Collection description..."></textarea>
-        </div>
-        <div class="form-group full">
-          <label for="collectionLinkUrl">COLLECTION CLICK URL</label>
-          <input id="collectionLinkUrl" placeholder="https://example.com or #movies">
-        </div>
-        <div class="form-group full">
-          <label for="collectionImage">COLLECTION IMAGE URL</label>
-          <input id="collectionImage" type="url" placeholder="https://example.com/collection.jpg">
+          <label for="collectionImage">COLLECTION IMAGE URL</label><input id="collectionImage" type="url" placeholder="https://example.com/collection.jpg">
           <div class="upload-box">
-            <label for="collectionFile">UPLOAD COLLECTION IMAGE</label>
-            <input id="collectionFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+            <label for="collectionFile">UPLOAD COLLECTION IMAGE</label><input id="collectionFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
             <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
             <div id="collectionStatus" class="upload-status"></div>
             <img id="collectionPreview" class="image-preview wide-preview" alt="Collection preview">
@@ -648,15 +365,10 @@ footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1p
     </form>
     <hr class="divider">
     <div class="toolbar">
-      <div>
-        <h3>Existing Collections</h3>
-        <p class="page-subtitle">Edit, reorder or remove a collection.</p>
-      </div>
+      <div><h3>Existing Collections</h3><p class="page-subtitle">Edit, reorder or remove a collection.</p></div>
       <button class="btn" type="button" id="collectionRefreshBtn">Refresh</button>
     </div>
-    <div id="collectionList" class="collection-list">
-      <div class="loading">Loading collections...</div>
-    </div>
+    <div id="collectionList" class="collection-list"><div class="loading">Loading collections...</div></div>
   </section>
 </main>
 
@@ -698,12 +410,10 @@ const SETTINGS_FIELDS=[
 ];
 
 const HERO_FIELDS=[
-  "heroEyebrow","heroEyebrowUrl",
-  "heroTitle","heroTitleUrl",
-  "heroHighlight","heroHighlightUrl",
-  "heroDescription","heroDescriptionUrl",
-  "heroImage","heroButton1Text","heroButton1Url",
-  "heroButton2Text","heroButton2Url"
+  "heroEyebrow","heroEyebrowUrl","heroTitle","heroTitleUrl",
+  "heroHighlight","heroHighlightUrl","heroDescription",
+  "heroDescriptionUrl","heroImage","heroButton1Text",
+  "heroButton1Url","heroButton2Text","heroButton2Url"
 ];
 
 const URL_FIELDS=[
@@ -824,10 +534,7 @@ $("loginForm").addEventListener("submit",async event=>{
   $("loginBtn").textContent="Signing in...";
 
   try{
-    await apiRequest("/login",{
-      method:"POST",
-      body:JSON.stringify({password})
-    });
+    await apiRequest("/login",{method:"POST",body:JSON.stringify({password})});
     $("adminPassword").value="";
     $("loginNotice").className="notice";
     showDashboard();
@@ -874,10 +581,15 @@ function openTab(name){
 }
 
 /* IMAGE PREVIEW */
+function getImageUrlInputId(field){
+  if(field==="hero")return "heroImage";
+  if(field==="collection")return "collectionImage";
+  return field;
+}
+
 function updatePreview(field){
-  const inputId=field==="hero"?"heroImage":field;
+  const input=$(getImageUrlInputId(field));
   const preview=$(field+"Preview");
-  const input=$(inputId);
   if(!preview||!input)return;
 
   const url=input.value.trim();
@@ -892,15 +604,14 @@ function updatePreview(field){
 }
 
 ["poster","backdrop","hero","collection"].forEach(field=>{
-  const inputId=field==="hero"?"heroImage":field;
-  const input=$(inputId);
+  const input=$(getImageUrlInputId(field));
   if(input)input.addEventListener("input",()=>updatePreview(field));
 });
 
 /* CLOUDINARY UPLOAD */
 async function uploadImage(type,file){
   const fileInput=$(type+"File");
-  const urlInput=$(type==="hero"?"heroImage":type);
+  const urlInput=$(getImageUrlInputId(type));
   const status=$(type+"Status");
   if(!file||!fileInput||!urlInput||!status)return;
 
@@ -928,10 +639,7 @@ async function uploadImage(type,file){
     formData.append("file",file);
     formData.append("type",type);
 
-    const data=await apiRequest("/upload",{
-      method:"POST",
-      body:formData
-    });
+    const data=await apiRequest("/upload",{method:"POST",body:formData});
 
     if(!data.url||!validHttpUrl(data.url)){
       throw new Error("Cloudinary did not return a valid image URL.");
@@ -1026,29 +734,19 @@ function renderMovies(){
   const pageItems=filtered.slice(start,start+PAGE_SIZE);
 
   $("movieList").innerHTML=pageItems.map(movie=>{
-    const meta=[
-      movie.year,movie.genre,movie.language,movie.quality
-    ].filter(Boolean).map(escapeHTML).join(" · ");
+    const meta=[movie.year,movie.genre,movie.language,movie.quality]
+      .filter(Boolean).map(escapeHTML).join(" · ");
     const adCount=Number(movie.adCount??4);
 
     return `
       <article class="movie-item">
-        <img class="movie-poster"
-          src="${escapeHTML(movie.poster||"")}"
-          alt=""
-          loading="lazy">
+        <img class="movie-poster" src="${escapeHTML(movie.poster||"")}" alt="" loading="lazy">
         <div>
           <div class="movie-title">${escapeHTML(movie.title||"Untitled")}</div>
           <div class="movie-meta">${meta||"Movie details unavailable"}</div>
           <div class="movie-meta">ID: ${escapeHTML(movie.id)} · Rating: ${escapeHTML(movie.rating??"N/A")}</div>
-          <div class="movie-meta">
-            Watch: ${movie.watchUrl?"Configured":"Not set"} ·
-            Downloads: ${movie.downloadUrl?"1":"0"}${movie.downloadUrl2?" + 2":" "}
-          </div>
-          <div class="movie-meta">
-            Ad count: ${escapeHTML(adCount)} ·
-            Ad URL: ${movie.adUrl?"Configured":"Not set"}
-          </div>
+          <div class="movie-meta">Watch: ${movie.watchUrl?"Configured":"Not set"} · Downloads: ${movie.downloadUrl?"1":"0"}${movie.downloadUrl2?" + 2":" "}</div>
+          <div class="movie-meta">Ad count: ${escapeHTML(adCount)} · Ad URL: ${movie.adUrl?"Configured":"Not set"}</div>
         </div>
         <div class="movie-actions">
           <button class="btn btn-small edit-btn" data-id="${escapeHTML(movie.id)}" type="button">Edit</button>
@@ -1123,17 +821,13 @@ $("movieList").addEventListener("click",event=>{
 
 function editMovie(movie){
   editingId=movie.id;
-
   const fields=[
     "title","year","genre","language","country","rating",
     "duration","director","quality","poster","backdrop",
     "description","watchUrl","downloadUrl","downloadUrl2","adUrl"
   ];
 
-  fields.forEach(field=>{
-    $(field).value=movie[field]??"";
-  });
-
+  fields.forEach(field=>{$(field).value=movie[field]??"";});
   $("adCount").value=movie.adCount??4;
   $("movieId").value=movie.id;
   $("posterFile").value="";
@@ -1211,17 +905,14 @@ $("movieForm").addEventListener("submit",async event=>{
     showNotice("mainNotice","Movie title is required.","error");
     return;
   }
-
   if(movie.year!==null&&(!Number.isInteger(movie.year)||movie.year<1888||movie.year>2100)){
     showNotice("mainNotice","Please enter a valid release year.","error");
     return;
   }
-
   if(!Number.isFinite(movie.rating)||movie.rating<0||movie.rating>10){
     showNotice("mainNotice","Rating must be between 0 and 10.","error");
     return;
   }
-
   if(!Number.isSafeInteger(movie.adCount)||movie.adCount<4||movie.adCount>1000){
     showNotice("mainNotice","Advertisement count must be a whole number from 4 to 1000.","error");
     return;
@@ -1322,10 +1013,7 @@ async function saveSettings(fields,buttonId,defaultText,successMessage){
   button.textContent="Saving...";
 
   try{
-    await apiRequest("/settings",{
-      method:"PUT",
-      body:JSON.stringify(settings)
-    });
+    await apiRequest("/settings",{method:"PUT",body:JSON.stringify(settings)});
     showNotice("mainNotice",successMessage,"success");
   }catch(error){
     showNotice("mainNotice",error.message,"error");
@@ -1337,23 +1025,13 @@ async function saveSettings(fields,buttonId,defaultText,successMessage){
 
 $("settingsForm").addEventListener("submit",event=>{
   event.preventDefault();
-  saveSettings(
-    SETTINGS_FIELDS,
-    "settingsSaveBtn",
-    "Save Website Settings",
-    "Website settings saved successfully."
-  );
+  saveSettings(SETTINGS_FIELDS,"settingsSaveBtn","Save Website Settings","Website settings saved successfully.");
 });
 $("settingsReloadBtn").addEventListener("click",loadSettings);
 
 $("heroForm").addEventListener("submit",event=>{
   event.preventDefault();
-  saveSettings(
-    HERO_FIELDS,
-    "heroSaveBtn",
-    "Save Hero Banner",
-    "Hero Banner settings saved successfully."
-  );
+  saveSettings(HERO_FIELDS,"heroSaveBtn","Save Hero Banner","Hero Banner settings saved successfully.");
 });
 $("heroReloadBtn").addEventListener("click",loadSettings);
 
@@ -1409,10 +1087,7 @@ function renderCollections(){
 
   $("collectionList").innerHTML=ordered.map(item=>`
     <article class="collection-item">
-      <img class="collection-image"
-        src="${escapeHTML(item.image||"")}"
-        alt=""
-        loading="lazy">
+      <img class="collection-image" src="${escapeHTML(item.image||"")}" alt="" loading="lazy">
       <div>
         <div class="movie-title">${escapeHTML(item.icon||"")} ${escapeHTML(item.name||"Untitled Collection")}</div>
         <div class="movie-meta">${escapeHTML(item.description||"No description")}</div>
@@ -1531,11 +1206,7 @@ $("collectionForm").addEventListener("submit",async event=>{
       body:JSON.stringify(collection)
     });
 
-    showNotice(
-      "mainNotice",
-      isEditing?"Collection updated successfully.":"Collection created successfully.",
-      "success"
-    );
+    showNotice("mainNotice",isEditing?"Collection updated successfully.":"Collection created successfully.","success");
 
     resetCollectionForm();
     await loadCollections();
