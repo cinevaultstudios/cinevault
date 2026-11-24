@@ -10,428 +10,98 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-:root {
-  --gold:#d6ad55;
-  --gold2:#f0d58c;
-  --bg:#080808;
-  --panel:#121212;
-  --panel2:#191919;
-  --text:#f5f5f5;
-  --muted:#999;
-  --border:#292929;
-  --danger:#e05252;
+:root{
+  --gold:#d6ad55;--gold2:#f0d58c;--bg:#080808;
+  --panel:#121212;--panel2:#191919;--text:#f5f5f5;
+  --muted:#999;--border:#292929;--danger:#e05252;
   --success:#35b779;
 }
-
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,Arial,sans-serif;
-}
-
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
 .hidden{display:none!important}
 .gold{color:var(--gold)}
 .muted{color:var(--muted)}
 .container{max-width:1250px;margin:auto;padding:24px}
-
-header{
-  border-bottom:1px solid var(--border);
-  background:#0c0c0c;
-}
-
-.header-inner{
-  max-width:1250px;
-  margin:auto;
-  padding:18px 24px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  flex-wrap:wrap;
-}
-
-.brand{
-  font-size:24px;
-  font-weight:800;
-  letter-spacing:2px;
-  color:var(--gold);
-}
-
-.brand small{
-  display:block;
-  font-size:10px;
-  letter-spacing:4px;
-  color:#aaa;
-  margin-top:4px;
-}
-
-.header-right{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.btn{
-  border:1px solid var(--border);
-  border-radius:7px;
-  padding:10px 16px;
-  background:#202020;
-  color:white;
-  font-weight:600;
-  transition:.2s;
-}
-
-.btn:hover{
-  border-color:var(--gold);
-  color:var(--gold);
-}
-
-.btn:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-}
-
-.btn-gold{
-  background:linear-gradient(135deg,#b88b35,#f0d58c);
-  color:#111;
-  border:0;
-}
-
-.btn-gold:hover{
-  color:#111;
-  filter:brightness(1.08);
-}
-
-.btn-danger{
-  background:#351919;
-  color:#ff8c8c;
-  border-color:#633030;
-}
-
-.btn-small{
-  padding:7px 11px;
-  font-size:12px;
-}
-
+header{border-bottom:1px solid var(--border);background:#0c0c0c}
+.header-inner{max-width:1250px;margin:auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.brand{font-size:24px;font-weight:800;letter-spacing:2px;color:var(--gold)}
+.brand small{display:block;font-size:10px;letter-spacing:4px;color:#aaa;margin-top:4px}
+.header-right{display:flex;align-items:center;gap:12px}
+.btn{border:1px solid var(--border);border-radius:7px;padding:10px 16px;background:#202020;color:white;font-weight:600;transition:.2s}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-gold{background:linear-gradient(135deg,#b88b35,#f0d58c);color:#111;border:0}
+.btn-gold:hover{color:#111;filter:brightness(1.08)}
+.btn-danger{background:#351919;color:#ff8c8c;border-color:#633030}
+.btn-small{padding:7px 11px;font-size:12px}
 h1{font-size:27px;margin:0 0 8px}
 h2{font-size:19px;margin:0 0 18px}
 h3{font-size:15px;margin:0 0 10px}
-
-.page-subtitle{
-  color:var(--muted);
-  font-size:13px;
-  margin:0;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-  margin:28px 0;
-}
-
-.stat-card{
-  background:linear-gradient(145deg,#171717,#101010);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:22px;
-}
-
-.stat-card .label{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.stat-card .number{
-  font-size:32px;
-  font-weight:800;
-  color:var(--gold);
-  margin-top:9px;
-}
-
-.tabs{
-  display:flex;
-  gap:8px;
-  border-bottom:1px solid var(--border);
-  margin:25px 0 20px;
-  flex-wrap:wrap;
-}
-
-.tab{
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  padding:13px 17px;
-  border-bottom:2px solid transparent;
-  font-weight:600;
-}
-
-.tab.active{
-  color:var(--gold);
-  border-color:var(--gold);
-}
-
-.panel{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:22px;
-  margin-bottom:20px;
-}
-
-.toolbar{
-  display:flex;
-  gap:12px;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  margin-bottom:18px;
-}
-
-.search{
-  flex:1;
-  min-width:220px;
-  max-width:450px;
-}
-
-input,textarea,select{
-  width:100%;
-  background:#0b0b0b;
-  color:white;
-  border:1px solid #333;
-  border-radius:7px;
-  padding:12px;
-  outline:none;
-}
-
-input:focus,textarea:focus,select:focus{
-  border-color:var(--gold);
-}
-
-textarea{
-  min-height:105px;
-  resize:vertical;
-}
-
-label{
-  display:block;
-  font-size:12px;
-  color:#bbb;
-  margin-bottom:7px;
-  font-weight:600;
-}
-
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:17px;
-}
-
+.page-subtitle{color:var(--muted);font-size:13px;margin:0;line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:28px 0}
+.stat-card{background:linear-gradient(145deg,#171717,#101010);border:1px solid var(--border);border-radius:12px;padding:22px}
+.stat-card .label{font-size:12px;color:var(--muted)}
+.stat-card .number{font-size:32px;font-weight:800;color:var(--gold);margin-top:9px}
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);margin:25px 0 20px;flex-wrap:wrap}
+.tab{border:0;background:transparent;color:var(--muted);padding:13px 15px;border-bottom:2px solid transparent;font-weight:600}
+.tab.active{color:var(--gold);border-color:var(--gold)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px}
+.toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.search{flex:1;min-width:220px;max-width:450px}
+input,textarea,select{width:100%;background:#0b0b0b;color:white;border:1px solid #333;border-radius:7px;padding:12px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--gold)}
+textarea{min-height:105px;resize:vertical}
+label{display:block;font-size:12px;color:#bbb;margin-bottom:7px;font-weight:600}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
 .form-group.full{grid-column:1/-1}
-
-.form-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:20px;
-}
-
-.checkbox-row{
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.checkbox-row input{
-  width:auto;
-  accent-color:var(--gold);
-}
-
-.upload-box{
-  background:#0d0d0d;
-  border:1px dashed #514328;
-  border-radius:9px;
-  padding:15px;
-  margin-top:9px;
-}
-
-.upload-box input[type=file]{
-  padding:9px;
-  border:1px solid #333;
-  background:#151515;
-  font-size:12px;
-}
-
-.upload-help{
-  color:#888;
-  font-size:11px;
-  margin-top:8px;
-  line-height:1.6;
-}
-
-.upload-status{
-  font-size:12px;
-  margin-top:9px;
-  min-height:17px;
-  color:var(--muted);
-}
-
+.form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.upload-box{background:#0d0d0d;border:1px dashed #514328;border-radius:9px;padding:15px;margin-top:9px}
+.upload-box input[type=file]{padding:9px;border:1px solid #333;background:#151515;font-size:12px}
+.upload-help{color:#888;font-size:11px;margin-top:8px;line-height:1.6}
+.upload-status{font-size:12px;margin-top:9px;min-height:17px;color:var(--muted)}
 .upload-status.success{color:#82e2ae}
 .upload-status.error{color:#ff9999}
-
-.image-preview{
-  display:none;
-  max-width:180px;
-  max-height:230px;
-  object-fit:contain;
-  margin-top:12px;
-  border:1px solid #444;
-  border-radius:7px;
-  background:#171717;
-}
-
+.image-preview{display:none;max-width:180px;max-height:230px;object-fit:contain;margin-top:12px;border:1px solid #444;border-radius:7px;background:#171717}
 .image-preview.visible{display:block}
-
-.backdrop-preview{
-  max-width:100%;
-  width:320px;
-  max-height:180px;
-  aspect-ratio:16/9;
-}
-
-.movie-list{display:grid;gap:12px}
-
-.movie-item{
-  display:grid;
-  grid-template-columns:65px 1fr auto;
-  gap:15px;
-  align-items:center;
-  padding:12px;
-  background:#171717;
-  border:1px solid var(--border);
-  border-radius:9px;
-}
-
-.movie-poster{
-  width:65px;
-  height:85px;
-  object-fit:cover;
-  border-radius:5px;
-  background:#222;
-}
-
-.movie-title{
-  font-weight:700;
-  font-size:14px;
-}
-
-.movie-meta{
-  font-size:11px;
-  color:var(--muted);
-  margin-top:6px;
-}
-
-.movie-actions{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-}
-
-.notice{
-  display:none;
-  padding:12px 15px;
-  border-radius:7px;
-  margin:15px 0;
-  font-size:13px;
-}
-
+.wide-preview{max-width:100%;width:320px;max-height:180px;aspect-ratio:16/9}
+.movie-list,.collection-list{display:grid;gap:12px}
+.movie-item,.collection-item{display:grid;grid-template-columns:65px 1fr auto;gap:15px;align-items:center;padding:12px;background:#171717;border:1px solid var(--border);border-radius:9px}
+.movie-poster,.collection-image{width:65px;height:85px;object-fit:cover;border-radius:5px;background:#222}
+.collection-image{height:65px}
+.movie-title{font-weight:700;font-size:14px}
+.movie-meta{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+.movie-actions{display:flex;gap:7px;flex-wrap:wrap}
+.notice{display:none;padding:12px 15px;border-radius:7px;margin:15px 0;font-size:13px;line-height:1.5}
 .notice.show{display:block}
 .notice.error{background:#351919;color:#ff9999}
 .notice.success{background:#123222;color:#82e2ae}
-
-.empty{
-  text-align:center;
-  padding:35px 15px;
-  color:var(--muted);
-  border:1px dashed #333;
-  border-radius:9px;
-}
-
-.loading{
-  text-align:center;
-  padding:25px;
-  color:var(--gold);
-}
-
-.login-wrap{
-  min-height:calc(100vh - 80px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:25px;
-}
-
-.login-card{
-  width:100%;
-  max-width:420px;
-  padding:35px;
-  background:linear-gradient(145deg,#171717,#0e0e0e);
-  border:1px solid #3c3321;
-  border-radius:14px;
-  box-shadow:0 15px 60px #000;
-}
-
-.login-logo{
-  text-align:center;
-  margin-bottom:25px;
-}
-
+.empty{text-align:center;padding:35px 15px;color:var(--muted);border:1px dashed #333;border-radius:9px}
+.loading{text-align:center;padding:25px;color:var(--gold)}
+.login-wrap{min-height:calc(100vh - 80px);display:flex;align-items:center;justify-content:center;padding:25px}
+.login-card{width:100%;max-width:420px;padding:35px;background:linear-gradient(145deg,#171717,#0e0e0e);border:1px solid #3c3321;border-radius:14px;box-shadow:0 15px 60px #000}
+.login-logo{text-align:center;margin-bottom:25px}
 .login-logo .brand{font-size:30px}
 .login-card h2{text-align:center;margin-bottom:7px}
-
-.login-card .muted{
-  text-align:center;
-  font-size:13px;
-  margin-bottom:25px;
-}
-
+.login-card .muted{text-align:center;font-size:13px;margin-bottom:25px}
 .login-card .form-group{margin-bottom:17px}
-
-.login-card .btn{
-  width:100%;
-  padding:13px;
-}
-
-.login-foot{
-  text-align:center;
-  color:#777;
-  font-size:11px;
-  margin-top:20px;
-}
-
-footer{
-  text-align:center;
-  padding:25px;
-  color:#666;
-  font-size:11px;
-  border-top:1px solid var(--border);
-  margin-top:35px;
-}
-
+.login-card .btn{width:100%;padding:13px}
+.login-foot{text-align:center;color:#777;font-size:11px;margin-top:20px}
+.section-note{padding:12px;background:#171717;border:1px solid #333;border-radius:7px;color:#aaa;font-size:12px;line-height:1.6;margin-bottom:18px}
+.divider{border:0;border-top:1px solid var(--border);margin:22px 0}
+footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px solid var(--border);margin-top:35px}
 @media(max-width:700px){
   .container{padding:17px}
   .stats{grid-template-columns:1fr}
   .form-grid{grid-template-columns:1fr}
   .form-group.full{grid-column:auto}
-  .movie-item{grid-template-columns:52px 1fr}
-  .movie-poster{width:52px;height:72px}
+  .movie-item,.collection-item{grid-template-columns:52px 1fr}
+  .movie-poster,.collection-image{width:52px;height:70px}
   .movie-actions{grid-column:1/-1}
   .header-inner{padding:15px}
+  .panel{padding:16px}
+  .tab{padding:11px 10px;font-size:12px}
 }
 </style>
 </head>
@@ -440,65 +110,38 @@ footer{
 
 <header>
   <div class="header-inner">
-    <div class="brand">
-      CINEVAULT
-      <small>ADMINISTRATION PANEL</small>
-    </div>
-
+    <div class="brand">CINEVAULT<small>ADMINISTRATION PANEL</small></div>
     <div class="header-right">
       <span class="muted" id="adminStatus">Admin Panel</span>
-      <button class="btn btn-danger btn-small hidden" id="logoutBtn">
-        Logout
-      </button>
+      <button class="btn btn-danger btn-small hidden" id="logoutBtn">Logout</button>
     </div>
   </div>
 </header>
 
-<!-- LOGIN SCREEN -->
 <section class="login-wrap" id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
       <div class="brand">CINEVAULT</div>
       <div class="muted">PREMIUM ADMIN ACCESS</div>
     </div>
-
     <h2>Admin Login</h2>
-    <p class="muted">Sign in to manage your movie library.</p>
-
+    <p class="muted">Sign in to manage your CineVault website.</p>
     <div id="loginNotice" class="notice"></div>
-
     <form id="loginForm">
       <div class="form-group">
         <label for="adminPassword">ADMIN PASSWORD</label>
-        <input
-          type="password"
-          id="adminPassword"
-          placeholder="Enter admin password"
-          autocomplete="current-password"
-          required
-        >
+        <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="current-password" required>
       </div>
-
-      <button class="btn btn-gold" type="submit" id="loginBtn">
-        Secure Login
-      </button>
+      <button class="btn btn-gold" type="submit" id="loginBtn">Secure Login</button>
     </form>
-
-    <div class="login-foot">
-      Protected CineVault Administration
-    </div>
+    <div class="login-foot">Protected CineVault Administration</div>
   </div>
 </section>
 
-<!-- ADMIN DASHBOARD -->
 <main class="container hidden" id="dashboard">
 
-  <div>
-    <h1>Admin <span class="gold">Dashboard</span></h1>
-    <p class="page-subtitle">
-      Manage your CineVault movie collection.
-    </p>
-  </div>
+  <h1>Admin <span class="gold">Dashboard</span></h1>
+  <p class="page-subtitle">Manage your CineVault website, movies, hero banner and collections.</p>
 
   <div id="mainNotice" class="notice"></div>
 
@@ -507,23 +150,18 @@ footer{
       <div class="label">TOTAL MOVIES</div>
       <div class="number" id="totalMovies">0</div>
     </div>
-
-    <div class="stat-card">
-      <div class="label">FEATURED MOVIES</div>
-      <div class="number" id="featuredMovies">0</div>
-    </div>
-
     <div class="stat-card">
       <div class="label">DATABASE STATUS</div>
-      <div class="number" id="databaseStatus" style="font-size:20px">
-        Checking...
-      </div>
+      <div class="number" id="databaseStatus" style="font-size:20px">Checking...</div>
     </div>
   </section>
 
   <div class="tabs">
     <button class="tab active" data-tab="library">Movie Library</button>
     <button class="tab" data-tab="add">Add Movie</button>
+    <button class="tab" data-tab="settings">Website Settings</button>
+    <button class="tab" data-tab="hero">Hero Banner</button>
+    <button class="tab" data-tab="collections">Movie Collections</button>
   </div>
 
   <!-- MOVIE LIBRARY -->
@@ -531,116 +169,80 @@ footer{
     <div class="toolbar">
       <div>
         <h2>Movie Library</h2>
-        <p class="page-subtitle">Search, edit and delete movies.</p>
+        <p class="page-subtitle">Search, edit and delete movies in your D1 database.</p>
       </div>
-
       <button class="btn" id="refreshBtn">Refresh</button>
     </div>
-
     <div class="toolbar">
-      <input
-        class="search"
-        type="search"
-        id="movieSearch"
-        placeholder="Search by movie title, genre or year..."
-      >
+      <input class="search" type="search" id="movieSearch" placeholder="Search by title, genre or year...">
       <span class="muted" id="resultCount">0 movies</span>
     </div>
-
-    <div id="movieList" class="movie-list">
-      <div class="loading">Loading movies...</div>
-    </div>
+    <div id="movieList" class="movie-list"><div class="loading">Loading movies...</div></div>
   </section>
 
-  <!-- ADD / EDIT FORM -->
+  <!-- ADD / EDIT MOVIE -->
   <section id="addTab" class="panel hidden">
     <h2 id="formHeading">Add New Movie</h2>
-    <p class="page-subtitle" id="formSubtitle">
-      Add a movie to your CineVault database.
-    </p>
+    <p class="page-subtitle" id="formSubtitle">Add a movie to your CineVault database.</p>
 
     <form id="movieForm">
       <input type="hidden" id="movieId">
-
       <div class="form-grid">
 
         <div class="form-group">
           <label for="title">MOVIE TITLE *</label>
           <input id="title" required maxlength="200" placeholder="Movie title">
         </div>
-
         <div class="form-group">
           <label for="year">RELEASE YEAR</label>
           <input id="year" type="number" min="1888" max="2100" placeholder="2026">
         </div>
-
         <div class="form-group">
           <label for="genre">GENRE</label>
           <input id="genre" placeholder="Action, Drama, Thriller">
         </div>
-
         <div class="form-group">
           <label for="language">LANGUAGE</label>
           <input id="language" placeholder="English, Hindi, Bangla">
         </div>
-
         <div class="form-group">
           <label for="country">COUNTRY</label>
           <input id="country" placeholder="USA, India, Bangladesh">
         </div>
-
         <div class="form-group">
           <label for="rating">IMDB RATING</label>
           <input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5">
         </div>
-
         <div class="form-group">
           <label for="duration">DURATION</label>
           <input id="duration" placeholder="2h 15m">
         </div>
-
         <div class="form-group">
           <label for="director">DIRECTOR</label>
           <input id="director" placeholder="Director name">
         </div>
 
-        <!-- POSTER UPLOAD -->
         <div class="form-group full">
           <label for="poster">POSTER IMAGE URL</label>
-          <input id="poster" type="url" placeholder="Upload an image or enter image URL">
-
+          <input id="poster" type="url" placeholder="Image URL">
           <div class="upload-box">
-            <label for="posterFile">UPLOAD POSTER FROM YOUR DEVICE</label>
-            <input
-              id="posterFile"
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/avif"
-            >
-            <div class="upload-help">
-              JPG, PNG, WEBP or AVIF · Maximum 5 MB
-            </div>
+            <label for="posterFile">UPLOAD POSTER FROM DEVICE</label>
+            <input id="posterFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
             <div id="posterStatus" class="upload-status"></div>
             <img id="posterPreview" class="image-preview" alt="Poster preview">
           </div>
         </div>
 
-        <!-- BACKDROP UPLOAD -->
         <div class="form-group full">
           <label for="backdrop">BACKDROP IMAGE URL</label>
-          <input id="backdrop" type="url" placeholder="Upload an image or enter image URL">
-
+          <input id="backdrop" type="url" placeholder="Image URL">
           <div class="upload-box">
-            <label for="backdropFile">UPLOAD BACKDROP FROM YOUR DEVICE</label>
-            <input
-              id="backdropFile"
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/avif"
-            >
-            <div class="upload-help">
-              JPG, PNG, WEBP or AVIF · Maximum 5 MB
-            </div>
+            <label for="backdropFile">UPLOAD BACKDROP FROM DEVICE</label>
+            <input id="backdropFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
             <div id="backdropStatus" class="upload-status"></div>
-            <img id="backdropPreview" class="image-preview backdrop-preview" alt="Backdrop preview">
+            <img id="backdropPreview" class="image-preview wide-preview" alt="Backdrop preview">
           </div>
         </div>
 
@@ -648,731 +250,930 @@ footer{
           <label for="description">MOVIE DESCRIPTION</label>
           <textarea id="description" placeholder="Write movie description..."></textarea>
         </div>
-
         <div class="form-group full">
           <label for="watchUrl">WATCH URL</label>
           <input id="watchUrl" type="url" placeholder="https://example.com/watch">
         </div>
-
-        <!-- DOWNLOAD URL 1 -->
         <div class="form-group full">
-          <label for="downloadUrl">DOWNLOAD URL 1 — FIRST DOWNLOAD LINK</label>
-          <input
-            id="downloadUrl"
-            type="url"
-            placeholder="https://example.com/download-1"
-          >
+          <label for="downloadUrl">DOWNLOAD URL 1</label>
+          <input id="downloadUrl" type="url" placeholder="https://example.com/download-1">
         </div>
-
-        <!-- DOWNLOAD URL 2 -->
         <div class="form-group full">
-          <label for="downloadUrl2">DOWNLOAD URL 2 — SECOND DOWNLOAD LINK</label>
-          <input
-            id="downloadUrl2"
-            type="url"
-            placeholder="https://example.com/download-2"
-          >
-          <div class="upload-help">
-            Optional second download link. It will be saved separately in the D1 database.
-          </div>
+          <label for="downloadUrl2">DOWNLOAD URL 2</label>
+          <input id="downloadUrl2" type="url" placeholder="https://example.com/download-2">
+          <div class="upload-help">Optional second download link. Saved separately in D1.</div>
         </div>
-
-        <!-- EXISTING ADVERTISEMENT SETTINGS PRESERVED -->
         <div class="form-group full">
           <label for="adUrl">ADVERTISEMENT URL</label>
-          <input
-            id="adUrl"
-            type="url"
-            placeholder="https://example.com/advertisement"
-          >
-          <div class="upload-help">
-            Existing advertisement URL data is preserved.
-          </div>
+          <input id="adUrl" type="url" placeholder="https://example.com/advertisement">
         </div>
-
         <div class="form-group">
           <label for="adCount">ADVERTISEMENT COUNT (MINIMUM 4)</label>
-          <input
-            id="adCount"
-            type="number"
-            min="4"
-            step="1"
-            value="4"
-            required
-          >
-          <div class="upload-help">
-            Existing advertisement count setting is preserved.
-          </div>
+          <input id="adCount" type="number" min="4" step="1" value="4" required>
+          <div class="upload-help">Existing advertisement count data is preserved.</div>
         </div>
-
-        <div class="form-group full">
-          <label class="checkbox-row">
-            <input type="checkbox" id="featured">
-            FEATURED MOVIE
-          </label>
-        </div>
-
       </div>
 
       <div class="form-actions">
-        <button class="btn btn-gold" type="submit" id="saveBtn">
-          Save Movie
-        </button>
-        <button class="btn hidden" type="button" id="cancelEditBtn">
-          Cancel Edit
-        </button>
-        <button class="btn" type="reset" id="resetBtn">
-          Clear Form
-        </button>
+        <button class="btn btn-gold" type="submit" id="saveBtn">Save Movie</button>
+        <button class="btn hidden" type="button" id="cancelEditBtn">Cancel Edit</button>
+        <button class="btn" type="reset" id="resetBtn">Clear Form</button>
       </div>
     </form>
   </section>
 
+  <!-- WEBSITE SETTINGS -->
+  <section id="settingsTab" class="panel hidden">
+    <h2>Website <span class="gold">Settings</span></h2>
+    <p class="page-subtitle">Manage your website identity, About section and footer content.</p>
+    <div class="section-note">Changes are saved to your D1 database through the Admin Settings API.</div>
+
+    <form id="settingsForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="siteName">WEBSITE NAME</label>
+          <input id="siteName" placeholder="CineVault">
+        </div>
+        <div class="form-group">
+          <label for="logoText">LOGO TEXT</label>
+          <input id="logoText" placeholder="CINEVAULT">
+        </div>
+
+        <div class="form-group full">
+          <hr class="divider">
+          <h3>About Section</h3>
+        </div>
+        <div class="form-group">
+          <label for="aboutEyebrow">ABOUT EYEBROW</label>
+          <input id="aboutEyebrow" placeholder="ABOUT CINEVAULT">
+        </div>
+        <div class="form-group">
+          <label for="aboutTitle">ABOUT TITLE</label>
+          <input id="aboutTitle" placeholder="Your entertainment destination">
+        </div>
+        <div class="form-group full">
+          <label for="aboutHighlight">ABOUT TITLE HIGHLIGHT</label>
+          <input id="aboutHighlight" placeholder="Entertainment">
+        </div>
+        <div class="form-group full">
+          <label for="aboutDescription">ABOUT DESCRIPTION</label>
+          <textarea id="aboutDescription" placeholder="Write your About section..."></textarea>
+        </div>
+
+        <div class="form-group full">
+          <hr class="divider">
+          <h3>Footer Settings</h3>
+        </div>
+        <div class="form-group full">
+          <label for="footerDescription">FOOTER DESCRIPTION</label>
+          <textarea id="footerDescription" placeholder="Footer description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="footerTagline">FOOTER TAGLINE</label>
+          <input id="footerTagline" placeholder="Your entertainment destination">
+        </div>
+        <div class="form-group">
+          <label for="copyrightText">COPYRIGHT TEXT</label>
+          <input id="copyrightText" placeholder="© 2026 CineVault. All rights reserved.">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" type="submit" id="settingsSaveBtn">Save Website Settings</button>
+        <button class="btn" type="button" id="settingsReloadBtn">Reload Settings</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- HERO BANNER -->
+  <section id="heroTab" class="panel hidden">
+    <h2>Hero <span class="gold">Banner</span></h2>
+    <p class="page-subtitle">Edit the homepage hero banner content, background image and buttons.</p>
+    <div class="section-note">Use a publicly accessible HTTPS image URL or upload an image to Cloudinary. The homepage must read these settings from /api/settings to display the changes.</div>
+
+    <form id="heroForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="heroEyebrow">EYEBROW TEXT</label>
+          <input id="heroEyebrow" placeholder="WELCOME TO CINEVAULT">
+        </div>
+        <div class="form-group">
+          <label for="heroTitle">MAIN TITLE</label>
+          <input id="heroTitle" placeholder="Discover Stories">
+        </div>
+        <div class="form-group full">
+          <label for="heroHighlight">TITLE HIGHLIGHT</label>
+          <input id="heroHighlight" placeholder="Stories">
+        </div>
+        <div class="form-group full">
+          <label for="heroDescription">HERO DESCRIPTION</label>
+          <textarea id="heroDescription" placeholder="Write hero banner description..."></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label for="heroImage">HERO BACKGROUND IMAGE URL</label>
+          <input id="heroImage" type="url" placeholder="https://example.com/hero.jpg">
+          <div class="upload-box">
+            <label for="heroFile">UPLOAD HERO IMAGE</label>
+            <input id="heroFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
+            <div id="heroStatus" class="upload-status"></div>
+            <img id="heroPreview" class="image-preview wide-preview" alt="Hero preview">
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <hr class="divider">
+          <h3>First Hero Button</h3>
+        </div>
+        <div class="form-group">
+          <label for="heroButton1Text">BUTTON 1 TEXT</label>
+          <input id="heroButton1Text" placeholder="Explore Movies">
+        </div>
+        <div class="form-group">
+          <label for="heroButton1Url">BUTTON 1 LINK</label>
+          <input id="heroButton1Url" placeholder="#movies">
+        </div>
+
+        <div class="form-group full">
+          <hr class="divider">
+          <h3>Second Hero Button</h3>
+        </div>
+        <div class="form-group">
+          <label for="heroButton2Text">BUTTON 2 TEXT</label>
+          <input id="heroButton2Text" placeholder="Learn More">
+        </div>
+        <div class="form-group">
+          <label for="heroButton2Url">BUTTON 2 LINK</label>
+          <input id="heroButton2Url" placeholder="#about">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-gold" type="submit" id="heroSaveBtn">Save Hero Banner</button>
+        <button class="btn" type="button" id="heroReloadBtn">Reload Hero Settings</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- MOVIE COLLECTIONS -->
+  <section id="collectionsTab" class="panel hidden">
+    <h2>Movie <span class="gold">Collections</span></h2>
+    <p class="page-subtitle">Create, edit, reorder and manage homepage movie collections.</p>
+    <div class="section-note">Collections are saved separately in D1. The homepage must load /api/collections to display active collections.</div>
+
+    <form id="collectionForm">
+      <input type="hidden" id="collectionId">
+      <h3 id="collectionFormHeading">Add New Collection</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="collectionName">COLLECTION NAME *</label>
+          <input id="collectionName" required maxlength="120" placeholder="Action Movies">
+        </div>
+        <div class="form-group">
+          <label for="collectionGenre">GENRE / FILTER VALUE</label>
+          <input id="collectionGenre" placeholder="Action">
+        </div>
+        <div class="form-group">
+          <label for="collectionIcon">ICON / EMOJI</label>
+          <input id="collectionIcon" placeholder="🎬">
+        </div>
+        <div class="form-group">
+          <label for="collectionSortOrder">SORT ORDER</label>
+          <input id="collectionSortOrder" type="number" step="1" value="1">
+        </div>
+        <div class="form-group full">
+          <label for="collectionDescription">DESCRIPTION</label>
+          <textarea id="collectionDescription" placeholder="Collection description..."></textarea>
+        </div>
+        <div class="form-group full">
+          <label for="collectionImage">COLLECTION IMAGE URL</label>
+          <input id="collectionImage" type="url" placeholder="https://example.com/collection.jpg">
+          <div class="upload-box">
+            <label for="collectionFile">UPLOAD COLLECTION IMAGE</label>
+            <input id="collectionFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
+            <div id="collectionStatus" class="upload-status"></div>
+            <img id="collectionPreview" class="image-preview wide-preview" alt="Collection preview">
+          </div>
+        </div>
+        <div class="form-group full">
+          <label for="collectionActive">COLLECTION STATUS</label>
+          <select id="collectionActive">
+            <option value="true">Active — Show on website</option>
+            <option value="false">Inactive — Hide on website</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" type="submit" id="collectionSaveBtn">Save Collection</button>
+        <button class="btn hidden" type="button" id="collectionCancelBtn">Cancel Edit</button>
+        <button class="btn" type="reset" id="collectionResetBtn">Clear Form</button>
+      </div>
+    </form>
+
+    <hr class="divider">
+    <div class="toolbar">
+      <div>
+        <h3>Existing Collections</h3>
+        <p class="page-subtitle">Edit or remove a collection.</p>
+      </div>
+      <button class="btn" id="collectionRefreshBtn">Refresh</button>
+    </div>
+    <div id="collectionList" class="collection-list">
+      <div class="loading">Loading collections...</div>
+    </div>
+  </section>
+
 </main>
 
-<footer>
-  CINEVAULT ADMIN PANEL · PREMIUM BLACK & GOLD
-</footer>
+<footer>CINEVAULT ADMIN PANEL · PREMIUM BLACK & GOLD</footer>
 
 <script>
 "use strict";
 
 const API = "/api/admin";
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-
-const ALLOWED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif"
-];
-
+const ALLOWED_IMAGE_TYPES = ["image/jpeg","image/png","image/webp","image/avif"];
 const $ = id => document.getElementById(id);
 
 let movies = [];
+let collections = [];
 let editingId = null;
+let editingCollectionId = null;
 let activeUploads = 0;
 
-function showNotice(elementId, message, type = "success") {
-  const box = $(elementId);
-  box.textContent = message;
-  box.className = "notice show " + type;
+const SETTINGS_FIELDS = [
+  "siteName","logoText",
+  "aboutEyebrow","aboutTitle","aboutHighlight","aboutDescription",
+  "footerDescription","footerTagline","copyrightText"
+];
 
-  if (elementId === "mainNotice") {
-    window.setTimeout(() => {
-      box.className = "notice";
-    }, 5000);
+const HERO_FIELDS = [
+  "heroEyebrow","heroTitle","heroHighlight","heroDescription",
+  "heroImage","heroButton1Text","heroButton1Url",
+  "heroButton2Text","heroButton2Url"
+];
+
+function showNotice(elementId,message,type="success"){
+  const box=$(elementId);
+  box.textContent=message;
+  box.className="notice show "+type;
+  if(elementId==="mainNotice"){
+    window.setTimeout(()=>box.className="notice",5000);
   }
 }
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
+function escapeHTML(value){
+  return String(value??"").replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   })[char]);
 }
 
-function validHttpUrl(value) {
-  if (!value) return true;
-
-  try {
-    const url = new URL(value);
-    return ["http:", "https:"].includes(url.protocol);
-  } catch (_) {
-    return false;
-  }
+function validHttpUrl(value){
+  if(!value)return true;
+  try{
+    const url=new URL(value);
+    return ["http:","https:"].includes(url.protocol);
+  }catch(_){return false}
 }
 
-async function apiRequest(path, options = {}) {
-  const response = await fetch(API + path, {
+async function apiRequest(path,options={}){
+  const response=await fetch(API+path,{
     ...options,
-    credentials: "same-origin",
-    headers: {
+    credentials:"same-origin",
+    headers:{
       ...(options.body && !(options.body instanceof FormData)
-        ? {"Content-Type": "application/json"}
-        : {}),
-      ...(options.headers || {})
+        ? {"Content-Type":"application/json"}:{}),
+      ...(options.headers||{})
     }
   });
 
-  let data = {};
+  let data={};
+  try{data=await response.json()}catch(_){data={}}
 
-  try {
-    data = await response.json();
-  } catch (_) {
-    data = {};
-  }
-
-  if (response.status === 401) {
+  if(response.status===401){
     showLogin();
     throw new Error("Your session has expired. Please log in again.");
   }
-
-  if (!response.ok || data.success === false) {
-    throw new Error(data.message || "Request failed. Please try again.");
+  if(!response.ok||data.success===false){
+    throw new Error(data.message||"Request failed. Please try again.");
   }
-
   return data;
 }
 
-function showLogin() {
+function showLogin(){
   $("loginScreen").classList.remove("hidden");
   $("dashboard").classList.add("hidden");
   $("logoutBtn").classList.add("hidden");
-  $("adminStatus").textContent = "Admin Login";
+  $("adminStatus").textContent="Admin Login";
 }
 
-function showDashboard() {
+function showDashboard(){
   $("loginScreen").classList.add("hidden");
   $("dashboard").classList.remove("hidden");
   $("logoutBtn").classList.remove("hidden");
-  $("adminStatus").textContent = "Authenticated Admin";
+  $("adminStatus").textContent="Authenticated Admin";
 }
 
-async function checkSession() {
-  try {
-    const data = await apiRequest("/session");
-
-    if (data.authenticated) {
+async function checkSession(){
+  try{
+    const data=await apiRequest("/session");
+    if(data.authenticated){
       showDashboard();
-      await loadMovies();
-    } else {
+      await Promise.all([loadMovies(),loadSettings(),loadCollections()]);
+    }else{
       showLogin();
     }
-  } catch (error) {
+  }catch(error){
     showLogin();
-    if (error.message) console.warn(error.message);
+    console.warn(error.message);
   }
 }
 
 /* LOGIN */
-$("loginForm").addEventListener("submit", async event => {
+$("loginForm").addEventListener("submit",async event=>{
   event.preventDefault();
+  const password=$("adminPassword").value;
+  if(!password)return;
 
-  const password = $("adminPassword").value;
-  if (!password) return;
+  $("loginBtn").disabled=true;
+  $("loginBtn").textContent="Signing in...";
 
-  $("loginBtn").disabled = true;
-  $("loginBtn").textContent = "Signing in...";
-
-  try {
-    await apiRequest("/login", {
-      method: "POST",
-      body: JSON.stringify({password})
+  try{
+    await apiRequest("/login",{
+      method:"POST",
+      body:JSON.stringify({password})
     });
-
-    $("adminPassword").value = "";
-    $("loginNotice").className = "notice";
-
+    $("adminPassword").value="";
+    $("loginNotice").className="notice";
     showDashboard();
-    await loadMovies();
-
-  } catch (error) {
-    showNotice("loginNotice", error.message, "error");
-  } finally {
-    $("loginBtn").disabled = false;
-    $("loginBtn").textContent = "Secure Login";
+    await Promise.all([loadMovies(),loadSettings(),loadCollections()]);
+  }catch(error){
+    showNotice("loginNotice",error.message,"error");
+  }finally{
+    $("loginBtn").disabled=false;
+    $("loginBtn").textContent="Secure Login";
   }
 });
 
 /* LOGOUT */
-$("logoutBtn").addEventListener("click", async () => {
-  if (!confirm("Are you sure you want to logout?")) return;
-
-  try {
-    await apiRequest("/logout", {method: "POST"});
-  } catch (error) {
-    console.warn(error.message);
-  }
-
-  movies = [];
-  $("movieList").innerHTML = "";
-  $("adminPassword").value = "";
+$("logoutBtn").addEventListener("click",async()=>{
+  if(!confirm("Are you sure you want to logout?"))return;
+  try{await apiRequest("/logout",{method:"POST"})}
+  catch(error){console.warn(error.message)}
+  movies=[];
+  collections=[];
+  $("movieList").innerHTML="";
+  $("collectionList").innerHTML="";
+  $("adminPassword").value="";
   showLogin();
 });
 
 /* TABS */
-document.querySelectorAll(".tab").forEach(button => {
-  button.addEventListener("click", () => {
-    openTab(button.dataset.tab);
-  });
+document.querySelectorAll(".tab").forEach(button=>{
+  button.addEventListener("click",()=>openTab(button.dataset.tab));
 });
 
-function openTab(name) {
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.classList.toggle("active", tab.dataset.tab === name);
+function openTab(name){
+  document.querySelectorAll(".tab").forEach(tab=>{
+    tab.classList.toggle("active",tab.dataset.tab===name);
   });
-
-  $("libraryTab").classList.toggle("hidden", name !== "library");
-  $("addTab").classList.toggle("hidden", name !== "add");
+  ["library","add","settings","hero","collections"].forEach(tab=>{
+    $(tab+"Tab").classList.toggle("hidden",tab!==name);
+  });
 }
 
 /* IMAGE PREVIEW */
-function updatePreview(field) {
-  const preview = $(field + "Preview");
-  const url = $(field).value.trim();
-
+function updatePreview(field){
+  const preview=$(field+"Preview");
+  const url=$(field).value.trim();
   preview.classList.remove("visible");
   preview.removeAttribute("src");
-
-  if (!url) return;
-
-  try {
-    const parsed = new URL(url);
-
-    if (!["http:", "https:"].includes(parsed.protocol)) return;
-
-    preview.onload = () => preview.classList.add("visible");
-    preview.onerror = () => preview.classList.remove("visible");
-    preview.src = parsed.href;
-
-  } catch (_) {
-    preview.classList.remove("visible");
-  }
+  if(!url)return;
+  try{
+    const parsed=new URL(url);
+    if(!["http:","https:"].includes(parsed.protocol))return;
+    preview.onload=()=>preview.classList.add("visible");
+    preview.onerror=()=>preview.classList.remove("visible");
+    preview.src=parsed.href;
+  }catch(_){}
 }
 
-$("poster").addEventListener("input", () => updatePreview("poster"));
-$("backdrop").addEventListener("input", () => updatePreview("backdrop"));
+["poster","backdrop","hero","collection"].forEach(field=>{
+  $(field).addEventListener("input",()=>updatePreview(field));
+});
 
-/* CLOUDINARY DIRECT UPLOAD */
-async function uploadImage(type, file) {
-  const fileInput = $(type + "File");
-  const urlInput = $(type);
-  const status = $(type + "Status");
+/* CLOUDINARY UPLOAD */
+async function uploadImage(type,file){
+  const fileInput=$(type+"File");
+  const urlInput=$(type);
+  const status=$(type+"Status");
+  if(!file)return;
 
-  if (!file) return;
-
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-    status.textContent = "Unsupported image format.";
-    status.className = "upload-status error";
-    fileInput.value = "";
+  if(!ALLOWED_IMAGE_TYPES.includes(file.type)){
+    status.textContent="Unsupported image format.";
+    status.className="upload-status error";
+    fileInput.value="";
+    return;
+  }
+  if(file.size<=0||file.size>MAX_IMAGE_SIZE){
+    status.textContent="Image must be smaller than 5 MB.";
+    status.className="upload-status error";
+    fileInput.value="";
     return;
   }
 
-  if (file.size <= 0 || file.size > MAX_IMAGE_SIZE) {
-    status.textContent = "Image must be smaller than 5 MB.";
-    status.className = "upload-status error";
-    fileInput.value = "";
-    return;
-  }
-
-  fileInput.disabled = true;
+  fileInput.disabled=true;
   activeUploads++;
-  $("saveBtn").disabled = true;
+  updateSaveButtons();
+  status.textContent="Uploading image to Cloudinary...";
+  status.className="upload-status";
 
-  status.textContent = "Uploading image to Cloudinary...";
-  status.className = "upload-status";
+  try{
+    const formData=new FormData();
+    formData.append("file",file);
+    formData.append("type",type);
 
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", type);
-
-    const data = await apiRequest("/upload", {
-      method: "POST",
-      body: formData
+    const data=await apiRequest("/upload",{
+      method:"POST",
+      body:formData
     });
+    if(!data.url)throw new Error("Cloudinary did not return an image URL.");
 
-    if (!data.url) {
-      throw new Error("Cloudinary did not return an image URL.");
-    }
-
-    urlInput.value = data.url;
+    urlInput.value=data.url;
     updatePreview(type);
-
-    status.textContent = "Upload successful!";
-    status.className = "upload-status success";
-
-  } catch (error) {
-    status.textContent = error.message;
-    status.className = "upload-status error";
-
-  } finally {
-    fileInput.disabled = false;
-    activeUploads = Math.max(0, activeUploads - 1);
-    $("saveBtn").disabled = activeUploads > 0;
+    status.textContent="Upload successful!";
+    status.className="upload-status success";
+  }catch(error){
+    status.textContent=error.message;
+    status.className="upload-status error";
+  }finally{
+    fileInput.disabled=false;
+    activeUploads=Math.max(0,activeUploads-1);
+    updateSaveButtons();
   }
 }
 
-$("posterFile").addEventListener("change", event => {
-  uploadImage("poster", event.target.files[0]);
+function updateSaveButtons(){
+  ["saveBtn","settingsSaveBtn","heroSaveBtn","collectionSaveBtn"].forEach(id=>{
+    if($(id))$(id).disabled=activeUploads>0;
+  });
+}
+
+["poster","backdrop","hero","collection"].forEach(type=>{
+  $(type+"File").addEventListener("change",event=>{
+    uploadImage(type,event.target.files[0]);
+  });
 });
 
-$("backdropFile").addEventListener("change", event => {
-  uploadImage("backdrop", event.target.files[0]);
-});
-
-/* LOAD MOVIES FROM D1 API */
-async function loadMovies() {
-  $("movieList").innerHTML =
-    '<div class="loading">Loading movies...</div>';
-
-  $("databaseStatus").textContent = "Connecting...";
-
-  try {
-    const data = await apiRequest("/movies");
-
-    movies = Array.isArray(data.movies) ? data.movies : [];
-
-    $("totalMovies").textContent =
-      Number.isFinite(Number(data.total)) ? data.total : movies.length;
-
-    $("featuredMovies").textContent =
-      movies.filter(movie =>
-        movie.featured === true ||
-        movie.featured === 1 ||
-        movie.featured === "1"
-      ).length;
-
-    $("databaseStatus").textContent = "Connected";
-    $("databaseStatus").style.color = "var(--success)";
-
+/* MOVIES */
+async function loadMovies(){
+  $("movieList").innerHTML='<div class="loading">Loading movies...</div>';
+  $("databaseStatus").textContent="Connecting...";
+  try{
+    const data=await apiRequest("/movies");
+    movies=Array.isArray(data.movies)?data.movies:[];
+    $("totalMovies").textContent=Number.isFinite(Number(data.total))
+      ?data.total:movies.length;
+    $("databaseStatus").textContent="Connected";
+    $("databaseStatus").style.color="var(--success)";
     renderMovies();
-
-  } catch (error) {
-    $("movieList").innerHTML =
-      '<div class="empty">Could not load movies. ' +
-      escapeHTML(error.message) + '</div>';
-
-    $("databaseStatus").textContent = "Error";
-    $("databaseStatus").style.color = "var(--danger)";
-
-    showNotice("mainNotice", error.message, "error");
+  }catch(error){
+    $("movieList").innerHTML='<div class="empty">Could not load movies. '+escapeHTML(error.message)+'</div>';
+    $("databaseStatus").textContent="Error";
+    $("databaseStatus").style.color="var(--danger)";
+    showNotice("mainNotice",error.message,"error");
   }
 }
 
-/* RENDER MOVIE LIBRARY */
-function renderMovies() {
-  const query = $("movieSearch").value.trim().toLowerCase();
-
-  const filtered = movies.filter(movie => {
-    const searchable = [
-      movie.title,
-      movie.genre,
-      movie.year,
-      movie.language,
-      movie.country,
-      movie.director
+function renderMovies(){
+  const query=$("movieSearch").value.trim().toLowerCase();
+  const filtered=movies.filter(movie=>{
+    const searchable=[
+      movie.title,movie.genre,movie.year,movie.language,
+      movie.country,movie.director
     ].join(" ").toLowerCase();
-
     return searchable.includes(query);
   });
 
-  $("resultCount").textContent = filtered.length + " movies";
-
-  if (!filtered.length) {
-    $("movieList").innerHTML =
-      '<div class="empty">No movies found.</div>';
+  $("resultCount").textContent=filtered.length+" movies";
+  if(!filtered.length){
+    $("movieList").innerHTML='<div class="empty">No movies found.</div>';
     return;
   }
 
-  $("movieList").innerHTML = filtered.map(movie => {
-    const poster = movie.poster || "";
-    const title = escapeHTML(movie.title || "Untitled");
-
-    const meta = [
-      movie.year,
-      movie.genre,
-      movie.language
-    ].filter(Boolean).map(escapeHTML).join(" · ");
-
-    const adCount = Number(movie.adCount ?? 4);
-
+  $("movieList").innerHTML=filtered.map(movie=>{
+    const meta=[movie.year,movie.genre,movie.language]
+      .filter(Boolean).map(escapeHTML).join(" · ");
+    const adCount=Number(movie.adCount??4);
     return `
       <div class="movie-item">
-        <img
-          class="movie-poster"
-          src="${escapeHTML(poster)}"
-          alt=""
-          loading="lazy"
-        >
-
+        <img class="movie-poster" src="${escapeHTML(movie.poster||"")}" alt="" loading="lazy">
         <div>
-          <div class="movie-title">${title}</div>
+          <div class="movie-title">${escapeHTML(movie.title||"Untitled")}</div>
+          <div class="movie-meta">${meta||"Movie details unavailable"}</div>
+          <div class="movie-meta">ID: ${escapeHTML(movie.id)}</div>
           <div class="movie-meta">
-            ${meta || "Movie details unavailable"}
-          </div>
-          <div class="movie-meta">
-            ID: ${escapeHTML(movie.id)}
-          </div>
-          <div class="movie-meta">
-            Download links: ${movie.downloadUrl ? "1" : "0"} configured ·
-            ${movie.downloadUrl2 ? "2nd link configured" : "2nd link not configured"}
+            Download links: ${movie.downloadUrl?"1 configured":"0 configured"} ·
+            ${movie.downloadUrl2?"2nd link configured":"2nd link not configured"}
           </div>
           <div class="movie-meta">
             Existing ad settings: ${adCount} ·
-            ${movie.adUrl ? "URL configured" : "URL not configured"}
+            ${movie.adUrl?"URL configured":"URL not configured"}
           </div>
         </div>
-
         <div class="movie-actions">
-          <button class="btn btn-small edit-btn"
-            data-id="${escapeHTML(movie.id)}">
-            Edit
-          </button>
-
-          <button class="btn btn-danger btn-small delete-btn"
-            data-id="${escapeHTML(movie.id)}">
-            Delete
-          </button>
+          <button class="btn btn-small edit-btn" data-id="${escapeHTML(movie.id)}">Edit</button>
+          <button class="btn btn-danger btn-small delete-btn" data-id="${escapeHTML(movie.id)}">Delete</button>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join("");
 
-  $("movieList").querySelectorAll(".movie-poster").forEach(img => {
-    img.addEventListener("error", () => {
-      img.style.visibility = "hidden";
-    });
+  $("movieList").querySelectorAll(".movie-poster").forEach(img=>{
+    img.addEventListener("error",()=>img.style.visibility="hidden");
   });
 }
 
-$("movieSearch").addEventListener("input", renderMovies);
-$("refreshBtn").addEventListener("click", loadMovies);
+$("movieSearch").addEventListener("input",renderMovies);
+$("refreshBtn").addEventListener("click",loadMovies);
 
-/* EDIT MOVIE */
-$("movieList").addEventListener("click", event => {
-  const editButton = event.target.closest(".edit-btn");
-  const deleteButton = event.target.closest(".delete-btn");
-
-  if (editButton) {
-    const movie = movies.find(item =>
-      String(item.id) === editButton.dataset.id
-    );
-
-    if (movie) editMovie(movie);
+$("movieList").addEventListener("click",event=>{
+  const editButton=event.target.closest(".edit-btn");
+  const deleteButton=event.target.closest(".delete-btn");
+  if(editButton){
+    const movie=movies.find(item=>String(item.id)===editButton.dataset.id);
+    if(movie)editMovie(movie);
   }
-
-  if (deleteButton) {
-    deleteMovie(deleteButton.dataset.id);
-  }
+  if(deleteButton)deleteMovie(deleteButton.dataset.id);
 });
 
-function editMovie(movie) {
-  editingId = movie.id;
-
-  const fields = [
-    "title",
-    "year",
-    "genre",
-    "language",
-    "country",
-    "rating",
-    "duration",
-    "director",
-    "poster",
-    "backdrop",
-    "description",
-    "watchUrl",
-    "downloadUrl",
-    "downloadUrl2",
-    "adUrl"
+function editMovie(movie){
+  editingId=movie.id;
+  const fields=[
+    "title","year","genre","language","country","rating","duration",
+    "director","poster","backdrop","description","watchUrl",
+    "downloadUrl","downloadUrl2","adUrl"
   ];
-
-  fields.forEach(field => {
-    $(field).value = movie[field] ?? "";
-  });
-
-  $("adCount").value = movie.adCount ?? 4;
-
-  $("featured").checked =
-    movie.featured === true ||
-    movie.featured === 1 ||
-    movie.featured === "1";
-
-  $("movieId").value = movie.id;
-
-  $("posterFile").value = "";
-  $("backdropFile").value = "";
-
-  $("posterStatus").textContent = "";
-  $("backdropStatus").textContent = "";
-
+  fields.forEach(field=>$(field).value=movie[field]??"");
+  $("adCount").value=movie.adCount??4;
+  $("movieId").value=movie.id;
+  $("posterFile").value="";
+  $("backdropFile").value="";
+  $("posterStatus").textContent="";
+  $("backdropStatus").textContent="";
   updatePreview("poster");
   updatePreview("backdrop");
-
-  $("formHeading").textContent = "Edit Movie";
-  $("formSubtitle").textContent = "Update movie information.";
-  $("saveBtn").textContent = "Update Movie";
+  $("formHeading").textContent="Edit Movie";
+  $("formSubtitle").textContent="Update movie information.";
+  $("saveBtn").textContent="Update Movie";
   $("cancelEditBtn").classList.remove("hidden");
-
   openTab("add");
-  window.scrollTo({top: 0, behavior: "smooth"});
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* RESET FORM */
-function resetMovieForm() {
+function resetMovieForm(){
   $("movieForm").reset();
-
-  $("movieId").value = "";
-  $("adCount").value = 4;
-
-  editingId = null;
-
-  $("posterStatus").textContent = "";
-  $("backdropStatus").textContent = "";
-
-  $("posterStatus").className = "upload-status";
-  $("backdropStatus").className = "upload-status";
-
-  $("posterPreview").classList.remove("visible");
-  $("backdropPreview").classList.remove("visible");
-
-  $("posterPreview").removeAttribute("src");
-  $("backdropPreview").removeAttribute("src");
-
-  $("formHeading").textContent = "Add New Movie";
-  $("formSubtitle").textContent =
-    "Add a movie to your CineVault database.";
-
-  $("saveBtn").textContent = "Save Movie";
+  $("movieId").value="";
+  $("adCount").value=4;
+  editingId=null;
+  ["poster","backdrop"].forEach(field=>{
+    $(field+"Status").textContent="";
+    $(field+"Status").className="upload-status";
+    $(field+"Preview").classList.remove("visible");
+    $(field+"Preview").removeAttribute("src");
+  });
+  $("formHeading").textContent="Add New Movie";
+  $("formSubtitle").textContent="Add a movie to your CineVault database.";
+  $("saveBtn").textContent="Save Movie";
   $("cancelEditBtn").classList.add("hidden");
 }
 
-$("cancelEditBtn").addEventListener("click", () => {
+$("cancelEditBtn").addEventListener("click",()=>{
   resetMovieForm();
   openTab("library");
 });
+$("resetBtn").addEventListener("click",()=>window.setTimeout(resetMovieForm,0));
 
-$("resetBtn").addEventListener("click", () => {
-  window.setTimeout(resetMovieForm, 0);
-});
-
-/* SAVE OR UPDATE MOVIE */
-$("movieForm").addEventListener("submit", async event => {
+$("movieForm").addEventListener("submit",async event=>{
   event.preventDefault();
-
-  if (activeUploads > 0) {
-    showNotice(
-      "mainNotice",
-      "Please wait until image uploads finish.",
-      "error"
-    );
+  if(activeUploads>0){
+    showNotice("mainNotice","Please wait until image uploads finish.","error");
     return;
   }
 
-  const movie = {
-    title: $("title").value.trim(),
-    year: $("year").value ? Number($("year").value) : null,
-    genre: $("genre").value.trim(),
-    language: $("language").value.trim(),
-    country: $("country").value.trim(),
-    rating: $("rating").value ? Number($("rating").value) : null,
-    duration: $("duration").value.trim(),
-    director: $("director").value.trim(),
-    poster: $("poster").value.trim(),
-    backdrop: $("backdrop").value.trim(),
-    description: $("description").value.trim(),
-    watchUrl: $("watchUrl").value.trim(),
-
-    // Two independent download links
-    downloadUrl: $("downloadUrl").value.trim(),
-    downloadUrl2: $("downloadUrl2").value.trim(),
-
-    // Existing advertisement fields preserved
-    adUrl: $("adUrl").value.trim(),
-    adCount: Number($("adCount").value),
-
-    featured: $("featured").checked
+  const movie={
+    title:$("title").value.trim(),
+    year:$("year").value?Number($("year").value):null,
+    genre:$("genre").value.trim(),
+    language:$("language").value.trim(),
+    country:$("country").value.trim(),
+    rating:$("rating").value?Number($("rating").value):null,
+    duration:$("duration").value.trim(),
+    director:$("director").value.trim(),
+    poster:$("poster").value.trim(),
+    backdrop:$("backdrop").value.trim(),
+    description:$("description").value.trim(),
+    watchUrl:$("watchUrl").value.trim(),
+    downloadUrl:$("downloadUrl").value.trim(),
+    downloadUrl2:$("downloadUrl2").value.trim(),
+    adUrl:$("adUrl").value.trim(),
+    adCount:Number($("adCount").value)
   };
 
-  if (!movie.title) {
-    showNotice("mainNotice", "Movie title is required.", "error");
+  if(!movie.title){
+    showNotice("mainNotice","Movie title is required.","error");
+    return;
+  }
+  if(!Number.isSafeInteger(movie.adCount)||movie.adCount<4){
+    showNotice("mainNotice","Advertisement count must be a whole number of at least 4.","error");
     return;
   }
 
-  if (
-    !Number.isSafeInteger(movie.adCount) ||
-    movie.adCount < 4
-  ) {
-    showNotice(
-      "mainNotice",
-      "Advertisement count must be a whole number of at least 4.",
-      "error"
-    );
-    return;
-  }
-
-  const urlFields = [
-    "poster",
-    "backdrop",
-    "watchUrl",
-    "downloadUrl",
-    "downloadUrl2",
-    "adUrl"
-  ];
-
-  for (const field of urlFields) {
-    if (movie[field] && !validHttpUrl(movie[field])) {
-      showNotice(
-        "mainNotice",
-        "Please enter a valid HTTP or HTTPS URL for " + field + ".",
-        "error"
-      );
+  for(const field of ["poster","backdrop","watchUrl","downloadUrl","downloadUrl2","adUrl"]){
+    if(movie[field]&&!validHttpUrl(movie[field])){
+      showNotice("mainNotice","Please enter a valid HTTP or HTTPS URL for "+field+".","error");
       return;
     }
   }
 
-  const isEditing = editingId !== null;
-  const currentEditingId = editingId;
+  const isEditing=editingId!==null;
+  const currentId=editingId;
+  const endpoint=isEditing?"/movies/"+encodeURIComponent(currentId):"/movies";
+  $("saveBtn").disabled=true;
+  $("saveBtn").textContent=isEditing?"Updating...":"Saving...";
 
-  const endpoint = isEditing
-    ? "/movies/" + encodeURIComponent(currentEditingId)
-    : "/movies";
-
-  $("saveBtn").disabled = true;
-  $("saveBtn").textContent = isEditing ? "Updating..." : "Saving...";
-
-  try {
-    await apiRequest(endpoint, {
-      method: isEditing ? "PUT" : "POST",
-      body: JSON.stringify(movie)
+  try{
+    await apiRequest(endpoint,{
+      method:isEditing?"PUT":"POST",
+      body:JSON.stringify(movie)
     });
-
-    showNotice(
-      "mainNotice",
-      isEditing
-        ? "Movie updated successfully."
-        : "Movie added successfully.",
-      "success"
-    );
-
+    showNotice("mainNotice",isEditing?"Movie updated successfully.":"Movie added successfully.","success");
     resetMovieForm();
     await loadMovies();
     openTab("library");
-
-  } catch (error) {
-    showNotice("mainNotice", error.message, "error");
-
-  } finally {
-    $("saveBtn").disabled = activeUploads > 0;
-    $("saveBtn").textContent =
-      editingId !== null ? "Update Movie" : "Save Movie";
+  }catch(error){
+    showNotice("mainNotice",error.message,"error");
+  }finally{
+    $("saveBtn").disabled=activeUploads>0;
+    $("saveBtn").textContent=editingId!==null?"Update Movie":"Save Movie";
   }
 });
 
-/* DELETE MOVIE */
-async function deleteMovie(id) {
-  const movie = movies.find(item => String(item.id) === String(id));
-
-  if (!confirm(
-    'Delete "' + (movie?.title || "this movie") +
-    '" permanently from the database?'
-  )) return;
-
-  try {
-    await apiRequest("/movies/" + encodeURIComponent(id), {
-      method: "DELETE"
-    });
-
-    showNotice("mainNotice", "Movie deleted successfully.", "success");
+async function deleteMovie(id){
+  const movie=movies.find(item=>String(item.id)===String(id));
+  if(!confirm('Delete "'+(movie?.title||"this movie")+'" permanently from the database?'))return;
+  try{
+    await apiRequest("/movies/"+encodeURIComponent(id),{method:"DELETE"});
+    showNotice("mainNotice","Movie deleted successfully.","success");
     await loadMovies();
+  }catch(error){
+    showNotice("mainNotice",error.message,"error");
+  }
+}
 
-  } catch (error) {
-    showNotice("mainNotice", error.message, "error");
+/* SETTINGS */
+function fillFields(fields,data){
+  fields.forEach(field=>{
+    if($(field))$(field).value=data?.[field]??"";
+  });
+}
+
+async function loadSettings(){
+  try{
+    const data=await apiRequest("/settings");
+    const settings=data.settings||{};
+    fillFields(SETTINGS_FIELDS,settings);
+    fillFields(HERO_FIELDS,settings);
+    updatePreview("hero");
+  }catch(error){
+    showNotice("mainNotice","Could not load website settings: "+error.message,"error");
+  }
+}
+
+$("settingsForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(activeUploads>0){
+    showNotice("mainNotice","Please wait until uploads finish.","error");
+    return;
+  }
+  const settings={};
+  SETTINGS_FIELDS.forEach(field=>settings[field]=$(field).value.trim());
+
+  $("settingsSaveBtn").disabled=true;
+  $("settingsSaveBtn").textContent="Saving...";
+  try{
+    await apiRequest("/settings",{
+      method:"PUT",
+      body:JSON.stringify(settings)
+    });
+    showNotice("mainNotice","Website settings saved successfully.","success");
+  }catch(error){
+    showNotice("mainNotice",error.message,"error");
+  }finally{
+    $("settingsSaveBtn").disabled=activeUploads>0;
+    $("settingsSaveBtn").textContent="Save Website Settings";
+  }
+});
+
+$("settingsReloadBtn").addEventListener("click",loadSettings);
+
+/* HERO */
+$("heroForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(activeUploads>0){
+    showNotice("mainNotice","Please wait until uploads finish.","error");
+    return;
+  }
+  const settings={};
+  HERO_FIELDS.forEach(field=>settings[field]=$(field).value.trim());
+
+  if(settings.heroImage&&!validHttpUrl(settings.heroImage)){
+    showNotice("mainNotice","Please enter a valid HTTP or HTTPS Hero image URL.","error");
+    return;
+  }
+
+  $("heroSaveBtn").disabled=true;
+  $("heroSaveBtn").textContent="Saving...";
+  try{
+    await apiRequest("/settings",{
+      method:"PUT",
+      body:JSON.stringify(settings)
+    });
+    showNotice("mainNotice","Hero Banner settings saved successfully.","success");
+  }catch(error){
+    showNotice("mainNotice",error.message,"error");
+  }finally{
+    $("heroSaveBtn").disabled=activeUploads>0;
+    $("heroSaveBtn").textContent="Save Hero Banner";
+  }
+});
+
+$("heroReloadBtn").addEventListener("click",loadSettings);
+
+/* COLLECTIONS */
+function resetCollectionForm(){
+  $("collectionForm").reset();
+  $("collectionId").value="";
+  $("collectionSortOrder").value=1;
+  $("collectionActive").value="true";
+  $("collectionFile").value="";
+  $("collectionStatus").textContent="";
+  $("collectionStatus").className="upload-status";
+  $("collectionPreview").classList.remove("visible");
+  $("collectionPreview").removeAttribute("src");
+  editingCollectionId=null;
+  $("collectionFormHeading").textContent="Add New Collection";
+  $("collectionSaveBtn").textContent="Save Collection";
+  $("collectionCancelBtn").classList.add("hidden");
+}
+
+async function loadCollections(){
+  $("collectionList").innerHTML='<div class="loading">Loading collections...</div>';
+  try{
+    const data=await apiRequest("/collections");
+    collections=Array.isArray(data.collections)?data.collections:[];
+    renderCollections();
+  }catch(error){
+    $("collectionList").innerHTML='<div class="empty">Could not load collections. '+escapeHTML(error.message)+'</div>';
+  }
+}
+
+function renderCollections(){
+  if(!collections.length){
+    $("collectionList").innerHTML='<div class="empty">No collections found. Add your first collection above.</div>';
+    return;
+  }
+
+  const ordered=[...collections].sort((a,b)=>
+    Number(a.sortOrder??0)-Number(b.sortOrder??0)
+  );
+
+  $("collectionList").innerHTML=ordered.map(item=>`
+    <div class="collection-item">
+      <img class="collection-image" src="${escapeHTML(item.image||"")}" alt="" loading="lazy">
+      <div>
+        <div class="movie-title">${escapeHTML(item.icon||"")} ${escapeHTML(item.name||"Untitled Collection")}</div>
+        <div class="movie-meta">${escapeHTML(item.description||"No description")}</div>
+        <div class="movie-meta">
+          Genre: ${escapeHTML(item.genre||"Not set")} ·
+          Order: ${escapeHTML(item.sortOrder??0)} ·
+          ${item.isActive===false||item.isActive===0?"Inactive":"Active"}
+        </div>
+        <div class="movie-meta">ID: ${escapeHTML(item.id)}</div>
+      </div>
+      <div class="movie-actions">
+        <button class="btn btn-small collection-edit-btn" data-id="${escapeHTML(item.id)}">Edit</button>
+        <button class="btn btn-danger btn-small collection-delete-btn" data-id="${escapeHTML(item.id)}">Delete</button>
+      </div>
+    </div>
+  `).join("");
+
+  $("collectionList").querySelectorAll(".collection-image").forEach(img=>{
+    img.addEventListener("error",()=>img.style.visibility="hidden");
+  });
+}
+
+$("collectionList").addEventListener("click",event=>{
+  const editButton=event.target.closest(".collection-edit-btn");
+  const deleteButton=event.target.closest(".collection-delete-btn");
+
+  if(editButton){
+    const item=collections.find(c=>String(c.id)===editButton.dataset.id);
+    if(item)editCollection(item);
+  }
+  if(deleteButton)deleteCollection(deleteButton.dataset.id);
+});
+
+function editCollection(item){
+  editingCollectionId=item.id;
+  $("collectionId").value=item.id;
+  $("collectionName").value=item.name??"";
+  $("collectionGenre").value=item.genre??"";
+  $("collectionIcon").value=item.icon??"";
+  $("collectionSortOrder").value=item.sortOrder??0;
+  $("collectionDescription").value=item.description??"";
+  $("collectionImage").value=item.image??"";
+  $("collectionActive").value=
+    item.isActive===false||item.isActive===0||item.isActive==="0"
+      ?"false":"true";
+
+  $("collectionFile").value="";
+  $("collectionStatus").textContent="";
+  updatePreview("collection");
+  $("collectionFormHeading").textContent="Edit Collection";
+  $("collectionSaveBtn").textContent="Update Collection";
+  $("collectionCancelBtn").classList.remove("hidden");
+  openTab("collections");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+$("collectionCancelBtn").addEventListener("click",resetCollectionForm);
+$("collectionResetBtn").addEventListener("click",()=>window.setTimeout(resetCollectionForm,0));
+$("collectionRefreshBtn").addEventListener("click",loadCollections);
+
+$("collectionForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(activeUploads>0){
+    showNotice("mainNotice","Please wait until image uploads finish.","error");
+    return;
+  }
+
+  const collection={
+    name:$("collectionName").value.trim(),
+    genre:$("collectionGenre").value.trim(),
+    icon:$("collectionIcon").value.trim(),
+    sortOrder:Number($("collectionSortOrder").value||0),
+    description:$("collectionDescription").value.trim(),
+    image:$("collectionImage").value.trim(),
+    isActive:$("collectionActive").value==="true"
+  };
+
+  if(!collection.name){
+    showNotice("mainNotice","Collection name is required.","error");
+    return;
+  }
+  if(collection.image&&!validHttpUrl(collection.image)){
+    showNotice("mainNotice","Please enter a valid collection image URL.","error");
+    return;
+  }
+
+  const isEditing=editingCollectionId!==null;
+  const endpoint=isEditing
+    ?"/collections/"+encodeURIComponent(editingCollectionId)
+    :"/collections";
+
+  $("collectionSaveBtn").disabled=true;
+  $("collectionSaveBtn").textContent=isEditing?"Updating...":"Saving...";
+
+  try{
+    await apiRequest(endpoint,{
+      method:isEditing?"PUT":"POST",
+      body:JSON.stringify(collection)
+    });
+    showNotice("mainNotice",isEditing?"Collection updated successfully.":"Collection created successfully.","success");
+    resetCollectionForm();
+    await loadCollections();
+  }catch(error){
+    showNotice("mainNotice",error.message,"error");
+  }finally{
+    $("collectionSaveBtn").disabled=activeUploads>0;
+    $("collectionSaveBtn").textContent=editingCollectionId!==null
+      ?"Update Collection":"Save Collection";
+  }
+});
+
+async function deleteCollection(id){
+  const item=collections.find(c=>String(c.id)===String(id));
+  if(!confirm('Delete "'+(item?.name||"this collection")+'" permanently?'))return;
+
+  try{
+    await apiRequest("/collections/"+encodeURIComponent(id),{
+      method:"DELETE"
+    });
+    showNotice("mainNotice","Collection deleted successfully.","success");
+    await loadCollections();
+  }catch(error){
+    showNotice("mainNotice",error.message,"error");
   }
 }
 
