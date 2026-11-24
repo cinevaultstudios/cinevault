@@ -314,19 +314,38 @@ function validLink(value) {
 
   if (!input) return "";
 
-  if (
-    input.startsWith("#") ||
-    input.startsWith("/") ||
-    input.startsWith("./") ||
-    input.startsWith("../")
-  ) {
-    if (/[\u0000-\u001F]/.test(input)) {
+  if (/[\u0000-\u001F]/.test(input)) {
+    throw new Error("Invalid link");
+  }
+
+  // Allow internal anchors.
+  if (input.startsWith("#")) {
+    return input;
+  }
+
+  // Allow root-relative paths, but reject protocol-relative URLs.
+  if (input.startsWith("/")) {
+    if (input.startsWith("//")) {
       throw new Error("Invalid link");
     }
 
     return input;
   }
 
+  // Allow ./ and ../ relative paths.
+  if (input.startsWith("./") || input.startsWith("../")) {
+    return input;
+  }
+
+  // Allow ordinary relative paths such as about.html.
+  if (
+    !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(input) &&
+    !input.startsWith("\\")
+  ) {
+    return input;
+  }
+
+  // External links must use HTTP or HTTPS.
   return validUrl(input);
 }
 
