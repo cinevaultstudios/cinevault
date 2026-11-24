@@ -47,20 +47,14 @@
     <div class="header-inner">
 
       <a href="index.html" class="brand" id="headerBrand" aria-label="CineVault Home">
-
         <span class="brand-icon" id="headerLogoIcon">C</span>
 
         <span id="headerLogoText">
           CINE<span class="gold-text">VAULT</span>
         </span>
-
       </a>
 
-      <nav
-        class="main-nav"
-        id="mainNav"
-        aria-label="Main navigation"
-      >
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
 
         <a href="#home" class="active" aria-current="page">
           Home
@@ -97,7 +91,6 @@
           class="watchlist-link"
           aria-label="Open my watchlist"
         >
-
           <span aria-hidden="true">♡</span>
 
           <span
@@ -105,7 +98,6 @@
             id="watchlistCount"
             aria-live="polite"
           >0</span>
-
         </a>
 
         <button
@@ -129,85 +121,150 @@
   <!-- MAIN CONTENT -->
   <main id="main-content">
 
-    <!-- HERO BANNER -->
+    <!-- MULTIPLE HERO BANNER SLIDER -->
     <section
-      class="hero-section"
+      class="hero-section hero-slider-section"
       id="home"
-      aria-labelledby="heroTitle"
+      aria-label="Featured banners"
     >
 
-      <div class="hero-overlay"></div>
+      <div
+        class="hero-slider"
+        id="heroSlider"
+        aria-roledescription="carousel"
+        aria-label="Featured content"
+      >
 
-      <div class="hero-content">
+        <!--
+          DEFAULT FALLBACK SLIDE
 
-        <span class="hero-eyebrow" id="heroEyebrow">
-          YOUR WORLD OF CINEMA
-        </span>
+          This slide preserves the legacy Hero IDs.
+          The updated script.js will render Admin-managed
+          heroBanners here when available.
+        -->
 
-        <h1 id="heroTitle">
+        <div
+          class="hero-slider-track"
+          id="heroSliderTrack"
+          aria-live="polite"
+        >
 
-          Discover Stories.<br>
-
-          <span class="gold-text" id="heroHighlight">
-            Experience Cinema.
-          </span>
-
-        </h1>
-
-        <p id="heroDescription">
-          Explore a curated world of movies, discover hidden gems
-          and find your next unforgettable experience.
-        </p>
-
-        <div class="hero-buttons">
-
-          <a
-            href="#movies"
-            class="btn btn-primary"
-            id="heroButton1"
+          <article
+            class="hero-slide hero-slide-active"
+            id="heroFallbackSlide"
+            aria-roledescription="slide"
+            aria-label="Featured banner"
           >
 
-            <span id="heroButton1Text">
-              Explore Movies
-            </span>
+            <div class="hero-overlay"></div>
 
-            <span aria-hidden="true">→</span>
+            <div class="hero-content">
 
-          </a>
+              <span class="hero-eyebrow" id="heroEyebrow">
+                YOUR WORLD OF CINEMA
+              </span>
 
-          <a
-            href="#collections"
-            class="btn btn-outline"
-            id="heroButton2"
-          >
-            Browse Collections
-          </a>
+              <h1 id="heroTitle">
+                Discover Stories.<br>
+
+                <span class="gold-text" id="heroHighlight">
+                  Experience Cinema.
+                </span>
+              </h1>
+
+              <p id="heroDescription">
+                Explore a curated world of movies, discover hidden gems
+                and find your next unforgettable experience.
+              </p>
+
+              <div class="hero-buttons">
+
+                <a
+                  href="#movies"
+                  class="btn btn-primary"
+                  id="heroButton1"
+                >
+                  <span id="heroButton1Text">
+                    Explore Movies
+                  </span>
+
+                  <span aria-hidden="true">→</span>
+                </a>
+
+                <a
+                  href="#collections"
+                  class="btn btn-outline"
+                  id="heroButton2"
+                >
+                  Browse Collections
+                </a>
+
+              </div>
+
+              <div class="hero-stats">
+
+                <div>
+                  <strong id="totalMovies" aria-live="polite">0</strong>
+                  <span>Movies</span>
+                </div>
+
+                <div>
+                  <strong>Worldwide</strong>
+                  <span>Cinema</span>
+                </div>
+
+                <div>
+                  <strong>Premium</strong>
+                  <span>Experience</span>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="hero-decoration" aria-hidden="true">
+              <span>C</span>
+            </div>
+
+          </article>
 
         </div>
 
-        <div class="hero-stats">
 
-          <div>
-            <strong id="totalMovies" aria-live="polite">0</strong>
-            <span>Movies</span>
-          </div>
+        <!-- SLIDER NAVIGATION -->
+        <div class="hero-slider-navigation" id="heroSliderNavigation" hidden>
 
-          <div>
-            <strong>Worldwide</strong>
-            <span>Cinema</span>
-          </div>
+          <button
+            class="hero-slider-arrow hero-slider-prev"
+            id="heroSliderPrev"
+            type="button"
+            aria-label="Previous banner"
+          >
+            &#10094;
+          </button>
 
-          <div>
-            <strong>Premium</strong>
-            <span>Experience</span>
-          </div>
+          <button
+            class="hero-slider-arrow hero-slider-next"
+            id="heroSliderNext"
+            type="button"
+            aria-label="Next banner"
+          >
+            &#10095;
+          </button>
 
         </div>
 
-      </div>
 
-      <div class="hero-decoration" aria-hidden="true">
-        <span>C</span>
+        <!-- SLIDER INDICATORS -->
+        <div
+          class="hero-slider-dots"
+          id="heroSliderDots"
+          role="group"
+          aria-label="Choose featured banner"
+          hidden
+        >
+        </div>
+
       </div>
 
     </section>
@@ -215,7 +272,7 @@
 
     <!-- MOVIE COLLECTIONS -->
     <section
-      class="section collections-section"
+      class="section collections-section compact-collections-section"
       id="collections"
       aria-labelledby="collectionsHeading"
     >
@@ -320,12 +377,10 @@
             id="sortMovies"
             aria-label="Sort movies"
           >
-
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
             <option value="rating">Top Rated</option>
             <option value="az">Name A–Z</option>
-
           </select>
 
           <button
@@ -743,7 +798,6 @@
     </div>
 
   </footer>
-
 
 </body>
 </html>
