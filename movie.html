@@ -122,7 +122,8 @@
       margin-top: 28px;
     }
 
-    .movie-action-buttons a {
+    .movie-action-buttons a,
+    .movie-action-buttons button {
       display: inline-block;
       text-decoration: none;
       padding: 14px 25px;
@@ -130,19 +131,25 @@
       font-weight: 700;
       text-align: center;
       transition: .2s;
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
     }
 
     .watch-button {
       background: #d6b36a;
       color: #080a0f;
+      border: 1px solid #d6b36a;
     }
 
     .download-button {
+      background: transparent;
       border: 1px solid #d6b36a;
       color: #d6b36a;
     }
 
-    .movie-action-buttons a:hover {
+    .movie-action-buttons a:hover,
+    .movie-action-buttons button:hover {
       transform: translateY(-3px);
       opacity: .9;
     }
@@ -211,6 +218,175 @@
       padding: 100px 20px;
     }
 
+    /* ADVERTISEMENT GATE */
+
+    .cv-ad-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, .86);
+      backdrop-filter: blur(7px);
+    }
+
+    .cv-ad-overlay.active {
+      display: flex;
+    }
+
+    .cv-ad-modal {
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+      background: #10141d;
+      border: 1px solid rgba(214,179,106,.45);
+      border-radius: 15px;
+      padding: 30px 25px;
+      box-shadow: 0 20px 70px rgba(0,0,0,.65);
+      text-align: center;
+      animation: cvModalIn .22s ease;
+    }
+
+    @keyframes cvModalIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px) scale(.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .cv-ad-close {
+      position: absolute;
+      right: 13px;
+      top: 10px;
+      border: none;
+      background: transparent;
+      color: #aaa;
+      font-size: 26px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .cv-ad-close:hover {
+      color: #fff;
+    }
+
+    .cv-ad-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(214,179,106,.12);
+      color: #d6b36a;
+      font-size: 27px;
+    }
+
+    .cv-ad-modal h2 {
+      color: #d6b36a;
+      font-size: 23px;
+      margin: 0 0 10px;
+    }
+
+    .cv-ad-description {
+      color: #bbb;
+      font-size: 14px;
+      line-height: 1.7;
+      margin: 0 0 20px;
+    }
+
+    .cv-ad-progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: #ddd;
+      font-size: 13px;
+      margin-bottom: 9px;
+    }
+
+    .cv-ad-progress-track {
+      width: 100%;
+      height: 9px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #252b36;
+      margin-bottom: 22px;
+    }
+
+    .cv-ad-progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #a9823d, #e9ca82);
+      transition: width .25s ease;
+    }
+
+    .cv-ad-visit,
+    .cv-ad-continue {
+      width: 100%;
+      min-height: 48px;
+      padding: 13px 18px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+      font-family: inherit;
+    }
+
+    .cv-ad-visit {
+      border: 1px solid #d6b36a;
+      background: #d6b36a;
+      color: #080a0f;
+    }
+
+    .cv-ad-continue {
+      margin-top: 11px;
+      border: 1px solid #d6b36a;
+      background: transparent;
+      color: #d6b36a;
+    }
+
+    .cv-ad-visit:hover,
+    .cv-ad-continue:not(:disabled):hover {
+      opacity: .88;
+      transform: translateY(-2px);
+    }
+
+    .cv-ad-continue:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    .cv-ad-status {
+      min-height: 22px;
+      color: #d6b36a;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 13px 0 0;
+    }
+
+    .cv-ad-note {
+      color: #777;
+      font-size: 11px;
+      line-height: 1.6;
+      margin: 14px 0 0;
+    }
+
+    .cv-ad-no-url {
+      color: #ff9999;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 12px 0 0;
+    }
+
     @media (max-width: 900px) {
       .similar-movies-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -242,8 +418,13 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .movie-action-buttons a {
+      .movie-action-buttons a,
+      .movie-action-buttons button {
         flex: 1 1 130px;
+      }
+
+      .cv-ad-modal {
+        padding: 28px 19px 22px;
       }
     }
 
@@ -299,6 +480,12 @@
   const requestedId = params.get("id");
   const requestedSlug = params.get("title");
 
+  let activeDownload = null;
+  let currentMovie = null;
+
+  // Fallback storage for browsers where sessionStorage is unavailable.
+  const memoryProgress = Object.create(null);
+
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, function (char) {
       return {
@@ -315,7 +502,7 @@
     if (!value) return "";
 
     try {
-      const parsed = new URL(value);
+      const parsed = new URL(String(value).trim());
 
       if (!["https:", "http:"].includes(parsed.protocol)) {
         return "";
@@ -356,13 +543,20 @@
   }
 
   function normalizeMovie(movie) {
+    const rawAdCount = Number(
+      movie.adCount ?? movie.ad_count ?? 4
+    );
+
     return {
       ...movie,
+
       id: movie.id,
+
       title: movie.title || "Untitled Movie",
       poster: movie.poster || "",
       backdrop: movie.backdrop || "",
       description: movie.description || "",
+
       year: movie.year || "",
       genre: movie.genre || "",
       rating: movie.rating ?? "",
@@ -371,9 +565,21 @@
       country: movie.country || "",
       director: movie.director || "",
       quality: movie.quality || "",
+
       watchUrl: movie.watchUrl || movie.watch_url || "",
-      downloadUrl: movie.downloadUrl || movie.download_url || "",
-      downloadUrl2: movie.downloadUrl2 || movie.download_url_2 || ""
+
+      downloadUrl:
+        movie.downloadUrl || movie.download_url || "",
+
+      downloadUrl2:
+        movie.downloadUrl2 || movie.download_url_2 || "",
+
+      // Advertisement settings from Cloudflare D1 API.
+      adUrl: validURL(movie.adUrl || movie.ad_url || ""),
+
+      adCount: Number.isFinite(rawAdCount)
+        ? Math.max(4, Math.min(1000, Math.floor(rawAdCount)))
+        : 4
     };
   }
 
@@ -407,7 +613,380 @@
     `;
   }
 
+  // Unique progress key for each movie and download button.
+  function getProgressKey(movieId, downloadType) {
+    return "cinevault_ad_progress_" +
+      String(movieId) + "_" + String(downloadType);
+  }
+
+  function getAdProgress(movieId, downloadType) {
+    const key = getProgressKey(movieId, downloadType);
+
+    try {
+      const value = Number(sessionStorage.getItem(key) || 0);
+
+      return Math.max(0, Math.floor(value));
+    } catch {
+      return Number(memoryProgress[key] || 0);
+    }
+  }
+
+  function saveAdProgress(movieId, downloadType, count) {
+    const key = getProgressKey(movieId, downloadType);
+
+    memoryProgress[key] = count;
+
+    try {
+      sessionStorage.setItem(key, String(count));
+    } catch {
+      // Memory fallback remains active.
+    }
+  }
+
+  function clearAdProgress(movieId, downloadType) {
+    const key = getProgressKey(movieId, downloadType);
+
+    delete memoryProgress[key];
+
+    try {
+      sessionStorage.removeItem(key);
+    } catch {
+      // Ignore unavailable storage.
+    }
+  }
+
+  function createAdModal() {
+    const existing = document.getElementById("cvAdOverlay");
+
+    if (existing) {
+      existing.remove();
+    }
+
+    const overlay = document.createElement("div");
+
+    overlay.id = "cvAdOverlay";
+    overlay.className = "cv-ad-overlay";
+
+    overlay.innerHTML = `
+      <div
+        class="cv-ad-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cvAdTitle">
+
+        <button
+          type="button"
+          class="cv-ad-close"
+          id="cvAdClose"
+          aria-label="Close advertisement dialog">
+          &times;
+        </button>
+
+        <div class="cv-ad-icon">↗</div>
+
+        <h2 id="cvAdTitle">Unlock Your Download</h2>
+
+        <p class="cv-ad-description" id="cvAdDescription">
+          Complete the advertisement steps to unlock your download.
+        </p>
+
+        <div class="cv-ad-progress-label">
+          <span>Advertisement Progress</span>
+          <strong id="cvAdCounter">0 / 4</strong>
+        </div>
+
+        <div
+          class="cv-ad-progress-track"
+          role="progressbar"
+          aria-label="Advertisement progress"
+          aria-valuemin="0"
+          aria-valuemax="4"
+          aria-valuenow="0"
+          id="cvAdProgressBar">
+
+          <div
+            class="cv-ad-progress-fill"
+            id="cvAdProgressFill">
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="cv-ad-visit"
+          id="cvAdVisit">
+          ↗ VISIT ADVERTISEMENT
+        </button>
+
+        <button
+          type="button"
+          class="cv-ad-continue"
+          id="cvAdContinue"
+          disabled>
+          ↓ CONTINUE TO DOWNLOAD
+        </button>
+
+        <p
+          class="cv-ad-status"
+          id="cvAdStatus"
+          aria-live="polite">
+        </p>
+
+        <p class="cv-ad-note">
+          Each successful advertisement tab opening counts as one step.
+        </p>
+
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    document.getElementById("cvAdClose").addEventListener(
+      "click",
+      closeAdModal
+    );
+
+    document.getElementById("cvAdVisit").addEventListener(
+      "click",
+      visitAdvertisement
+    );
+
+    document.getElementById("cvAdContinue").addEventListener(
+      "click",
+      continueToDownload
+    );
+
+    overlay.addEventListener("click", function (event) {
+      if (event.target === overlay) {
+        closeAdModal();
+      }
+    });
+
+    return overlay;
+  }
+
+  function updateAdModal() {
+    if (!activeDownload) return;
+
+    const movie = activeDownload.movie;
+    const type = activeDownload.type;
+
+    const required = movie.adCount;
+    const progress = getAdProgress(movie.id, type);
+
+    const completed = Math.min(progress, required);
+    const percentage = Math.min(
+      100,
+      (completed / required) * 100
+    );
+
+    const counter = document.getElementById("cvAdCounter");
+    const fill = document.getElementById("cvAdProgressFill");
+    const bar = document.getElementById("cvAdProgressBar");
+    const visitButton = document.getElementById("cvAdVisit");
+    const continueButton = document.getElementById("cvAdContinue");
+    const status = document.getElementById("cvAdStatus");
+    const description = document.getElementById("cvAdDescription");
+
+    if (!counter || !fill || !bar || !visitButton ||
+        !continueButton || !status || !description) {
+      return;
+    }
+
+    counter.textContent = completed + " / " + required;
+
+    fill.style.width = percentage + "%";
+
+    bar.setAttribute("aria-valuemax", String(required));
+    bar.setAttribute("aria-valuenow", String(completed));
+
+    description.textContent =
+      "Open the advertisement " + required +
+      " times to unlock " +
+      (type === "download1" ? "Download 1" : "Download 2") +
+      " for " + movie.title + ".";
+
+    const unlocked = progress >= required;
+
+    continueButton.disabled = !unlocked;
+
+    if (unlocked) {
+      visitButton.textContent = "✓ AD STEPS COMPLETED";
+      visitButton.disabled = true;
+
+      status.textContent =
+        "All advertisement steps completed. Your download is now unlocked.";
+
+    } else {
+      visitButton.disabled = false;
+      visitButton.textContent = "↗ VISIT ADVERTISEMENT";
+
+      status.textContent =
+        "Complete " + (required - completed) +
+        " more advertisement step(s).";
+    }
+
+    if (!movie.adUrl) {
+      visitButton.disabled = true;
+      continueButton.disabled = true;
+
+      status.textContent =
+        "Advertisement URL is not configured for this movie.";
+
+      description.textContent =
+        "The advertisement link has not been configured by the administrator.";
+
+      visitButton.textContent = "ADVERTISEMENT UNAVAILABLE";
+    }
+  }
+
+  function openAdModal(movie, type, downloadUrl) {
+    if (!movie || !downloadUrl) return;
+
+    activeDownload = {
+      movie: movie,
+      type: type,
+      downloadUrl: downloadUrl
+    };
+
+    const overlay = document.getElementById("cvAdOverlay") ||
+      createAdModal();
+
+    overlay.classList.add("active");
+
+    updateAdModal();
+
+    const closeButton = document.getElementById("cvAdClose");
+
+    if (closeButton) {
+      closeButton.focus();
+    }
+  }
+
+  function closeAdModal() {
+    const overlay = document.getElementById("cvAdOverlay");
+
+    if (overlay) {
+      overlay.classList.remove("active");
+    }
+
+    activeDownload = null;
+  }
+
+  // Open advertisement directly from a user click.
+  function visitAdvertisement() {
+    if (!activeDownload) return;
+
+    const movie = activeDownload.movie;
+    const type = activeDownload.type;
+
+    if (!movie.adUrl) {
+      updateAdModal();
+      return;
+    }
+
+    const currentProgress = getAdProgress(movie.id, type);
+
+    if (currentProgress >= movie.adCount) {
+      updateAdModal();
+      return;
+    }
+
+    /*
+      Important:
+      window.open is called synchronously from the click handler.
+      This gives the browser the best chance to allow the popup.
+    */
+
+    let adWindow = null;
+
+    try {
+      adWindow = window.open(movie.adUrl, "_blank");
+
+      if (!adWindow) {
+        document.getElementById("cvAdStatus").textContent =
+          "Your browser blocked the advertisement tab. Please allow pop-ups and try again.";
+
+        return;
+      }
+
+      try {
+        adWindow.opener = null;
+      } catch {
+        // The advertisement tab may restrict opener access.
+      }
+
+    } catch (error) {
+      console.error("Advertisement opening error:", error);
+
+      document.getElementById("cvAdStatus").textContent =
+        "Unable to open the advertisement. Please try again.";
+
+      return;
+    }
+
+    const nextProgress = currentProgress + 1;
+
+    saveAdProgress(movie.id, type, nextProgress);
+
+    updateAdModal();
+  }
+
+  function continueToDownload() {
+    if (!activeDownload) return;
+
+    const movie = activeDownload.movie;
+    const type = activeDownload.type;
+
+    const progress = getAdProgress(movie.id, type);
+
+    if (progress < movie.adCount) {
+      updateAdModal();
+      return;
+    }
+
+    const downloadUrl = activeDownload.downloadUrl;
+
+    if (!downloadUrl) return;
+
+    /*
+      The actual download URL is opened only after
+      the configured advertisement steps are completed.
+    */
+
+    const downloadWindow = window.open(
+      downloadUrl,
+      "_blank"
+    );
+
+    if (!downloadWindow) {
+      document.getElementById("cvAdStatus").textContent =
+        "Your browser blocked the download tab. Please allow pop-ups and try again.";
+
+      return;
+    }
+
+    try {
+      downloadWindow.opener = null;
+    } catch {
+      // Ignore opener restrictions.
+    }
+
+    // Reset only the completed download button's progress.
+    clearAdProgress(movie.id, type);
+
+    closeAdModal();
+  }
+
+  // Escape key closes the advertisement modal.
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeAdModal();
+    }
+  });
+
   function renderMovie(movie, similarMovies) {
+    currentMovie = movie;
+
     const poster =
       validImage(movie.poster) ||
       fallbackArtwork(movie.title);
@@ -439,23 +1018,23 @@
 
     if (downloadUrl) {
       buttons.push(`
-        <a class="download-button"
-           href="${escapeHTML(downloadUrl)}"
-           target="_blank"
-           rel="noopener noreferrer">
+        <button
+          type="button"
+          class="download-button"
+          data-download-type="download1">
           ↓ DOWNLOAD 1
-        </a>
+        </button>
       `);
     }
 
     if (downloadUrl2) {
       buttons.push(`
-        <a class="download-button"
-           href="${escapeHTML(downloadUrl2)}"
-           target="_blank"
-           rel="noopener noreferrer">
+        <button
+          type="button"
+          class="download-button"
+          data-download-type="download2">
           ↓ DOWNLOAD 2
-        </a>
+        </button>
       `);
     }
 
@@ -496,9 +1075,7 @@
 
           <h2>About the Movie</h2>
 
-          <p class="movie-detail-description">
-            ${escapeHTML(description)}
-          </p>
+          <p class="movie-detail-description">${escapeHTML(description)}</p>
 
           <div class="movie-info-list">
             ${createInfoItem("Release Year", movie.year)}
@@ -538,10 +1115,43 @@
       }
     `;
 
+    // Advertisement modal is created once per movie page.
+    createAdModal();
+
+    // Download button event delegation.
+    container.addEventListener("click", function (event) {
+      const button = event.target.closest(
+        "[data-download-type]"
+      );
+
+      if (!button) return;
+
+      const type = button.dataset.downloadType;
+
+      let targetUrl = "";
+
+      if (type === "download1") {
+        targetUrl = downloadUrl;
+      }
+
+      if (type === "download2") {
+        targetUrl = downloadUrl2;
+      }
+
+      if (!targetUrl) return;
+
+      openAdModal(movie, type, targetUrl);
+    });
+
     const backdropElement =
       document.getElementById("movieBackdrop");
 
     if (backdropElement) {
+      const safeBackdrop = backdrop.replace(
+        /["\\\n\r]/g,
+        "\\$&"
+      );
+
       backdropElement.style.backgroundImage = `
         linear-gradient(
           0deg,
@@ -549,7 +1159,7 @@
           rgba(8,10,15,.55) 65%,
           rgba(8,10,15,.25)
         ),
-        url("${backdrop.replace(/["\\]/g, "")}")
+        url("${safeBackdrop}")
       `;
     }
 
@@ -592,7 +1202,7 @@
       return;
     }
 
-    if (!/^[a-zA-Z0-9-]+$/.test(identifier)) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(identifier)) {
       showError(
         "Invalid Movie Link",
         "The movie address is not valid."
