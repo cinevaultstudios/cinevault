@@ -12,7 +12,7 @@ const SESSION_SECONDS = 8 * 60 * 60;
 const CLOUDINARY_CLOUD_NAME = "v9vl1rze";
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_PAGE_SIZE = 100;
-const MAX_BANNERS = 10;
+const MAX_BANNERS = 4;
 const MAX_BANNER_DATA_SIZE = 50000;
 
 let schemaPromise = null;
@@ -107,7 +107,6 @@ const DEFAULT_SETTINGS = {
   moviesEyebrowUrl: "",
   moviesHeading: "Explore",
   moviesHeadingHighlight: "Movies",
-  moviesHeadingUrl: "",
   moviesDescription: "Browse the latest additions and discover your next favourite movie.",
   moviesDescriptionUrl: "",
 
@@ -225,8 +224,6 @@ async function ensureCustomizationSchema(env) {
         )
       `).run();
 
-      /* Add missing fields without deleting old data. */
-
       await addMissingColumns(db, "movies", {
         slug: "TEXT",
         description: "TEXT DEFAULT ''",
@@ -249,8 +246,6 @@ async function ensureCustomizationSchema(env) {
         created_at: "TEXT DEFAULT ''",
         updated_at: "TEXT DEFAULT ''"
       });
-
-      /* Normalize existing movie data and timestamps. */
 
       await db.prepare(`
         UPDATE movies
@@ -313,8 +308,6 @@ async function ensureCustomizationSchema(env) {
         created_at: "TEXT DEFAULT ''",
         updated_at: "TEXT DEFAULT ''"
       });
-
-      /* Normalize existing collection timestamps. */
 
       await db.prepare(`
         UPDATE collections
@@ -1802,11 +1795,6 @@ export default {
       });
 
     } catch (error) {
-      /*
-        Do not expose database details, credentials,
-        SQL statements or internal stack traces publicly.
-      */
-
       console.error("CineVault Worker Error:", error);
 
       return errorResponse(
