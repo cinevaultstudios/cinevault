@@ -439,12 +439,21 @@
 <body>
 
 <header class="site-header">
-  <a class="brand" href="index.html" aria-label="CineVault Home">
+  <a class="brand"
+     href="index.html"
+     target="_blank"
+     rel="noopener noreferrer"
+     aria-label="CineVault Home">
     <span class="brand-mark">C</span>
     <span>CINE<span>VAULT</span></span>
   </a>
 
-  <a class="header-cta" href="index.html">Back to CineVault ↗</a>
+  <a class="header-cta"
+     href="index.html"
+     target="_blank"
+     rel="noopener noreferrer">
+    Back to CineVault ↗
+  </a>
 </header>
 
 <main id="movieDetails" class="movie-details-page">
@@ -459,9 +468,9 @@
     <span>© <span id="year"></span> CineVault</span>
 
     <div class="footer-links">
-      <a href="about.html">About</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Terms</a>
+      <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+      <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy</a>
+      <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms</a>
     </div>
   </div>
 </footer>
@@ -516,6 +525,25 @@
 
   function validImage(value) {
     return validURL(value);
+  }
+
+  // Open a URL in a separate tab from a direct user interaction.
+  function openNewTab(url) {
+    const safeUrl = validURL(url);
+
+    if (!safeUrl) return null;
+
+    const newWindow = window.open(safeUrl, "_blank");
+
+    if (newWindow) {
+      try {
+        newWindow.opener = null;
+      } catch {
+        // Ignore cross-origin opener restrictions.
+      }
+    }
+
+    return newWindow;
   }
 
   function fallbackArtwork(title) {
@@ -599,7 +627,9 @@
 
     return `
       <a class="similar-movie-card"
-         href="movie.html?id=${encodeURIComponent(movie.id)}">
+         href="movie.html?id=${encodeURIComponent(movie.id)}"
+         target="_blank"
+         rel="noopener noreferrer">
 
         <img
           src="${escapeHTML(poster)}"
@@ -872,7 +902,7 @@
     activeDownload = null;
   }
 
-  // Open advertisement directly from a user click.
+  // Open advertisement in a separate tab.
   function visitAdvertisement() {
     if (!activeDownload) return;
 
@@ -892,34 +922,15 @@
     }
 
     /*
-      Important:
       window.open is called synchronously from the click handler.
       This gives the browser the best chance to allow the popup.
     */
 
-    let adWindow = null;
+    const adWindow = openNewTab(movie.adUrl);
 
-    try {
-      adWindow = window.open(movie.adUrl, "_blank");
-
-      if (!adWindow) {
-        document.getElementById("cvAdStatus").textContent =
-          "Your browser blocked the advertisement tab. Please allow pop-ups and try again.";
-
-        return;
-      }
-
-      try {
-        adWindow.opener = null;
-      } catch {
-        // The advertisement tab may restrict opener access.
-      }
-
-    } catch (error) {
-      console.error("Advertisement opening error:", error);
-
+    if (!adWindow) {
       document.getElementById("cvAdStatus").textContent =
-        "Unable to open the advertisement. Please try again.";
+        "Your browser blocked the advertisement tab. Please allow pop-ups and try again.";
 
       return;
     }
@@ -953,22 +964,13 @@
       the configured advertisement steps are completed.
     */
 
-    const downloadWindow = window.open(
-      downloadUrl,
-      "_blank"
-    );
+    const downloadWindow = openNewTab(downloadUrl);
 
     if (!downloadWindow) {
       document.getElementById("cvAdStatus").textContent =
         "Your browser blocked the download tab. Please allow pop-ups and try again.";
 
       return;
-    }
-
-    try {
-      downloadWindow.opener = null;
-    } catch {
-      // Ignore opener restrictions.
     }
 
     // Reset only the completed download button's progress.
@@ -1186,7 +1188,13 @@
       <div class="movie-error">
         <h1>${escapeHTML(title)}</h1>
         <p>${escapeHTML(message)}</p>
-        <p><a href="index.html">← Return to Home</a></p>
+        <p>
+          <a href="index.html"
+             target="_blank"
+             rel="noopener noreferrer">
+            ← Return to Home
+          </a>
+        </p>
       </div>
     `;
   }
