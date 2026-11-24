@@ -71,7 +71,7 @@ label{display:block;font-size:12px;color:#bbb;margin-bottom:7px;font-weight:600}
 .movie-poster,.collection-image{width:65px;height:85px;object-fit:cover;border-radius:5px;background:#222}
 .collection-image{height:65px}
 .movie-title{font-weight:700;font-size:14px}
-.movie-meta{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+.movie-meta{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;overflow-wrap:anywhere}
 .movie-actions{display:flex;gap:7px;flex-wrap:wrap}
 .notice{display:none;padding:12px 15px;border-radius:7px;margin:15px 0;font-size:13px;line-height:1.5}
 .notice.show{display:block}
@@ -90,6 +90,11 @@ label{display:block;font-size:12px;color:#bbb;margin-bottom:7px;font-weight:600}
 .login-foot{text-align:center;color:#777;font-size:11px;margin-top:20px}
 .section-note{padding:12px;background:#171717;border:1px solid #333;border-radius:7px;color:#aaa;font-size:12px;line-height:1.6;margin-bottom:18px}
 .divider{border:0;border-top:1px solid var(--border);margin:22px 0}
+.subheading{font-size:14px;color:var(--gold);margin:5px 0 0}
+.url-field{background:#0e0e0e;border:1px solid #292929;border-radius:8px;padding:12px;margin-top:8px}
+.url-field label{color:#d6ad55}
+.url-field input{font-size:12px}
+.field-help{font-size:10px;color:#777;margin-top:6px;line-height:1.5}
 footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px solid var(--border);margin-top:35px}
 @media(max-width:700px){
   .container{padding:17px}
@@ -107,7 +112,6 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
 </head>
 
 <body>
-
 <header>
   <div class="header-inner">
     <div class="brand">CINEVAULT<small>ADMINISTRATION PANEL</small></div>
@@ -139,10 +143,8 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
 </section>
 
 <main class="container hidden" id="dashboard">
-
   <h1>Admin <span class="gold">Dashboard</span></h1>
   <p class="page-subtitle">Manage your CineVault website, movies, hero banner and collections.</p>
-
   <div id="mainNotice" class="notice"></div>
 
   <section class="stats">
@@ -164,13 +166,9 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
     <button class="tab" data-tab="collections">Movie Collections</button>
   </div>
 
-  <!-- MOVIE LIBRARY -->
   <section id="libraryTab" class="panel">
     <div class="toolbar">
-      <div>
-        <h2>Movie Library</h2>
-        <p class="page-subtitle">Search, edit and delete movies in your D1 database.</p>
-      </div>
+      <div><h2>Movie Library</h2><p class="page-subtitle">Search, edit and delete movies in your D1 database.</p></div>
       <button class="btn" id="refreshBtn">Refresh</button>
     </div>
     <div class="toolbar">
@@ -180,51 +178,23 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
     <div id="movieList" class="movie-list"><div class="loading">Loading movies...</div></div>
   </section>
 
-  <!-- ADD / EDIT MOVIE -->
   <section id="addTab" class="panel hidden">
     <h2 id="formHeading">Add New Movie</h2>
     <p class="page-subtitle" id="formSubtitle">Add a movie to your CineVault database.</p>
-
     <form id="movieForm">
       <input type="hidden" id="movieId">
       <div class="form-grid">
-
-        <div class="form-group">
-          <label for="title">MOVIE TITLE *</label>
-          <input id="title" required maxlength="200" placeholder="Movie title">
-        </div>
-        <div class="form-group">
-          <label for="year">RELEASE YEAR</label>
-          <input id="year" type="number" min="1888" max="2100" placeholder="2026">
-        </div>
-        <div class="form-group">
-          <label for="genre">GENRE</label>
-          <input id="genre" placeholder="Action, Drama, Thriller">
-        </div>
-        <div class="form-group">
-          <label for="language">LANGUAGE</label>
-          <input id="language" placeholder="English, Hindi, Bangla">
-        </div>
-        <div class="form-group">
-          <label for="country">COUNTRY</label>
-          <input id="country" placeholder="USA, India, Bangladesh">
-        </div>
-        <div class="form-group">
-          <label for="rating">IMDB RATING</label>
-          <input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5">
-        </div>
-        <div class="form-group">
-          <label for="duration">DURATION</label>
-          <input id="duration" placeholder="2h 15m">
-        </div>
-        <div class="form-group">
-          <label for="director">DIRECTOR</label>
-          <input id="director" placeholder="Director name">
-        </div>
+        <div class="form-group"><label for="title">MOVIE TITLE *</label><input id="title" required maxlength="200" placeholder="Movie title"></div>
+        <div class="form-group"><label for="year">RELEASE YEAR</label><input id="year" type="number" min="1888" max="2100" placeholder="2026"></div>
+        <div class="form-group"><label for="genre">GENRE</label><input id="genre" placeholder="Action, Drama, Thriller"></div>
+        <div class="form-group"><label for="language">LANGUAGE</label><input id="language" placeholder="English, Hindi, Bangla"></div>
+        <div class="form-group"><label for="country">COUNTRY</label><input id="country" placeholder="USA, India, Bangladesh"></div>
+        <div class="form-group"><label for="rating">IMDB RATING</label><input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5"></div>
+        <div class="form-group"><label for="duration">DURATION</label><input id="duration" placeholder="2h 15m"></div>
+        <div class="form-group"><label for="director">DIRECTOR</label><input id="director" placeholder="Director name"></div>
 
         <div class="form-group full">
-          <label for="poster">POSTER IMAGE URL</label>
-          <input id="poster" type="url" placeholder="Image URL">
+          <label for="poster">POSTER IMAGE URL</label><input id="poster" type="url" placeholder="Image URL">
           <div class="upload-box">
             <label for="posterFile">UPLOAD POSTER FROM DEVICE</label>
             <input id="posterFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
@@ -233,10 +203,8 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
             <img id="posterPreview" class="image-preview" alt="Poster preview">
           </div>
         </div>
-
         <div class="form-group full">
-          <label for="backdrop">BACKDROP IMAGE URL</label>
-          <input id="backdrop" type="url" placeholder="Image URL">
+          <label for="backdrop">BACKDROP IMAGE URL</label><input id="backdrop" type="url" placeholder="Image URL">
           <div class="upload-box">
             <label for="backdropFile">UPLOAD BACKDROP FROM DEVICE</label>
             <input id="backdropFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
@@ -245,35 +213,13 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
             <img id="backdropPreview" class="image-preview wide-preview" alt="Backdrop preview">
           </div>
         </div>
-
-        <div class="form-group full">
-          <label for="description">MOVIE DESCRIPTION</label>
-          <textarea id="description" placeholder="Write movie description..."></textarea>
-        </div>
-        <div class="form-group full">
-          <label for="watchUrl">WATCH URL</label>
-          <input id="watchUrl" type="url" placeholder="https://example.com/watch">
-        </div>
-        <div class="form-group full">
-          <label for="downloadUrl">DOWNLOAD URL 1</label>
-          <input id="downloadUrl" type="url" placeholder="https://example.com/download-1">
-        </div>
-        <div class="form-group full">
-          <label for="downloadUrl2">DOWNLOAD URL 2</label>
-          <input id="downloadUrl2" type="url" placeholder="https://example.com/download-2">
-          <div class="upload-help">Optional second download link. Saved separately in D1.</div>
-        </div>
-        <div class="form-group full">
-          <label for="adUrl">ADVERTISEMENT URL</label>
-          <input id="adUrl" type="url" placeholder="https://example.com/advertisement">
-        </div>
-        <div class="form-group">
-          <label for="adCount">ADVERTISEMENT COUNT (MINIMUM 4)</label>
-          <input id="adCount" type="number" min="4" step="1" value="4" required>
-          <div class="upload-help">Existing advertisement count data is preserved.</div>
-        </div>
+        <div class="form-group full"><label for="description">MOVIE DESCRIPTION</label><textarea id="description" placeholder="Write movie description..."></textarea></div>
+        <div class="form-group full"><label for="watchUrl">WATCH URL</label><input id="watchUrl" type="url" placeholder="https://example.com/watch"></div>
+        <div class="form-group full"><label for="downloadUrl">DOWNLOAD URL 1</label><input id="downloadUrl" type="url" placeholder="https://example.com/download-1"></div>
+        <div class="form-group full"><label for="downloadUrl2">DOWNLOAD URL 2</label><input id="downloadUrl2" type="url" placeholder="https://example.com/download-2"><div class="upload-help">Optional second download link. Saved separately in D1.</div></div>
+        <div class="form-group full"><label for="adUrl">ADVERTISEMENT URL</label><input id="adUrl" type="url" placeholder="https://example.com/advertisement"></div>
+        <div class="form-group"><label for="adCount">ADVERTISEMENT COUNT (MINIMUM 4)</label><input id="adCount" type="number" min="4" step="1" value="4" required><div class="upload-help">Existing advertisement count data is preserved.</div></div>
       </div>
-
       <div class="form-actions">
         <button class="btn btn-gold" type="submit" id="saveBtn">Save Movie</button>
         <button class="btn hidden" type="button" id="cancelEditBtn">Cancel Edit</button>
@@ -285,57 +231,46 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
   <!-- WEBSITE SETTINGS -->
   <section id="settingsTab" class="panel hidden">
     <h2>Website <span class="gold">Settings</span></h2>
-    <p class="page-subtitle">Manage your website identity, About section and footer content.</p>
-    <div class="section-note">Changes are saved to your D1 database through the Admin Settings API.</div>
-
+    <p class="page-subtitle">Manage your website identity, About section, homepage sections and footer content.</p>
+    <div class="section-note">Text URL fields accept HTTPS, HTTP, relative page links and #anchor links. Leave a URL blank if the text should not be clickable.</div>
     <form id="settingsForm">
       <div class="form-grid">
-        <div class="form-group">
-          <label for="siteName">WEBSITE NAME</label>
-          <input id="siteName" placeholder="CineVault">
-        </div>
-        <div class="form-group">
-          <label for="logoText">LOGO TEXT</label>
-          <input id="logoText" placeholder="CINEVAULT">
-        </div>
+        <div class="form-group"><label for="siteName">WEBSITE NAME</label><input id="siteName" placeholder="CineVault"></div>
+        <div class="form-group"><label for="logoText">LOGO TEXT</label><input id="logoText" placeholder="C"></div>
 
-        <div class="form-group full">
-          <hr class="divider">
-          <h3>About Section</h3>
-        </div>
-        <div class="form-group">
-          <label for="aboutEyebrow">ABOUT EYEBROW</label>
-          <input id="aboutEyebrow" placeholder="ABOUT CINEVAULT">
-        </div>
-        <div class="form-group">
-          <label for="aboutTitle">ABOUT TITLE</label>
-          <input id="aboutTitle" placeholder="Your entertainment destination">
-        </div>
-        <div class="form-group full">
-          <label for="aboutHighlight">ABOUT TITLE HIGHLIGHT</label>
-          <input id="aboutHighlight" placeholder="Entertainment">
-        </div>
-        <div class="form-group full">
-          <label for="aboutDescription">ABOUT DESCRIPTION</label>
-          <textarea id="aboutDescription" placeholder="Write your About section..."></textarea>
-        </div>
+        <div class="form-group full"><hr class="divider"><h3>Homepage Collections Heading</h3></div>
+        <div class="form-group"><label for="collectionsEyebrow">COLLECTIONS EYEBROW</label><input id="collectionsEyebrow" placeholder="EXPLORE OUR COLLECTIONS"></div>
+        <div class="form-group"><label for="collectionsEyebrowUrl">EYEBROW URL</label><input id="collectionsEyebrowUrl" placeholder="#collections"></div>
+        <div class="form-group"><label for="collectionsHeading">COLLECTIONS HEADING</label><input id="collectionsHeading" placeholder="Movie"></div>
+        <div class="form-group"><label for="collectionsHeadingHighlight">HEADING HIGHLIGHT</label><input id="collectionsHeadingHighlight" placeholder="Collections"></div>
+        <div class="form-group full"><label for="collectionsHeadingUrl">HEADING URL</label><input id="collectionsHeadingUrl" placeholder="https://example.com/collections"></div>
+        <div class="form-group full"><label for="collectionsDescription">COLLECTIONS DESCRIPTION</label><textarea id="collectionsDescription" placeholder="Describe the collections section..."></textarea><label for="collectionsDescriptionUrl">DESCRIPTION URL</label><input id="collectionsDescriptionUrl" placeholder="#collections"></div>
 
-        <div class="form-group full">
-          <hr class="divider">
-          <h3>Footer Settings</h3>
-        </div>
-        <div class="form-group full">
-          <label for="footerDescription">FOOTER DESCRIPTION</label>
-          <textarea id="footerDescription" placeholder="Footer description..."></textarea>
-        </div>
-        <div class="form-group">
-          <label for="footerTagline">FOOTER TAGLINE</label>
-          <input id="footerTagline" placeholder="Your entertainment destination">
-        </div>
-        <div class="form-group">
-          <label for="copyrightText">COPYRIGHT TEXT</label>
-          <input id="copyrightText" placeholder="© 2026 CineVault. All rights reserved.">
-        </div>
+        <div class="form-group full"><hr class="divider"><h3>Explore Movies Heading</h3></div>
+        <div class="form-group"><label for="moviesEyebrow">MOVIES EYEBROW</label><input id="moviesEyebrow" placeholder="DISCOVER YOUR NEXT MOVIE"></div>
+        <div class="form-group"><label for="moviesEyebrowUrl">EYEBROW URL</label><input id="moviesEyebrowUrl" placeholder="#movies"></div>
+        <div class="form-group"><label for="moviesHeading">MOVIES HEADING</label><input id="moviesHeading" placeholder="Explore"></div>
+        <div class="form-group"><label for="moviesHeadingHighlight">HEADING HIGHLIGHT</label><input id="moviesHeadingHighlight" placeholder="Movies"></div>
+        <div class="form-group full"><label for="moviesHeadingUrl">HEADING URL</label><input id="moviesHeadingUrl" placeholder="#movies"></div>
+        <div class="form-group full"><label for="moviesDescription">MOVIES DESCRIPTION</label><textarea id="moviesDescription" placeholder="Describe the movie library..."></textarea><label for="moviesDescriptionUrl">DESCRIPTION URL</label><input id="moviesDescriptionUrl" placeholder="#movies"></div>
+
+        <div class="form-group full"><hr class="divider"><h3>About Section</h3></div>
+        <div class="form-group"><label for="aboutEyebrow">ABOUT EYEBROW</label><input id="aboutEyebrow" placeholder="ABOUT CINEVAULT"></div>
+        <div class="form-group"><label for="aboutEyebrowUrl">EYEBROW URL</label><input id="aboutEyebrowUrl" placeholder="#about"></div>
+        <div class="form-group"><label for="aboutTitle">ABOUT TITLE</label><input id="aboutTitle" placeholder="More Than Movies."></div>
+        <div class="form-group"><label for="aboutTitleUrl">TITLE URL</label><input id="aboutTitleUrl" placeholder="#about"></div>
+        <div class="form-group"><label for="aboutHighlight">ABOUT TITLE HIGHLIGHT</label><input id="aboutHighlight" placeholder="A Cinema Experience."></div>
+        <div class="form-group"><label for="aboutHighlightUrl">HIGHLIGHT URL</label><input id="aboutHighlightUrl" placeholder="#about"></div>
+        <div class="form-group full"><label for="aboutDescription">ABOUT DESCRIPTION</label><textarea id="aboutDescription" placeholder="Write your About section..."></textarea><label for="aboutDescriptionUrl">DESCRIPTION URL</label><input id="aboutDescriptionUrl" placeholder="#about"></div>
+        <div class="form-group"><label for="aboutButtonText">ABOUT BUTTON TEXT</label><input id="aboutButtonText" placeholder="Discover Movies"></div>
+        <div class="form-group"><label for="aboutButtonUrl">ABOUT BUTTON URL</label><input id="aboutButtonUrl" placeholder="#movies"></div>
+
+        <div class="form-group full"><hr class="divider"><h3>Footer Settings</h3></div>
+        <div class="form-group full"><label for="footerDescription">FOOTER DESCRIPTION</label><textarea id="footerDescription" placeholder="Footer description..."></textarea><label for="footerDescriptionUrl">DESCRIPTION URL</label><input id="footerDescriptionUrl" placeholder="https://example.com"></div>
+        <div class="form-group"><label for="footerTagline">FOOTER TAGLINE</label><input id="footerTagline" placeholder="Made for movie lovers."></div>
+        <div class="form-group"><label for="footerTaglineUrl">TAGLINE URL</label><input id="footerTaglineUrl" placeholder="https://example.com"></div>
+        <div class="form-group"><label for="copyrightText">COPYRIGHT TEXT</label><input id="copyrightText" placeholder="All rights reserved."></div>
+        <div class="form-group"><label for="copyrightUrl">COPYRIGHT URL</label><input id="copyrightUrl" placeholder="https://example.com"></div>
       </div>
       <div class="form-actions">
         <button class="btn btn-gold" type="submit" id="settingsSaveBtn">Save Website Settings</button>
@@ -347,31 +282,16 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
   <!-- HERO BANNER -->
   <section id="heroTab" class="panel hidden">
     <h2>Hero <span class="gold">Banner</span></h2>
-    <p class="page-subtitle">Edit the homepage hero banner content, background image and buttons.</p>
-    <div class="section-note">Use a publicly accessible HTTPS image URL or upload an image to Cloudinary. The homepage must read these settings from /api/settings to display the changes.</div>
-
+    <p class="page-subtitle">Edit the homepage hero banner content, image and buttons.</p>
+    <div class="section-note">You can assign a separate destination URL to each major text element. The homepage script must support these settings.</div>
     <form id="heroForm">
       <div class="form-grid">
-        <div class="form-group">
-          <label for="heroEyebrow">EYEBROW TEXT</label>
-          <input id="heroEyebrow" placeholder="WELCOME TO CINEVAULT">
-        </div>
-        <div class="form-group">
-          <label for="heroTitle">MAIN TITLE</label>
-          <input id="heroTitle" placeholder="Discover Stories">
-        </div>
+        <div class="form-group"><label for="heroEyebrow">EYEBROW TEXT</label><input id="heroEyebrow" placeholder="YOUR WORLD OF CINEMA"><label for="heroEyebrowUrl">EYEBROW URL</label><input id="heroEyebrowUrl" placeholder="#movies"></div>
+        <div class="form-group"><label for="heroTitle">MAIN TITLE</label><input id="heroTitle" placeholder="Discover Stories."><label for="heroTitleUrl">TITLE URL</label><input id="heroTitleUrl" placeholder="#movies"></div>
+        <div class="form-group full"><label for="heroHighlight">TITLE HIGHLIGHT</label><input id="heroHighlight" placeholder="Experience Cinema."><label for="heroHighlightUrl">HIGHLIGHT URL</label><input id="heroHighlightUrl" placeholder="#movies"></div>
+        <div class="form-group full"><label for="heroDescription">HERO DESCRIPTION</label><textarea id="heroDescription" placeholder="Write hero banner description..."></textarea><label for="heroDescriptionUrl">DESCRIPTION URL</label><input id="heroDescriptionUrl" placeholder="#movies"></div>
         <div class="form-group full">
-          <label for="heroHighlight">TITLE HIGHLIGHT</label>
-          <input id="heroHighlight" placeholder="Stories">
-        </div>
-        <div class="form-group full">
-          <label for="heroDescription">HERO DESCRIPTION</label>
-          <textarea id="heroDescription" placeholder="Write hero banner description..."></textarea>
-        </div>
-
-        <div class="form-group full">
-          <label for="heroImage">HERO BACKGROUND IMAGE URL</label>
-          <input id="heroImage" type="url" placeholder="https://example.com/hero.jpg">
+          <label for="heroImage">HERO BACKGROUND IMAGE URL</label><input id="heroImage" type="url" placeholder="https://example.com/hero.jpg">
           <div class="upload-box">
             <label for="heroFile">UPLOAD HERO IMAGE</label>
             <input id="heroFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
@@ -380,34 +300,13 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
             <img id="heroPreview" class="image-preview wide-preview" alt="Hero preview">
           </div>
         </div>
-
-        <div class="form-group full">
-          <hr class="divider">
-          <h3>First Hero Button</h3>
-        </div>
-        <div class="form-group">
-          <label for="heroButton1Text">BUTTON 1 TEXT</label>
-          <input id="heroButton1Text" placeholder="Explore Movies">
-        </div>
-        <div class="form-group">
-          <label for="heroButton1Url">BUTTON 1 LINK</label>
-          <input id="heroButton1Url" placeholder="#movies">
-        </div>
-
-        <div class="form-group full">
-          <hr class="divider">
-          <h3>Second Hero Button</h3>
-        </div>
-        <div class="form-group">
-          <label for="heroButton2Text">BUTTON 2 TEXT</label>
-          <input id="heroButton2Text" placeholder="Learn More">
-        </div>
-        <div class="form-group">
-          <label for="heroButton2Url">BUTTON 2 LINK</label>
-          <input id="heroButton2Url" placeholder="#about">
-        </div>
+        <div class="form-group full"><hr class="divider"><h3>First Hero Button</h3></div>
+        <div class="form-group"><label for="heroButton1Text">BUTTON 1 TEXT</label><input id="heroButton1Text" placeholder="Explore Movies"></div>
+        <div class="form-group"><label for="heroButton1Url">BUTTON 1 LINK</label><input id="heroButton1Url" placeholder="#movies"></div>
+        <div class="form-group full"><hr class="divider"><h3>Second Hero Button</h3></div>
+        <div class="form-group"><label for="heroButton2Text">BUTTON 2 TEXT</label><input id="heroButton2Text" placeholder="Browse Collections"></div>
+        <div class="form-group"><label for="heroButton2Url">BUTTON 2 LINK</label><input id="heroButton2Url" placeholder="#collections"></div>
       </div>
-
       <div class="form-actions">
         <button class="btn btn-gold" type="submit" id="heroSaveBtn">Save Hero Banner</button>
         <button class="btn" type="button" id="heroReloadBtn">Reload Hero Settings</button>
@@ -415,39 +314,23 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
     </form>
   </section>
 
-  <!-- MOVIE COLLECTIONS -->
+  <!-- COLLECTIONS -->
   <section id="collectionsTab" class="panel hidden">
     <h2>Movie <span class="gold">Collections</span></h2>
     <p class="page-subtitle">Create, edit, reorder and manage homepage movie collections.</p>
-    <div class="section-note">Collections are saved separately in D1. The homepage must load /api/collections to display active collections.</div>
-
+    <div class="section-note">Each collection can have its own destination URL. If the URL is blank, your homepage may use its normal genre-filter behaviour.</div>
     <form id="collectionForm">
       <input type="hidden" id="collectionId">
       <h3 id="collectionFormHeading">Add New Collection</h3>
       <div class="form-grid">
-        <div class="form-group">
-          <label for="collectionName">COLLECTION NAME *</label>
-          <input id="collectionName" required maxlength="120" placeholder="Action Movies">
-        </div>
-        <div class="form-group">
-          <label for="collectionGenre">GENRE / FILTER VALUE</label>
-          <input id="collectionGenre" placeholder="Action">
-        </div>
-        <div class="form-group">
-          <label for="collectionIcon">ICON / EMOJI</label>
-          <input id="collectionIcon" placeholder="🎬">
-        </div>
-        <div class="form-group">
-          <label for="collectionSortOrder">SORT ORDER</label>
-          <input id="collectionSortOrder" type="number" step="1" value="1">
-        </div>
+        <div class="form-group"><label for="collectionName">COLLECTION NAME *</label><input id="collectionName" required maxlength="120" placeholder="Action Movies"></div>
+        <div class="form-group"><label for="collectionGenre">GENRE / FILTER VALUE</label><input id="collectionGenre" placeholder="Action"></div>
+        <div class="form-group"><label for="collectionIcon">ICON / EMOJI</label><input id="collectionIcon" placeholder="🎬"></div>
+        <div class="form-group"><label for="collectionSortOrder">SORT ORDER</label><input id="collectionSortOrder" type="number" step="1" value="1"></div>
+        <div class="form-group full"><label for="collectionDescription">DESCRIPTION</label><textarea id="collectionDescription" placeholder="Collection description..."></textarea></div>
+        <div class="form-group full"><label for="collectionLinkUrl">COLLECTION CLICK URL</label><input id="collectionLinkUrl" placeholder="https://example.com or #movies"><div class="upload-help">Supports HTTPS, HTTP, relative page links and #anchor links.</div></div>
         <div class="form-group full">
-          <label for="collectionDescription">DESCRIPTION</label>
-          <textarea id="collectionDescription" placeholder="Collection description..."></textarea>
-        </div>
-        <div class="form-group full">
-          <label for="collectionImage">COLLECTION IMAGE URL</label>
-          <input id="collectionImage" type="url" placeholder="https://example.com/collection.jpg">
+          <label for="collectionImage">COLLECTION IMAGE URL</label><input id="collectionImage" type="url" placeholder="https://example.com/collection.jpg">
           <div class="upload-box">
             <label for="collectionFile">UPLOAD COLLECTION IMAGE</label>
             <input id="collectionFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
@@ -458,10 +341,7 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
         </div>
         <div class="form-group full">
           <label for="collectionActive">COLLECTION STATUS</label>
-          <select id="collectionActive">
-            <option value="true">Active — Show on website</option>
-            <option value="false">Inactive — Hide on website</option>
-          </select>
+          <select id="collectionActive"><option value="true">Active — Show on website</option><option value="false">Inactive — Hide on website</option></select>
         </div>
       </div>
       <div class="form-actions">
@@ -470,20 +350,13 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
         <button class="btn" type="reset" id="collectionResetBtn">Clear Form</button>
       </div>
     </form>
-
     <hr class="divider">
     <div class="toolbar">
-      <div>
-        <h3>Existing Collections</h3>
-        <p class="page-subtitle">Edit or remove a collection.</p>
-      </div>
+      <div><h3>Existing Collections</h3><p class="page-subtitle">Edit or remove a collection.</p></div>
       <button class="btn" id="collectionRefreshBtn">Refresh</button>
     </div>
-    <div id="collectionList" class="collection-list">
-      <div class="loading">Loading collections...</div>
-    </div>
+    <div id="collectionList" class="collection-list"><div class="loading">Loading collections...</div></div>
   </section>
-
 </main>
 
 <footer>CINEVAULT ADMIN PANEL · PREMIUM BLACK & GOLD</footer>
@@ -491,34 +364,65 @@ footer{text-align:center;padding:25px;color:#666;font-size:11px;border-top:1px s
 <script>
 "use strict";
 
-const API = "/api/admin";
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = ["image/jpeg","image/png","image/webp","image/avif"];
-const $ = id => document.getElementById(id);
+const API="/api/admin";
+const MAX_IMAGE_SIZE=5*1024*1024;
+const ALLOWED_IMAGE_TYPES=["image/jpeg","image/png","image/webp","image/avif"];
+const $=id=>document.getElementById(id);
 
-let movies = [];
-let collections = [];
-let editingId = null;
-let editingCollectionId = null;
-let activeUploads = 0;
+let movies=[];
+let collections=[];
+let editingId=null;
+let editingCollectionId=null;
+let activeUploads=0;
 
-const SETTINGS_FIELDS = [
+const SETTINGS_FIELDS=[
   "siteName","logoText",
-  "aboutEyebrow","aboutTitle","aboutHighlight","aboutDescription",
-  "footerDescription","footerTagline","copyrightText"
+
+  "collectionsEyebrow","collectionsEyebrowUrl",
+  "collectionsHeading","collectionsHeadingHighlight",
+  "collectionsHeadingUrl","collectionsDescription",
+  "collectionsDescriptionUrl",
+
+  "moviesEyebrow","moviesEyebrowUrl",
+  "moviesHeading","moviesHeadingHighlight",
+  "moviesHeadingUrl","moviesDescription","moviesDescriptionUrl",
+
+  "aboutEyebrow","aboutEyebrowUrl",
+  "aboutTitle","aboutTitleUrl",
+  "aboutHighlight","aboutHighlightUrl",
+  "aboutDescription","aboutDescriptionUrl",
+  "aboutButtonText","aboutButtonUrl",
+
+  "footerDescription","footerDescriptionUrl",
+  "footerTagline","footerTaglineUrl",
+  "copyrightText","copyrightUrl"
 ];
 
-const HERO_FIELDS = [
-  "heroEyebrow","heroTitle","heroHighlight","heroDescription",
+const HERO_FIELDS=[
+  "heroEyebrow","heroEyebrowUrl",
+  "heroTitle","heroTitleUrl",
+  "heroHighlight","heroHighlightUrl",
+  "heroDescription","heroDescriptionUrl",
   "heroImage","heroButton1Text","heroButton1Url",
   "heroButton2Text","heroButton2Url"
 ];
 
-function showNotice(elementId,message,type="success"){
-  const box=$(elementId);
+const URL_FIELDS=[
+  "heroEyebrowUrl","heroTitleUrl","heroHighlightUrl","heroDescriptionUrl",
+  "heroButton1Url","heroButton2Url",
+  "collectionsEyebrowUrl","collectionsHeadingUrl","collectionsDescriptionUrl",
+  "moviesEyebrowUrl","moviesHeadingUrl","moviesDescriptionUrl",
+  "aboutEyebrowUrl","aboutTitleUrl","aboutHighlightUrl",
+  "aboutDescriptionUrl","aboutButtonUrl",
+  "footerDescriptionUrl","footerTaglineUrl","copyrightUrl"
+];
+
+function showNotice(id,message,type="success"){
+  const box=$(id);
+  if(!box)return;
   box.textContent=message;
   box.className="notice show "+type;
-  if(elementId==="mainNotice"){
+  if(id==="mainNotice"){
     window.setTimeout(()=>box.className="notice",5000);
   }
 }
@@ -537,19 +441,37 @@ function validHttpUrl(value){
   }catch(_){return false}
 }
 
+function validLink(value){
+  const input=String(value??"").trim();
+  if(!input)return true;
+  if(input.startsWith("//"))return false;
+  if(input.startsWith("#")||input.startsWith("/"))return true;
+  try{
+    const url=new URL(input);
+    return ["http:","https:"].includes(url.protocol);
+  }catch(_){return false}
+}
+
+function validateLinks(data){
+  for(const field of URL_FIELDS){
+    if(data[field]&&!validLink(data[field])){
+      throw new Error("Invalid URL in "+field+". Use HTTP, HTTPS, a relative path or an anchor link.");
+    }
+  }
+}
+
 async function apiRequest(path,options={}){
   const response=await fetch(API+path,{
     ...options,
     credentials:"same-origin",
     headers:{
-      ...(options.body && !(options.body instanceof FormData)
-        ? {"Content-Type":"application/json"}:{}),
+      ...(options.body&&!(options.body instanceof FormData)?{"Content-Type":"application/json"}:{}),
       ...(options.headers||{})
     }
   });
 
   let data={};
-  try{data=await response.json()}catch(_){data={}}
+  try{data=await response.json()}catch(_){}
 
   if(response.status===401){
     showLogin();
@@ -581,9 +503,7 @@ async function checkSession(){
     if(data.authenticated){
       showDashboard();
       await Promise.all([loadMovies(),loadSettings(),loadCollections()]);
-    }else{
-      showLogin();
-    }
+    }else showLogin();
   }catch(error){
     showLogin();
     console.warn(error.message);
@@ -598,12 +518,8 @@ $("loginForm").addEventListener("submit",async event=>{
 
   $("loginBtn").disabled=true;
   $("loginBtn").textContent="Signing in...";
-
   try{
-    await apiRequest("/login",{
-      method:"POST",
-      body:JSON.stringify({password})
-    });
+    await apiRequest("/login",{method:"POST",body:JSON.stringify({password})});
     $("adminPassword").value="";
     $("loginNotice").className="notice";
     showDashboard();
@@ -616,11 +532,9 @@ $("loginForm").addEventListener("submit",async event=>{
   }
 });
 
-/* LOGOUT */
 $("logoutBtn").addEventListener("click",async()=>{
   if(!confirm("Are you sure you want to logout?"))return;
-  try{await apiRequest("/logout",{method:"POST"})}
-  catch(error){console.warn(error.message)}
+  try{await apiRequest("/logout",{method:"POST"})}catch(error){console.warn(error.message)}
   movies=[];
   collections=[];
   $("movieList").innerHTML="";
@@ -645,11 +559,16 @@ function openTab(name){
 
 /* IMAGE PREVIEW */
 function updatePreview(field){
+  const inputId=field==="hero"?"heroImage":field;
   const preview=$(field+"Preview");
-  const url=$(field).value.trim();
+  const input=$(inputId);
+  if(!preview||!input)return;
+
+  const url=input.value.trim();
   preview.classList.remove("visible");
   preview.removeAttribute("src");
   if(!url)return;
+
   try{
     const parsed=new URL(url);
     if(!["http:","https:"].includes(parsed.protocol))return;
@@ -660,15 +579,17 @@ function updatePreview(field){
 }
 
 ["poster","backdrop","hero","collection"].forEach(field=>{
-  $(field).addEventListener("input",()=>updatePreview(field));
+  const inputId=field==="hero"?"heroImage":field;
+  const input=$(inputId);
+  if(input)input.addEventListener("input",()=>updatePreview(field));
 });
 
 /* CLOUDINARY UPLOAD */
 async function uploadImage(type,file){
   const fileInput=$(type+"File");
-  const urlInput=$(type);
+  const urlInput=$(type==="hero"?"heroImage":type);
   const status=$(type+"Status");
-  if(!file)return;
+  if(!file||!fileInput||!urlInput||!status)return;
 
   if(!ALLOWED_IMAGE_TYPES.includes(file.type)){
     status.textContent="Unsupported image format.";
@@ -693,11 +614,7 @@ async function uploadImage(type,file){
     const formData=new FormData();
     formData.append("file",file);
     formData.append("type",type);
-
-    const data=await apiRequest("/upload",{
-      method:"POST",
-      body:formData
-    });
+    const data=await apiRequest("/upload",{method:"POST",body:formData});
     if(!data.url)throw new Error("Cloudinary did not return an image URL.");
 
     urlInput.value=data.url;
@@ -733,8 +650,7 @@ async function loadMovies(){
   try{
     const data=await apiRequest("/movies");
     movies=Array.isArray(data.movies)?data.movies:[];
-    $("totalMovies").textContent=Number.isFinite(Number(data.total))
-      ?data.total:movies.length;
+    $("totalMovies").textContent=Number.isFinite(Number(data.total))?data.total:movies.length;
     $("databaseStatus").textContent="Connected";
     $("databaseStatus").style.color="var(--success)";
     renderMovies();
@@ -749,10 +665,7 @@ async function loadMovies(){
 function renderMovies(){
   const query=$("movieSearch").value.trim().toLowerCase();
   const filtered=movies.filter(movie=>{
-    const searchable=[
-      movie.title,movie.genre,movie.year,movie.language,
-      movie.country,movie.director
-    ].join(" ").toLowerCase();
+    const searchable=[movie.title,movie.genre,movie.year,movie.language,movie.country,movie.director].join(" ").toLowerCase();
     return searchable.includes(query);
   });
 
@@ -763,8 +676,7 @@ function renderMovies(){
   }
 
   $("movieList").innerHTML=filtered.map(movie=>{
-    const meta=[movie.year,movie.genre,movie.language]
-      .filter(Boolean).map(escapeHTML).join(" · ");
+    const meta=[movie.year,movie.genre,movie.language].filter(Boolean).map(escapeHTML).join(" · ");
     const adCount=Number(movie.adCount??4);
     return `
       <div class="movie-item">
@@ -773,14 +685,8 @@ function renderMovies(){
           <div class="movie-title">${escapeHTML(movie.title||"Untitled")}</div>
           <div class="movie-meta">${meta||"Movie details unavailable"}</div>
           <div class="movie-meta">ID: ${escapeHTML(movie.id)}</div>
-          <div class="movie-meta">
-            Download links: ${movie.downloadUrl?"1 configured":"0 configured"} ·
-            ${movie.downloadUrl2?"2nd link configured":"2nd link not configured"}
-          </div>
-          <div class="movie-meta">
-            Existing ad settings: ${adCount} ·
-            ${movie.adUrl?"URL configured":"URL not configured"}
-          </div>
+          <div class="movie-meta">Download links: ${movie.downloadUrl?"1 configured":"0 configured"} · ${movie.downloadUrl2?"2nd link configured":"2nd link not configured"}</div>
+          <div class="movie-meta">Existing ad settings: ${adCount} · ${movie.adUrl?"URL configured":"URL not configured"}</div>
         </div>
         <div class="movie-actions">
           <button class="btn btn-small edit-btn" data-id="${escapeHTML(movie.id)}">Edit</button>
@@ -809,11 +715,7 @@ $("movieList").addEventListener("click",event=>{
 
 function editMovie(movie){
   editingId=movie.id;
-  const fields=[
-    "title","year","genre","language","country","rating","duration",
-    "director","poster","backdrop","description","watchUrl",
-    "downloadUrl","downloadUrl2","adUrl"
-  ];
+  const fields=["title","year","genre","language","country","rating","duration","director","poster","backdrop","description","watchUrl","downloadUrl","downloadUrl2","adUrl"];
   fields.forEach(field=>$(field).value=movie[field]??"");
   $("adCount").value=movie.adCount??4;
   $("movieId").value=movie.id;
@@ -888,7 +790,6 @@ $("movieForm").addEventListener("submit",async event=>{
     showNotice("mainNotice","Advertisement count must be a whole number of at least 4.","error");
     return;
   }
-
   for(const field of ["poster","backdrop","watchUrl","downloadUrl","downloadUrl2","adUrl"]){
     if(movie[field]&&!validHttpUrl(movie[field])){
       showNotice("mainNotice","Please enter a valid HTTP or HTTPS URL for "+field+".","error");
@@ -903,10 +804,7 @@ $("movieForm").addEventListener("submit",async event=>{
   $("saveBtn").textContent=isEditing?"Updating...":"Saving...";
 
   try{
-    await apiRequest(endpoint,{
-      method:isEditing?"PUT":"POST",
-      body:JSON.stringify(movie)
-    });
+    await apiRequest(endpoint,{method:isEditing?"PUT":"POST",body:JSON.stringify(movie)});
     showNotice("mainNotice",isEditing?"Movie updated successfully.":"Movie added successfully.","success");
     resetMovieForm();
     await loadMovies();
@@ -938,6 +836,14 @@ function fillFields(fields,data){
   });
 }
 
+function collectFields(fields){
+  const result={};
+  fields.forEach(field=>{
+    if($(field))result[field]=$(field).value.trim();
+  });
+  return result;
+}
+
 async function loadSettings(){
   try{
     const data=await apiRequest("/settings");
@@ -950,67 +856,60 @@ async function loadSettings(){
   }
 }
 
-$("settingsForm").addEventListener("submit",async event=>{
-  event.preventDefault();
+async function saveSettings(fields,buttonId,defaultText,successMessage){
   if(activeUploads>0){
     showNotice("mainNotice","Please wait until uploads finish.","error");
     return;
   }
-  const settings={};
-  SETTINGS_FIELDS.forEach(field=>settings[field]=$(field).value.trim());
 
-  $("settingsSaveBtn").disabled=true;
-  $("settingsSaveBtn").textContent="Saving...";
+  const settings=collectFields(fields);
   try{
-    await apiRequest("/settings",{
-      method:"PUT",
-      body:JSON.stringify(settings)
-    });
-    showNotice("mainNotice","Website settings saved successfully.","success");
+    validateLinks(settings);
+    if(settings.heroImage&&!validHttpUrl(settings.heroImage)){
+      throw new Error("Please enter a valid HTTP or HTTPS Hero image URL.");
+    }
+  }catch(error){
+    showNotice("mainNotice",error.message,"error");
+    return;
+  }
+
+  const button=$(buttonId);
+  button.disabled=true;
+  button.textContent="Saving...";
+
+  try{
+    await apiRequest("/settings",{method:"PUT",body:JSON.stringify(settings)});
+    showNotice("mainNotice",successMessage,"success");
   }catch(error){
     showNotice("mainNotice",error.message,"error");
   }finally{
-    $("settingsSaveBtn").disabled=activeUploads>0;
-    $("settingsSaveBtn").textContent="Save Website Settings";
+    button.disabled=activeUploads>0;
+    button.textContent=defaultText;
   }
-});
+}
 
+$("settingsForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  saveSettings(SETTINGS_FIELDS,"settingsSaveBtn","Save Website Settings","Website settings saved successfully.");
+});
 $("settingsReloadBtn").addEventListener("click",loadSettings);
 
-/* HERO */
-$("heroForm").addEventListener("submit",async event=>{
+$("heroForm").addEventListener("submit",event=>{
   event.preventDefault();
-  if(activeUploads>0){
-    showNotice("mainNotice","Please wait until uploads finish.","error");
-    return;
-  }
-  const settings={};
-  HERO_FIELDS.forEach(field=>settings[field]=$(field).value.trim());
-
-  if(settings.heroImage&&!validHttpUrl(settings.heroImage)){
-    showNotice("mainNotice","Please enter a valid HTTP or HTTPS Hero image URL.","error");
-    return;
-  }
-
-  $("heroSaveBtn").disabled=true;
-  $("heroSaveBtn").textContent="Saving...";
-  try{
-    await apiRequest("/settings",{
-      method:"PUT",
-      body:JSON.stringify(settings)
-    });
-    showNotice("mainNotice","Hero Banner settings saved successfully.","success");
-  }catch(error){
-    showNotice("mainNotice",error.message,"error");
-  }finally{
-    $("heroSaveBtn").disabled=activeUploads>0;
-    $("heroSaveBtn").textContent="Save Hero Banner";
-  }
+  saveSettings(HERO_FIELDS,"heroSaveBtn","Save Hero Banner","Hero Banner settings saved successfully.");
 });
-
 $("heroReloadBtn").addEventListener("click",loadSettings);
 
 /* COLLECTIONS */
+function normalizeCollection(item){
+  return {
+    ...item,
+    sortOrder:item.sortOrder??item.sort_order??0,
+    isActive:item.isActive??item.is_active??true,
+    linkUrl:item.linkUrl??item.link_url??""
+  };
+}
+
 function resetCollectionForm(){
   $("collectionForm").reset();
   $("collectionId").value="";
@@ -1031,7 +930,7 @@ async function loadCollections(){
   $("collectionList").innerHTML='<div class="loading">Loading collections...</div>';
   try{
     const data=await apiRequest("/collections");
-    collections=Array.isArray(data.collections)?data.collections:[];
+    collections=Array.isArray(data.collections)?data.collections.map(normalizeCollection):[];
     renderCollections();
   }catch(error){
     $("collectionList").innerHTML='<div class="empty">Could not load collections. '+escapeHTML(error.message)+'</div>';
@@ -1044,21 +943,15 @@ function renderCollections(){
     return;
   }
 
-  const ordered=[...collections].sort((a,b)=>
-    Number(a.sortOrder??0)-Number(b.sortOrder??0)
-  );
-
+  const ordered=[...collections].sort((a,b)=>Number(a.sortOrder)-Number(b.sortOrder));
   $("collectionList").innerHTML=ordered.map(item=>`
     <div class="collection-item">
       <img class="collection-image" src="${escapeHTML(item.image||"")}" alt="" loading="lazy">
       <div>
         <div class="movie-title">${escapeHTML(item.icon||"")} ${escapeHTML(item.name||"Untitled Collection")}</div>
         <div class="movie-meta">${escapeHTML(item.description||"No description")}</div>
-        <div class="movie-meta">
-          Genre: ${escapeHTML(item.genre||"Not set")} ·
-          Order: ${escapeHTML(item.sortOrder??0)} ·
-          ${item.isActive===false||item.isActive===0?"Inactive":"Active"}
-        </div>
+        <div class="movie-meta">Genre: ${escapeHTML(item.genre||"Not set")} · Order: ${escapeHTML(item.sortOrder)} · ${item.isActive===false||item.isActive===0||item.isActive==="0"?"Inactive":"Active"}</div>
+        <div class="movie-meta">Click URL: ${escapeHTML(item.linkUrl||"Not set")}</div>
         <div class="movie-meta">ID: ${escapeHTML(item.id)}</div>
       </div>
       <div class="movie-actions">
@@ -1076,7 +969,6 @@ function renderCollections(){
 $("collectionList").addEventListener("click",event=>{
   const editButton=event.target.closest(".collection-edit-btn");
   const deleteButton=event.target.closest(".collection-delete-btn");
-
   if(editButton){
     const item=collections.find(c=>String(c.id)===editButton.dataset.id);
     if(item)editCollection(item);
@@ -1085,6 +977,7 @@ $("collectionList").addEventListener("click",event=>{
 });
 
 function editCollection(item){
+  item=normalizeCollection(item);
   editingCollectionId=item.id;
   $("collectionId").value=item.id;
   $("collectionName").value=item.name??"";
@@ -1093,10 +986,8 @@ function editCollection(item){
   $("collectionSortOrder").value=item.sortOrder??0;
   $("collectionDescription").value=item.description??"";
   $("collectionImage").value=item.image??"";
-  $("collectionActive").value=
-    item.isActive===false||item.isActive===0||item.isActive==="0"
-      ?"false":"true";
-
+  $("collectionLinkUrl").value=item.linkUrl??"";
+  $("collectionActive").value=(item.isActive===false||item.isActive===0||item.isActive==="0")?"false":"true";
   $("collectionFile").value="";
   $("collectionStatus").textContent="";
   updatePreview("collection");
@@ -1125,6 +1016,7 @@ $("collectionForm").addEventListener("submit",async event=>{
     sortOrder:Number($("collectionSortOrder").value||0),
     description:$("collectionDescription").value.trim(),
     image:$("collectionImage").value.trim(),
+    linkUrl:$("collectionLinkUrl").value.trim(),
     isActive:$("collectionActive").value==="true"
   };
 
@@ -1136,20 +1028,18 @@ $("collectionForm").addEventListener("submit",async event=>{
     showNotice("mainNotice","Please enter a valid collection image URL.","error");
     return;
   }
+  if(!validLink(collection.linkUrl)){
+    showNotice("mainNotice","Please enter a valid Collection URL.","error");
+    return;
+  }
 
   const isEditing=editingCollectionId!==null;
-  const endpoint=isEditing
-    ?"/collections/"+encodeURIComponent(editingCollectionId)
-    :"/collections";
-
+  const endpoint=isEditing?"/collections/"+encodeURIComponent(editingCollectionId):"/collections";
   $("collectionSaveBtn").disabled=true;
   $("collectionSaveBtn").textContent=isEditing?"Updating...":"Saving...";
 
   try{
-    await apiRequest(endpoint,{
-      method:isEditing?"PUT":"POST",
-      body:JSON.stringify(collection)
-    });
+    await apiRequest(endpoint,{method:isEditing?"PUT":"POST",body:JSON.stringify(collection)});
     showNotice("mainNotice",isEditing?"Collection updated successfully.":"Collection created successfully.","success");
     resetCollectionForm();
     await loadCollections();
@@ -1157,19 +1047,15 @@ $("collectionForm").addEventListener("submit",async event=>{
     showNotice("mainNotice",error.message,"error");
   }finally{
     $("collectionSaveBtn").disabled=activeUploads>0;
-    $("collectionSaveBtn").textContent=editingCollectionId!==null
-      ?"Update Collection":"Save Collection";
+    $("collectionSaveBtn").textContent=editingCollectionId!==null?"Update Collection":"Save Collection";
   }
 });
 
 async function deleteCollection(id){
   const item=collections.find(c=>String(c.id)===String(id));
   if(!confirm('Delete "'+(item?.name||"this collection")+'" permanently?'))return;
-
   try{
-    await apiRequest("/collections/"+encodeURIComponent(id),{
-      method:"DELETE"
-    });
+    await apiRequest("/collections/"+encodeURIComponent(id),{method:"DELETE"});
     showNotice("mainNotice","Collection deleted successfully.","success");
     await loadCollections();
   }catch(error){
@@ -1180,6 +1066,5 @@ async function deleteCollection(id){
 /* START */
 checkSession();
 </script>
-
 </body>
 </html>
