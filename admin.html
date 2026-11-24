@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,373 +6,150 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#080a0f">
 <title>CineVault | Admin Dashboard</title>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-:root{
-  --gold:#d6b36a;--gold2:#f0d59a;--bg:#080a0f;
-  --panel:#111722;--panel2:#171e2a;--text:#f5f3ed;
-  --muted:#9ba3b1;--line:rgba(255,255,255,.09);
-  --danger:#e05252;--success:#35b779;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.55;cursor:not-allowed}
-.hidden{display:none!important}
-.gold{color:var(--gold)}
-.muted{color:var(--muted)}
-.container{max-width:1320px;margin:auto;padding:24px}
-header{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:rgba(8,10,15,.95);backdrop-filter:blur(14px)}
-.header-inner{max-width:1320px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-.brand{font-size:23px;font-weight:800;letter-spacing:2px;color:var(--gold)}
-.brand small{display:block;font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:4px}
-.header-right{display:flex;align-items:center;gap:12px}
-.btn{border:1px solid var(--line);border-radius:8px;padding:10px 15px;background:#202938;color:white;font-weight:600;transition:.2s}
-.btn:hover{border-color:var(--gold);color:var(--gold)}
-.btn-gold{background:linear-gradient(135deg,#b88b35,#f0d59a);color:#111;border:0}
-.btn-gold:hover{color:#111;filter:brightness(1.08)}
-.btn-danger{background:#351919;color:#ff9999;border-color:#633030}
-.btn-small{padding:7px 10px;font-size:12px}
-h1{font-size:27px;margin:0 0 8px}
-h2{font-size:19px;margin:0 0 15px}
-h3{font-size:15px;margin:0 0 10px}
-.page-subtitle{color:var(--muted);font-size:13px;margin:0;line-height:1.7}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:25px 0}
-.stat-card{background:linear-gradient(145deg,#171e2a,#10151e);border:1px solid var(--line);border-radius:13px;padding:20px}
-.stat-card .label{font-size:11px;color:var(--muted);letter-spacing:.7px}
-.stat-card .number{font-size:29px;font-weight:800;color:var(--gold);margin-top:8px}
-.tabs{display:flex;gap:7px;border-bottom:1px solid var(--line);margin:24px 0 18px;flex-wrap:wrap;overflow-x:auto}
-.tab{border:0;background:transparent;color:var(--muted);padding:12px 14px;border-bottom:2px solid transparent;font-weight:600;white-space:nowrap}
-.tab.active{color:var(--gold);border-color:var(--gold)}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px;margin-bottom:20px}
-.toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-.search{flex:1;min-width:210px;max-width:460px}
-input,textarea,select{width:100%;background:#0b1018;color:white;border:1px solid #303947;border-radius:8px;padding:12px;outline:none}
-input:focus,textarea:focus,select:focus{border-color:var(--gold)}
-textarea{min-height:105px;resize:vertical}
-label{display:block;font-size:11px;color:#c1c5cc;margin-bottom:7px;font-weight:700;letter-spacing:.4px}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.form-group.full{grid-column:1/-1}
-.form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
-.upload-box{background:#0b1018;border:1px dashed #68532d;border-radius:9px;padding:13px;margin-top:9px}
-.upload-box input[type=file]{padding:9px;font-size:12px}
-.upload-help{color:#8f98a7;font-size:11px;margin-top:7px;line-height:1.6}
-.upload-status{font-size:12px;margin-top:8px;min-height:17px;color:var(--muted)}
-.upload-status.success{color:#82e2ae}
-.upload-status.error{color:#ff9999}
-.image-preview{display:none;max-width:180px;max-height:230px;object-fit:contain;margin-top:12px;border:1px solid #444;border-radius:7px;background:#171e2a}
-.image-preview.visible{display:block}
-.wide-preview{max-width:100%;width:330px;max-height:185px;aspect-ratio:16/9}
-.movie-list,.collection-list{display:grid;gap:11px}
-.movie-item,.collection-item{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:13px;align-items:center;padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:10px}
-.movie-poster,.collection-image{width:62px;height:82px;object-fit:cover;border-radius:6px;background:#242b36}
-.collection-image{height:62px}
-.movie-title{font-weight:700;font-size:13px;overflow-wrap:anywhere}
-.movie-meta{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;overflow-wrap:anywhere}
-.movie-actions{display:flex;gap:6px;flex-wrap:wrap}
-.notice{display:none;padding:12px 14px;border-radius:8px;margin:14px 0;font-size:13px;line-height:1.6}
-.notice.show{display:block}
-.notice.error{background:#351919;color:#ff9999}
-.notice.success{background:#123222;color:#82e2ae}
-.empty{text-align:center;padding:32px 14px;color:var(--muted);border:1px dashed #39404c;border-radius:9px}
-.loading{text-align:center;padding:24px;color:var(--gold)}
-.login-wrap{min-height:calc(100vh - 75px);display:flex;align-items:center;justify-content:center;padding:24px}
-.login-card{width:100%;max-width:420px;padding:32px;background:linear-gradient(145deg,#171e2a,#0e131c);border:1px solid #4a3c25;border-radius:15px;box-shadow:0 15px 60px #000}
-.login-logo{text-align:center;margin-bottom:25px}
-.login-logo .brand{font-size:30px}
-.login-card h2{text-align:center;margin-bottom:7px}
-.login-card .muted{text-align:center;font-size:13px;margin-bottom:24px}
-.login-card .form-group{margin-bottom:16px}
-.login-card .btn{width:100%;padding:13px}
-.login-foot{text-align:center;color:#777;font-size:11px;margin-top:20px}
-.section-note{padding:12px;background:#171e2a;border:1px solid var(--line);border-radius:8px;color:#aab2bf;font-size:12px;line-height:1.7;margin-bottom:18px}
-.divider{border:0;border-top:1px solid var(--line);margin:22px 0}
-footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1px solid var(--line);margin-top:30px}
-.pagination{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:18px}
-.pagination button{min-width:36px}
-.pagination button.active{background:var(--gold);color:#111;border-color:var(--gold)}
-.field-help{font-size:10px;color:#7f8998;margin-top:5px;line-height:1.5}
-@media(max-width:760px){
-  .container{padding:16px}
-  .header-inner{padding:14px 16px}
-  .stats{grid-template-columns:1fr}
-  .form-grid{grid-template-columns:1fr}
-  .form-group.full{grid-column:auto}
-  .movie-item,.collection-item{grid-template-columns:50px minmax(0,1fr)}
-  .movie-poster,.collection-image{width:50px;height:68px}
-  .movie-actions{grid-column:1/-1}
-  .panel{padding:15px}
-  .tab{padding:11px 9px;font-size:12px}
-  h1{font-size:23px}
-}
+:root{--gold:#d6b36a;--gold2:#f0d59a;--bg:#080a0f;--panel:#111722;--panel2:#171e2a;--text:#f5f3ed;--muted:#9ba3b1;--line:rgba(255,255,255,.09);--danger:#e05252;--success:#35b779}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.hidden{display:none!important}.gold{color:var(--gold)}.muted{color:var(--muted)}
+.container{max-width:1320px;margin:auto;padding:24px}header{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:rgba(8,10,15,.95);backdrop-filter:blur(14px)}
+.header-inner{max-width:1320px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.brand{font-size:23px;font-weight:800;letter-spacing:2px;color:var(--gold)}.brand small{display:block;font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:4px}.header-right{display:flex;align-items:center;gap:12px}
+.btn{border:1px solid var(--line);border-radius:8px;padding:10px 15px;background:#202938;color:white;font-weight:600;transition:.2s}.btn:hover{border-color:var(--gold);color:var(--gold)}.btn-gold{background:linear-gradient(135deg,#b88b35,#f0d59a);color:#111;border:0}.btn-gold:hover{color:#111;filter:brightness(1.08)}.btn-danger{background:#351919;color:#ff9999;border-color:#633030}.btn-small{padding:7px 10px;font-size:12px}
+h1{font-size:27px;margin:0 0 8px}h2{font-size:19px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.page-subtitle{color:var(--muted);font-size:13px;margin:0;line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:25px 0}.stat-card{background:linear-gradient(145deg,#171e2a,#10151e);border:1px solid var(--line);border-radius:13px;padding:20px}.stat-card .label{font-size:11px;color:var(--muted);letter-spacing:.7px}.stat-card .number{font-size:29px;font-weight:800;color:var(--gold);margin-top:8px}
+.tabs{display:flex;gap:7px;border-bottom:1px solid var(--line);margin:24px 0 18px;flex-wrap:wrap;overflow-x:auto}.tab{border:0;background:transparent;color:var(--muted);padding:12px 14px;border-bottom:2px solid transparent;font-weight:600;white-space:nowrap}.tab.active{color:var(--gold);border-color:var(--gold)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:22px;margin-bottom:20px}.toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:16px}.search{flex:1;min-width:210px;max-width:460px}
+input,textarea,select{width:100%;background:#0b1018;color:white;border:1px solid #303947;border-radius:8px;padding:12px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--gold)}textarea{min-height:105px;resize:vertical}
+label{display:block;font-size:11px;color:#c1c5cc;margin-bottom:7px;font-weight:700;letter-spacing:.4px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.form-group.full{grid-column:1/-1}.form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.upload-box{background:#0b1018;border:1px dashed #68532d;border-radius:9px;padding:13px;margin-top:9px}.upload-box input[type=file]{padding:9px;font-size:12px}.upload-help{color:#8f98a7;font-size:11px;margin-top:7px;line-height:1.6}.upload-status{font-size:12px;margin-top:8px;min-height:17px;color:var(--muted)}.upload-status.success{color:#82e2ae}.upload-status.error{color:#ff9999}
+.image-preview{display:none;max-width:180px;max-height:230px;object-fit:contain;margin-top:12px;border:1px solid #444;border-radius:7px;background:#171e2a}.image-preview.visible{display:block}.wide-preview{max-width:100%;width:330px;max-height:185px;aspect-ratio:16/9}
+.movie-list,.collection-list{display:grid;gap:11px}.movie-item,.collection-item{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:13px;align-items:center;padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:10px}.movie-poster,.collection-image{width:62px;height:82px;object-fit:cover;border-radius:6px;background:#242b36}.collection-image{height:62px}.movie-title{font-weight:700;font-size:13px;overflow-wrap:anywhere}.movie-meta{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;overflow-wrap:anywhere}.movie-actions{display:flex;gap:6px;flex-wrap:wrap}
+.notice{display:none;padding:12px 14px;border-radius:8px;margin:14px 0;font-size:13px;line-height:1.6}.notice.show{display:block}.notice.error{background:#351919;color:#ff9999}.notice.success{background:#123222;color:#82e2ae}.empty{text-align:center;padding:32px 14px;color:var(--muted);border:1px dashed #39404c;border-radius:9px}.loading{text-align:center;padding:24px;color:var(--gold)}
+.login-wrap{min-height:calc(100vh - 75px);display:flex;align-items:center;justify-content:center;padding:24px}.login-card{width:100%;max-width:420px;padding:32px;background:linear-gradient(145deg,#171e2a,#0e131c);border:1px solid #4a3c25;border-radius:15px;box-shadow:0 15px 60px #000}.login-logo{text-align:center;margin-bottom:25px}.login-logo .brand{font-size:30px}.login-card h2{text-align:center;margin-bottom:7px}.login-card .muted{text-align:center;font-size:13px;margin-bottom:24px}.login-card .form-group{margin-bottom:16px}.login-card .btn{width:100%;padding:13px}.login-foot{text-align:center;color:#777;font-size:11px;margin-top:20px}
+.section-note{padding:12px;background:#171e2a;border:1px solid var(--line);border-radius:8px;color:#aab2bf;font-size:12px;line-height:1.7;margin-bottom:18px}.divider{border:0;border-top:1px solid var(--line);margin:22px 0}footer{text-align:center;padding:24px;color:#687080;font-size:11px;border-top:1px solid var(--line);margin-top:30px}.pagination{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:18px}.pagination button{min-width:36px}.pagination button.active{background:var(--gold);color:#111;border-color:var(--gold)}.field-help{font-size:10px;color:#7f8998;margin-top:5px;line-height:1.5}
+.banner-list{display:grid;gap:13px;margin-top:16px}.banner-card{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:15px}.banner-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:13px}.banner-card-title{font-size:14px;font-weight:800;color:var(--gold)}.banner-actions{display:flex;gap:6px;flex-wrap:wrap}.banner-preview{display:grid;grid-template-columns:180px 1fr;gap:14px;align-items:center;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#0b1018}.banner-preview img{width:100%;height:105px;object-fit:cover;border-radius:6px;background:#202938}.banner-preview-text{font-size:12px;line-height:1.6;overflow-wrap:anywhere}.banner-status{font-size:11px;color:var(--muted);margin-top:5px}.banner-card .form-grid{gap:12px}.banner-card textarea{min-height:75px}.banner-counter{font-size:12px;color:var(--muted)}.banner-enabled{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text)}.banner-enabled input{width:auto}
+@media(max-width:760px){.container{padding:16px}.header-inner{padding:14px 16px}.stats{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.movie-item,.collection-item{grid-template-columns:50px minmax(0,1fr)}.movie-poster,.collection-image{width:50px;height:68px}.movie-actions{grid-column:1/-1}.panel{padding:15px}.tab{padding:11px 9px;font-size:12px}h1{font-size:23px}.banner-preview{grid-template-columns:1fr}.banner-preview img{height:150px}}
 </style>
 </head>
-
 <body>
-<header>
-  <div class="header-inner">
-    <div class="brand">CINEVAULT<small>ADMINISTRATION PANEL</small></div>
-    <div class="header-right">
-      <span class="muted" id="adminStatus">Admin Panel</span>
-      <button class="btn btn-danger btn-small hidden" id="logoutBtn">Logout</button>
-    </div>
-  </div>
-</header>
+<header><div class="header-inner">
+  <div class="brand">CINEVAULT<small>ADMINISTRATION PANEL</small></div>
+  <div class="header-right"><span class="muted" id="adminStatus">Admin Panel</span><button class="btn btn-danger btn-small hidden" id="logoutBtn">Logout</button></div>
+</div></header>
 
-<section class="login-wrap" id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="brand">CINEVAULT</div>
-      <div class="muted">PREMIUM ADMIN ACCESS</div>
-    </div>
-    <h2>Admin Login</h2>
-    <p class="muted">Sign in to manage your CineVault website.</p>
-    <div id="loginNotice" class="notice"></div>
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="adminPassword">ADMIN PASSWORD</label>
-        <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="current-password" required>
-      </div>
-      <button class="btn btn-gold" type="submit" id="loginBtn">Secure Login</button>
-    </form>
-    <div class="login-foot">Protected CineVault Administration</div>
-  </div>
-</section>
+<section class="login-wrap" id="loginScreen"><div class="login-card">
+  <div class="login-logo"><div class="brand">CINEVAULT</div><div class="muted">PREMIUM ADMIN ACCESS</div></div>
+  <h2>Admin Login</h2><p class="muted">Sign in to manage your CineVault website.</p>
+  <div id="loginNotice" class="notice"></div>
+  <form id="loginForm"><div class="form-group"><label for="adminPassword">ADMIN PASSWORD</label><input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="current-password" required></div><button class="btn btn-gold" type="submit" id="loginBtn">Secure Login</button></form>
+  <div class="login-foot">Protected CineVault Administration</div>
+</div></section>
 
 <main class="container hidden" id="dashboard">
-  <h1>Admin <span class="gold">Dashboard</span></h1>
-  <p class="page-subtitle">Manage movies, homepage content, hero banner and collections.</p>
-  <div id="mainNotice" class="notice" role="status" aria-live="polite"></div>
+<h1>Admin <span class="gold">Dashboard</span></h1>
+<p class="page-subtitle">Manage movies, homepage content, hero banners and collections.</p>
+<div id="mainNotice" class="notice" role="status" aria-live="polite"></div>
+<section class="stats">
+  <div class="stat-card"><div class="label">TOTAL MOVIES</div><div class="number" id="totalMovies">0</div></div>
+  <div class="stat-card"><div class="label">TOTAL COLLECTIONS</div><div class="number" id="totalCollections">0</div></div>
+  <div class="stat-card"><div class="label">DATABASE STATUS</div><div class="number" id="databaseStatus" style="font-size:19px">Checking...</div></div>
+</section>
+<nav class="tabs" aria-label="Admin sections">
+  <button class="tab active" data-tab="library">Movie Library</button><button class="tab" data-tab="add">Add Movie</button><button class="tab" data-tab="settings">Website Settings</button><button class="tab" data-tab="hero">Hero Banner</button><button class="tab" data-tab="collections">Collections</button>
+</nav>
 
-  <section class="stats">
-    <div class="stat-card"><div class="label">TOTAL MOVIES</div><div class="number" id="totalMovies">0</div></div>
-    <div class="stat-card"><div class="label">TOTAL COLLECTIONS</div><div class="number" id="totalCollections">0</div></div>
-    <div class="stat-card"><div class="label">DATABASE STATUS</div><div class="number" id="databaseStatus" style="font-size:19px">Checking...</div></div>
-  </section>
+<section id="libraryTab" class="panel">
+  <div class="toolbar"><div><h2>Movie Library</h2><p class="page-subtitle">Search, edit and delete movies stored in Cloudflare D1.</p></div><button class="btn" id="refreshBtn" type="button">Refresh</button></div>
+  <div class="toolbar"><input class="search" type="search" id="movieSearch" placeholder="Search title, genre, year, language..."><select id="movieSort" style="max-width:190px"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="title">Title A–Z</option><option value="year">Year: newest</option><option value="rating">Rating: highest</option></select><span class="muted" id="resultCount">0 movies</span></div>
+  <div id="movieList" class="movie-list"><div class="loading">Loading movies...</div></div><div id="moviePagination" class="pagination"></div>
+</section>
 
-  <nav class="tabs" aria-label="Admin sections">
-    <button class="tab active" data-tab="library">Movie Library</button>
-    <button class="tab" data-tab="add">Add Movie</button>
-    <button class="tab" data-tab="settings">Website Settings</button>
-    <button class="tab" data-tab="hero">Hero Banner</button>
-    <button class="tab" data-tab="collections">Collections</button>
-  </nav>
+<section id="addTab" class="panel hidden">
+<h2 id="formHeading">Add New Movie</h2><p class="page-subtitle" id="formSubtitle">Add a movie to your CineVault database.</p>
+<form id="movieForm"><input type="hidden" id="movieId"><div class="form-grid">
+<div class="form-group"><label for="title">MOVIE TITLE *</label><input id="title" required maxlength="200" placeholder="Movie title"></div>
+<div class="form-group"><label for="year">RELEASE YEAR</label><input id="year" type="number" min="1888" max="2100" placeholder="2026"></div>
+<div class="form-group"><label for="genre">GENRE</label><input id="genre" placeholder="Action, Drama, Thriller"></div>
+<div class="form-group"><label for="language">LANGUAGE</label><input id="language" placeholder="English, Hindi, Bangla"></div>
+<div class="form-group"><label for="country">COUNTRY</label><input id="country" placeholder="USA, India, Bangladesh"></div>
+<div class="form-group"><label for="rating">IMDB RATING</label><input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5"></div>
+<div class="form-group"><label for="duration">DURATION</label><input id="duration" placeholder="2h 15m"></div>
+<div class="form-group"><label for="director">DIRECTOR</label><input id="director" placeholder="Director name"></div>
+<div class="form-group"><label for="quality">VIDEO QUALITY</label><input id="quality" placeholder="1080p, 720p, 4K"></div>
+<div class="form-group full"><label for="poster">POSTER IMAGE URL</label><input id="poster" type="url" placeholder="https://example.com/poster.jpg"><div class="upload-box"><label for="posterFile">UPLOAD POSTER FROM DEVICE</label><input id="posterFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div><div id="posterStatus" class="upload-status"></div><img id="posterPreview" class="image-preview" alt="Poster preview"></div></div>
+<div class="form-group full"><label for="backdrop">BACKDROP IMAGE URL</label><input id="backdrop" type="url" placeholder="https://example.com/backdrop.jpg"><div class="upload-box"><label for="backdropFile">UPLOAD BACKDROP FROM DEVICE</label><input id="backdropFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div><div id="backdropStatus" class="upload-status"></div><img id="backdropPreview" class="image-preview wide-preview" alt="Backdrop preview"></div></div>
+<div class="form-group full"><label for="description">MOVIE DESCRIPTION</label><textarea id="description" maxlength="20000" placeholder="Write movie description..."></textarea></div>
+<div class="form-group full"><label for="watchUrl">WATCH URL</label><input id="watchUrl" type="url" placeholder="https://example.com/watch"></div>
+<div class="form-group full"><label for="downloadUrl">DOWNLOAD URL 1</label><input id="downloadUrl" type="url" placeholder="https://example.com/download-1"></div>
+<div class="form-group full"><label for="downloadUrl2">DOWNLOAD URL 2</label><input id="downloadUrl2" type="url" placeholder="https://example.com/download-2"><div class="upload-help">Optional second download link. Stored separately in D1.</div></div>
+<div class="form-group full"><label for="adUrl">ADVERTISEMENT URL</label><input id="adUrl" type="url" placeholder="https://example.com/advertisement"></div>
+<div class="form-group"><label for="adCount">ADVERTISEMENT COUNT (MINIMUM 4)</label><input id="adCount" type="number" min="4" max="1000" step="1" value="4" required><div class="upload-help">The count is saved per movie. Existing values are retained when editing.</div></div>
+</div><div class="form-actions"><button class="btn btn-gold" type="submit" id="saveBtn">Save Movie</button><button class="btn hidden" type="button" id="cancelEditBtn">Cancel Edit</button><button class="btn" type="reset" id="resetBtn">Clear Form</button></div></form>
+</section>
 
-  <section id="libraryTab" class="panel">
-    <div class="toolbar">
-      <div><h2>Movie Library</h2><p class="page-subtitle">Search, edit and delete movies stored in Cloudflare D1.</p></div>
-      <button class="btn" id="refreshBtn" type="button">Refresh</button>
-    </div>
-    <div class="toolbar">
-      <input class="search" type="search" id="movieSearch" placeholder="Search title, genre, year, language...">
-      <select id="movieSort" style="max-width:190px">
-        <option value="newest">Newest first</option>
-        <option value="oldest">Oldest first</option>
-        <option value="title">Title A–Z</option>
-        <option value="year">Year: newest</option>
-        <option value="rating">Rating: highest</option>
-      </select>
-      <span class="muted" id="resultCount">0 movies</span>
-    </div>
-    <div id="movieList" class="movie-list"><div class="loading">Loading movies...</div></div>
-    <div id="moviePagination" class="pagination"></div>
-  </section>
+<section id="settingsTab" class="panel hidden">
+<h2>Website <span class="gold">Settings</span></h2><p class="page-subtitle">Manage website identity, homepage headings, About section and footer text.</p>
+<div class="section-note">Text URL fields accept HTTP/HTTPS links, relative paths and #anchor links. Leave a URL blank when the related text should not be clickable.</div>
+<form id="settingsForm"><div class="form-grid">
+<div class="form-group"><label for="siteName">WEBSITE NAME</label><input id="siteName" placeholder="CineVault"></div><div class="form-group"><label for="logoText">LOGO TEXT</label><input id="logoText" placeholder="C"></div>
+<div class="form-group full"><hr class="divider"><h3>Homepage Collections Heading</h3></div>
+<div class="form-group"><label for="collectionsEyebrow">COLLECTIONS EYEBROW</label><input id="collectionsEyebrow" placeholder="EXPLORE BY CATEGORY"></div><div class="form-group"><label for="collectionsEyebrowUrl">EYEBROW URL</label><input id="collectionsEyebrowUrl" placeholder="#collections"></div>
+<div class="form-group"><label for="collectionsHeading">COLLECTIONS HEADING</label><input id="collectionsHeading" placeholder="Movie"></div><div class="form-group"><label for="collectionsHeadingHighlight">HEADING HIGHLIGHT</label><input id="collectionsHeadingHighlight" placeholder="Collections"></div>
+<div class="form-group full"><label for="collectionsHeadingUrl">HEADING URL</label><input id="collectionsHeadingUrl" placeholder="#collections"></div>
+<div class="form-group full"><label for="collectionsDescription">COLLECTIONS DESCRIPTION</label><textarea id="collectionsDescription" placeholder="Describe the collections section..."></textarea><label for="collectionsDescriptionUrl">DESCRIPTION URL</label><input id="collectionsDescriptionUrl" placeholder="#collections"></div>
+<div class="form-group full"><hr class="divider"><h3>Explore Movies Heading</h3></div>
+<div class="form-group"><label for="moviesEyebrow">MOVIES EYEBROW</label><input id="moviesEyebrow" placeholder="YOUR NEXT WATCH"></div><div class="form-group"><label for="moviesEyebrowUrl">EYEBROW URL</label><input id="moviesEyebrowUrl" placeholder="#movies"></div>
+<div class="form-group"><label for="moviesHeading">MOVIES HEADING</label><input id="moviesHeading" placeholder="Explore"></div><div class="form-group"><label for="moviesHeadingHighlight">HEADING HIGHLIGHT</label><input id="moviesHeadingHighlight" placeholder="Movies"></div>
+<div class="form-group full"><label for="moviesHeadingUrl">HEADING URL</label><input id="moviesHeadingUrl" placeholder="#movies"></div>
+<div class="form-group full"><label for="moviesDescription">MOVIES DESCRIPTION</label><textarea id="moviesDescription" placeholder="Describe the movie library..."></textarea><label for="moviesDescriptionUrl">DESCRIPTION URL</label><input id="moviesDescriptionUrl" placeholder="#movies"></div>
+<div class="form-group full"><hr class="divider"><h3>About Section</h3></div>
+<div class="form-group"><label for="aboutEyebrow">ABOUT EYEBROW</label><input id="aboutEyebrow" placeholder="WELCOME TO CINEVAULT"></div><div class="form-group"><label for="aboutEyebrowUrl">EYEBROW URL</label><input id="aboutEyebrowUrl" placeholder="#about"></div>
+<div class="form-group"><label for="aboutTitle">ABOUT TITLE</label><input id="aboutTitle" placeholder="More Than Movies."></div><div class="form-group"><label for="aboutTitleUrl">TITLE URL</label><input id="aboutTitleUrl" placeholder="#about"></div>
+<div class="form-group"><label for="aboutHighlight">ABOUT TITLE HIGHLIGHT</label><input id="aboutHighlight" placeholder="A Cinema Experience."></div><div class="form-group"><label for="aboutHighlightUrl">HIGHLIGHT URL</label><input id="aboutHighlightUrl" placeholder="#about"></div>
+<div class="form-group full"><label for="aboutDescription">ABOUT DESCRIPTION</label><textarea id="aboutDescription" placeholder="Write your About section..."></textarea><label for="aboutDescriptionUrl">DESCRIPTION URL</label><input id="aboutDescriptionUrl" placeholder="#about"></div>
+<div class="form-group"><label for="aboutButtonText">ABOUT BUTTON TEXT</label><input id="aboutButtonText" placeholder="Discover Movies"></div><div class="form-group"><label for="aboutButtonUrl">ABOUT BUTTON URL</label><input id="aboutButtonUrl" placeholder="#movies"></div>
+<div class="form-group full"><hr class="divider"><h3>Footer Settings</h3></div>
+<div class="form-group full"><label for="footerDescription">FOOTER DESCRIPTION</label><textarea id="footerDescription" placeholder="Footer description..."></textarea><label for="footerDescriptionUrl">DESCRIPTION URL</label><input id="footerDescriptionUrl" placeholder="https://example.com"></div>
+<div class="form-group"><label for="footerTagline">FOOTER TAGLINE</label><input id="footerTagline" placeholder="Made for movie lovers."></div><div class="form-group"><label for="footerTaglineUrl">TAGLINE URL</label><input id="footerTaglineUrl" placeholder="https://example.com"></div>
+<div class="form-group"><label for="copyrightText">COPYRIGHT TEXT</label><input id="copyrightText" placeholder="All rights reserved."></div><div class="form-group"><label for="copyrightUrl">COPYRIGHT URL</label><input id="copyrightUrl" placeholder="https://example.com"></div>
+</div><div class="form-actions"><button class="btn btn-gold" type="submit" id="settingsSaveBtn">Save Website Settings</button><button class="btn" type="button" id="settingsReloadBtn">Reload Settings</button></div></form>
+</section>
 
-  <section id="addTab" class="panel hidden">
-    <h2 id="formHeading">Add New Movie</h2>
-    <p class="page-subtitle" id="formSubtitle">Add a movie to your CineVault database.</p>
-    <form id="movieForm">
-      <input type="hidden" id="movieId">
-      <div class="form-grid">
-        <div class="form-group"><label for="title">MOVIE TITLE *</label><input id="title" required maxlength="200" placeholder="Movie title"></div>
-        <div class="form-group"><label for="year">RELEASE YEAR</label><input id="year" type="number" min="1888" max="2100" placeholder="2026"></div>
-        <div class="form-group"><label for="genre">GENRE</label><input id="genre" placeholder="Action, Drama, Thriller"></div>
-        <div class="form-group"><label for="language">LANGUAGE</label><input id="language" placeholder="English, Hindi, Bangla"></div>
-        <div class="form-group"><label for="country">COUNTRY</label><input id="country" placeholder="USA, India, Bangladesh"></div>
-        <div class="form-group"><label for="rating">IMDB RATING</label><input id="rating" type="number" min="0" max="10" step="0.1" placeholder="8.5"></div>
-        <div class="form-group"><label for="duration">DURATION</label><input id="duration" placeholder="2h 15m"></div>
-        <div class="form-group"><label for="director">DIRECTOR</label><input id="director" placeholder="Director name"></div>
-        <div class="form-group"><label for="quality">VIDEO QUALITY</label><input id="quality" placeholder="1080p, 720p, 4K"></div>
+<section id="heroTab" class="panel hidden">
+<h2>Hero <span class="gold">Banner Manager</span></h2>
+<p class="page-subtitle">Manage multiple homepage hero slides. The slider will use the order shown below.</p>
+<div class="section-note">Multiple banners are saved in the existing <b>heroBanners</b> website setting. Maximum 10 banners. Each banner can be enabled or disabled independently. Changes become public after saving and after the homepage slider is connected to this setting.</div>
+<div class="toolbar"><div><h3>Multiple Hero Banners</h3><span class="banner-counter" id="bannerCount">0 / 10 banners</span></div><div class="banner-actions"><button class="btn" type="button" id="bannerReloadBtn">Reload Banners</button><button class="btn btn-gold" type="button" id="addBannerBtn">+ Add New Banner</button></div></div>
+<div id="bannerNotice" class="notice" role="status" aria-live="polite"></div>
+<div id="bannerList" class="banner-list"><div class="loading">Loading banners...</div></div>
+<div class="form-actions"><button class="btn btn-gold" type="button" id="saveBannersBtn">Save All Banner Changes</button></div>
+<hr class="divider">
+<h2>Legacy Single Hero <span class="gold">Settings</span></h2>
+<p class="page-subtitle">Fallback settings used by the homepage when no multiple banners are configured.</p>
+<form id="heroForm"><div class="form-grid">
+<div class="form-group"><label for="heroEyebrow">EYEBROW TEXT</label><input id="heroEyebrow" placeholder="YOUR WORLD OF CINEMA"><label for="heroEyebrowUrl">EYEBROW URL</label><input id="heroEyebrowUrl" placeholder="#movies"></div>
+<div class="form-group"><label for="heroTitle">MAIN TITLE</label><input id="heroTitle" placeholder="Discover Stories."><label for="heroTitleUrl">TITLE URL</label><input id="heroTitleUrl" placeholder="#movies"></div>
+<div class="form-group full"><label for="heroHighlight">TITLE HIGHLIGHT</label><input id="heroHighlight" placeholder="Experience Cinema."><label for="heroHighlightUrl">HIGHLIGHT URL</label><input id="heroHighlightUrl" placeholder="#movies"></div>
+<div class="form-group full"><label for="heroDescription">HERO DESCRIPTION</label><textarea id="heroDescription" placeholder="Write hero banner description..."></textarea><label for="heroDescriptionUrl">DESCRIPTION URL</label><input id="heroDescriptionUrl" placeholder="#movies"></div>
+<div class="form-group full"><label for="heroImage">HERO BACKGROUND IMAGE URL</label><input id="heroImage" type="url" placeholder="https://example.com/hero.jpg"><div class="upload-box"><label for="heroFile">UPLOAD HERO IMAGE</label><input id="heroFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div><div id="heroStatus" class="upload-status"></div><img id="heroPreview" class="image-preview wide-preview" alt="Hero preview"></div></div>
+<div class="form-group full"><hr class="divider"><h3>First Hero Button</h3></div><div class="form-group"><label for="heroButton1Text">BUTTON 1 TEXT</label><input id="heroButton1Text" placeholder="Explore Movies"></div><div class="form-group"><label for="heroButton1Url">BUTTON 1 LINK</label><input id="heroButton1Url" placeholder="#movies"></div>
+<div class="form-group full"><hr class="divider"><h3>Second Hero Button</h3></div><div class="form-group"><label for="heroButton2Text">BUTTON 2 TEXT</label><input id="heroButton2Text" placeholder="Browse Collections"></div><div class="form-group"><label for="heroButton2Url">BUTTON 2 LINK</label><input id="heroButton2Url" placeholder="#collections"></div>
+</div><div class="form-actions"><button class="btn btn-gold" type="submit" id="heroSaveBtn">Save Legacy Hero Settings</button><button class="btn" type="button" id="heroReloadBtn">Reload Hero Settings</button></div></form>
+</section>
 
-        <div class="form-group full">
-          <label for="poster">POSTER IMAGE URL</label><input id="poster" type="url" placeholder="https://example.com/poster.jpg">
-          <div class="upload-box">
-            <label for="posterFile">UPLOAD POSTER FROM DEVICE</label>
-            <input id="posterFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
-            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
-            <div id="posterStatus" class="upload-status"></div>
-            <img id="posterPreview" class="image-preview" alt="Poster preview">
-          </div>
-        </div>
-
-        <div class="form-group full">
-          <label for="backdrop">BACKDROP IMAGE URL</label><input id="backdrop" type="url" placeholder="https://example.com/backdrop.jpg">
-          <div class="upload-box">
-            <label for="backdropFile">UPLOAD BACKDROP FROM DEVICE</label>
-            <input id="backdropFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
-            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
-            <div id="backdropStatus" class="upload-status"></div>
-            <img id="backdropPreview" class="image-preview wide-preview" alt="Backdrop preview">
-          </div>
-        </div>
-
-        <div class="form-group full"><label for="description">MOVIE DESCRIPTION</label><textarea id="description" maxlength="20000" placeholder="Write movie description..."></textarea></div>
-        <div class="form-group full"><label for="watchUrl">WATCH URL</label><input id="watchUrl" type="url" placeholder="https://example.com/watch"></div>
-        <div class="form-group full"><label for="downloadUrl">DOWNLOAD URL 1</label><input id="downloadUrl" type="url" placeholder="https://example.com/download-1"></div>
-        <div class="form-group full">
-          <label for="downloadUrl2">DOWNLOAD URL 2</label><input id="downloadUrl2" type="url" placeholder="https://example.com/download-2">
-          <div class="upload-help">Optional second download link. Stored separately in D1.</div>
-        </div>
-        <div class="form-group full"><label for="adUrl">ADVERTISEMENT URL</label><input id="adUrl" type="url" placeholder="https://example.com/advertisement"></div>
-        <div class="form-group">
-          <label for="adCount">ADVERTISEMENT COUNT (MINIMUM 4)</label>
-          <input id="adCount" type="number" min="4" max="1000" step="1" value="4" required>
-          <div class="upload-help">The count is saved per movie. Existing values are retained when editing.</div>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-gold" type="submit" id="saveBtn">Save Movie</button>
-        <button class="btn hidden" type="button" id="cancelEditBtn">Cancel Edit</button>
-        <button class="btn" type="reset" id="resetBtn">Clear Form</button>
-      </div>
-    </form>
-  </section>
-
-  <section id="settingsTab" class="panel hidden">
-    <h2>Website <span class="gold">Settings</span></h2>
-    <p class="page-subtitle">Manage website identity, homepage headings, About section and footer text.</p>
-    <div class="section-note">Text URL fields accept HTTP/HTTPS links, relative paths and #anchor links. Leave a URL blank when the related text should not be clickable.</div>
-    <form id="settingsForm">
-      <div class="form-grid">
-        <div class="form-group"><label for="siteName">WEBSITE NAME</label><input id="siteName" placeholder="CineVault"></div>
-        <div class="form-group"><label for="logoText">LOGO TEXT</label><input id="logoText" placeholder="C"></div>
-
-        <div class="form-group full"><hr class="divider"><h3>Homepage Collections Heading</h3></div>
-        <div class="form-group"><label for="collectionsEyebrow">COLLECTIONS EYEBROW</label><input id="collectionsEyebrow" placeholder="EXPLORE BY CATEGORY"></div>
-        <div class="form-group"><label for="collectionsEyebrowUrl">EYEBROW URL</label><input id="collectionsEyebrowUrl" placeholder="#collections"></div>
-        <div class="form-group"><label for="collectionsHeading">COLLECTIONS HEADING</label><input id="collectionsHeading" placeholder="Movie"></div>
-        <div class="form-group"><label for="collectionsHeadingHighlight">HEADING HIGHLIGHT</label><input id="collectionsHeadingHighlight" placeholder="Collections"></div>
-        <div class="form-group full"><label for="collectionsHeadingUrl">HEADING URL</label><input id="collectionsHeadingUrl" placeholder="#collections"></div>
-        <div class="form-group full"><label for="collectionsDescription">COLLECTIONS DESCRIPTION</label><textarea id="collectionsDescription" placeholder="Describe the collections section..."></textarea><label for="collectionsDescriptionUrl">DESCRIPTION URL</label><input id="collectionsDescriptionUrl" placeholder="#collections"></div>
-
-        <div class="form-group full"><hr class="divider"><h3>Explore Movies Heading</h3></div>
-        <div class="form-group"><label for="moviesEyebrow">MOVIES EYEBROW</label><input id="moviesEyebrow" placeholder="YOUR NEXT WATCH"></div>
-        <div class="form-group"><label for="moviesEyebrowUrl">EYEBROW URL</label><input id="moviesEyebrowUrl" placeholder="#movies"></div>
-        <div class="form-group"><label for="moviesHeading">MOVIES HEADING</label><input id="moviesHeading" placeholder="Explore"></div>
-        <div class="form-group"><label for="moviesHeadingHighlight">HEADING HIGHLIGHT</label><input id="moviesHeadingHighlight" placeholder="Movies"></div>
-        <div class="form-group full"><label for="moviesHeadingUrl">HEADING URL</label><input id="moviesHeadingUrl" placeholder="#movies"></div>
-        <div class="form-group full"><label for="moviesDescription">MOVIES DESCRIPTION</label><textarea id="moviesDescription" placeholder="Describe the movie library..."></textarea><label for="moviesDescriptionUrl">DESCRIPTION URL</label><input id="moviesDescriptionUrl" placeholder="#movies"></div>
-
-        <div class="form-group full"><hr class="divider"><h3>About Section</h3></div>
-        <div class="form-group"><label for="aboutEyebrow">ABOUT EYEBROW</label><input id="aboutEyebrow" placeholder="WELCOME TO CINEVAULT"></div>
-        <div class="form-group"><label for="aboutEyebrowUrl">EYEBROW URL</label><input id="aboutEyebrowUrl" placeholder="#about"></div>
-        <div class="form-group"><label for="aboutTitle">ABOUT TITLE</label><input id="aboutTitle" placeholder="More Than Movies."></div>
-        <div class="form-group"><label for="aboutTitleUrl">TITLE URL</label><input id="aboutTitleUrl" placeholder="#about"></div>
-        <div class="form-group"><label for="aboutHighlight">ABOUT TITLE HIGHLIGHT</label><input id="aboutHighlight" placeholder="A Cinema Experience."></div>
-        <div class="form-group"><label for="aboutHighlightUrl">HIGHLIGHT URL</label><input id="aboutHighlightUrl" placeholder="#about"></div>
-        <div class="form-group full"><label for="aboutDescription">ABOUT DESCRIPTION</label><textarea id="aboutDescription" placeholder="Write your About section..."></textarea><label for="aboutDescriptionUrl">DESCRIPTION URL</label><input id="aboutDescriptionUrl" placeholder="#about"></div>
-        <div class="form-group"><label for="aboutButtonText">ABOUT BUTTON TEXT</label><input id="aboutButtonText" placeholder="Discover Movies"></div>
-        <div class="form-group"><label for="aboutButtonUrl">ABOUT BUTTON URL</label><input id="aboutButtonUrl" placeholder="#movies"></div>
-
-        <div class="form-group full"><hr class="divider"><h3>Footer Settings</h3></div>
-        <div class="form-group full"><label for="footerDescription">FOOTER DESCRIPTION</label><textarea id="footerDescription" placeholder="Footer description..."></textarea><label for="footerDescriptionUrl">DESCRIPTION URL</label><input id="footerDescriptionUrl" placeholder="https://example.com"></div>
-        <div class="form-group"><label for="footerTagline">FOOTER TAGLINE</label><input id="footerTagline" placeholder="Made for movie lovers."></div>
-        <div class="form-group"><label for="footerTaglineUrl">TAGLINE URL</label><input id="footerTaglineUrl" placeholder="https://example.com"></div>
-        <div class="form-group"><label for="copyrightText">COPYRIGHT TEXT</label><input id="copyrightText" placeholder="All rights reserved."></div>
-        <div class="form-group"><label for="copyrightUrl">COPYRIGHT URL</label><input id="copyrightUrl" placeholder="https://example.com"></div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-gold" type="submit" id="settingsSaveBtn">Save Website Settings</button>
-        <button class="btn" type="button" id="settingsReloadBtn">Reload Settings</button>
-      </div>
-    </form>
-  </section>
-
-  <section id="heroTab" class="panel hidden">
-    <h2>Hero <span class="gold">Banner</span></h2>
-    <p class="page-subtitle">Edit homepage hero text, background image and buttons.</p>
-    <div class="section-note">The homepage reads these values from the public website settings API.</div>
-    <form id="heroForm">
-      <div class="form-grid">
-        <div class="form-group"><label for="heroEyebrow">EYEBROW TEXT</label><input id="heroEyebrow" placeholder="YOUR WORLD OF CINEMA"><label for="heroEyebrowUrl">EYEBROW URL</label><input id="heroEyebrowUrl" placeholder="#movies"></div>
-        <div class="form-group"><label for="heroTitle">MAIN TITLE</label><input id="heroTitle" placeholder="Discover Stories."><label for="heroTitleUrl">TITLE URL</label><input id="heroTitleUrl" placeholder="#movies"></div>
-        <div class="form-group full"><label for="heroHighlight">TITLE HIGHLIGHT</label><input id="heroHighlight" placeholder="Experience Cinema."><label for="heroHighlightUrl">HIGHLIGHT URL</label><input id="heroHighlightUrl" placeholder="#movies"></div>
-        <div class="form-group full"><label for="heroDescription">HERO DESCRIPTION</label><textarea id="heroDescription" placeholder="Write hero banner description..."></textarea><label for="heroDescriptionUrl">DESCRIPTION URL</label><input id="heroDescriptionUrl" placeholder="#movies"></div>
-        <div class="form-group full">
-          <label for="heroImage">HERO BACKGROUND IMAGE URL</label><input id="heroImage" type="url" placeholder="https://example.com/hero.jpg">
-          <div class="upload-box">
-            <label for="heroFile">UPLOAD HERO IMAGE</label><input id="heroFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
-            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
-            <div id="heroStatus" class="upload-status"></div>
-            <img id="heroPreview" class="image-preview wide-preview" alt="Hero preview">
-          </div>
-        </div>
-        <div class="form-group full"><hr class="divider"><h3>First Hero Button</h3></div>
-        <div class="form-group"><label for="heroButton1Text">BUTTON 1 TEXT</label><input id="heroButton1Text" placeholder="Explore Movies"></div>
-        <div class="form-group"><label for="heroButton1Url">BUTTON 1 LINK</label><input id="heroButton1Url" placeholder="#movies"></div>
-        <div class="form-group full"><hr class="divider"><h3>Second Hero Button</h3></div>
-        <div class="form-group"><label for="heroButton2Text">BUTTON 2 TEXT</label><input id="heroButton2Text" placeholder="Browse Collections"></div>
-        <div class="form-group"><label for="heroButton2Url">BUTTON 2 LINK</label><input id="heroButton2Url" placeholder="#collections"></div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-gold" type="submit" id="heroSaveBtn">Save Hero Banner</button>
-        <button class="btn" type="button" id="heroReloadBtn">Reload Hero Settings</button>
-      </div>
-    </form>
-  </section>
-
-  <section id="collectionsTab" class="panel hidden">
-    <h2>Movie <span class="gold">Collections</span></h2>
-    <p class="page-subtitle">Create, edit, sort and manage homepage collections.</p>
-    <div class="section-note">Sort Order controls the display order. A smaller number appears earlier. Inactive collections are hidden from the public collections API.</div>
-    <form id="collectionForm">
-      <input type="hidden" id="collectionId">
-      <h3 id="collectionFormHeading">Add New Collection</h3>
-      <div class="form-grid">
-        <div class="form-group"><label for="collectionName">COLLECTION NAME *</label><input id="collectionName" required maxlength="150" placeholder="Action Movies"></div>
-        <div class="form-group"><label for="collectionGenre">GENRE / FILTER VALUE</label><input id="collectionGenre" placeholder="Action"></div>
-        <div class="form-group"><label for="collectionIcon">ICON / EMOJI</label><input id="collectionIcon" placeholder="🎬"></div>
-        <div class="form-group"><label for="collectionSortOrder">SORT ORDER</label><input id="collectionSortOrder" type="number" step="1" value="1"></div>
-        <div class="form-group full"><label for="collectionDescription">DESCRIPTION</label><textarea id="collectionDescription" placeholder="Collection description..."></textarea></div>
-        <div class="form-group full"><label for="collectionLinkUrl">COLLECTION CLICK URL</label><input id="collectionLinkUrl" placeholder="https://example.com or #movies"></div>
-        <div class="form-group full">
-          <label for="collectionImage">COLLECTION IMAGE URL</label><input id="collectionImage" type="url" placeholder="https://example.com/collection.jpg">
-          <div class="upload-box">
-            <label for="collectionFile">UPLOAD COLLECTION IMAGE</label><input id="collectionFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
-            <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
-            <div id="collectionStatus" class="upload-status"></div>
-            <img id="collectionPreview" class="image-preview wide-preview" alt="Collection preview">
-          </div>
-        </div>
-        <div class="form-group full">
-          <label for="collectionActive">COLLECTION STATUS</label>
-          <select id="collectionActive">
-            <option value="true">Active — Show on website</option>
-            <option value="false">Inactive — Hide on website</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-gold" type="submit" id="collectionSaveBtn">Save Collection</button>
-        <button class="btn hidden" type="button" id="collectionCancelBtn">Cancel Edit</button>
-        <button class="btn" type="reset" id="collectionResetBtn">Clear Form</button>
-      </div>
-    </form>
-    <hr class="divider">
-    <div class="toolbar">
-      <div><h3>Existing Collections</h3><p class="page-subtitle">Edit, reorder or remove a collection.</p></div>
-      <button class="btn" type="button" id="collectionRefreshBtn">Refresh</button>
-    </div>
-    <div id="collectionList" class="collection-list"><div class="loading">Loading collections...</div></div>
-  </section>
+<section id="collectionsTab" class="panel hidden">
+<h2>Movie <span class="gold">Collections</span></h2><p class="page-subtitle">Create, edit, sort and manage homepage collections.</p>
+<div class="section-note">Sort Order controls the display order. A smaller number appears earlier. Inactive collections are hidden from the public collections API.</div>
+<form id="collectionForm"><input type="hidden" id="collectionId"><h3 id="collectionFormHeading">Add New Collection</h3><div class="form-grid">
+<div class="form-group"><label for="collectionName">COLLECTION NAME *</label><input id="collectionName" required maxlength="150" placeholder="Action Movies"></div><div class="form-group"><label for="collectionGenre">GENRE / FILTER VALUE</label><input id="collectionGenre" placeholder="Action"></div>
+<div class="form-group"><label for="collectionIcon">ICON / EMOJI</label><input id="collectionIcon" placeholder="🎬"></div><div class="form-group"><label for="collectionSortOrder">SORT ORDER</label><input id="collectionSortOrder" type="number" step="1" value="1"></div>
+<div class="form-group full"><label for="collectionDescription">DESCRIPTION</label><textarea id="collectionDescription" placeholder="Collection description..."></textarea></div><div class="form-group full"><label for="collectionLinkUrl">COLLECTION CLICK URL</label><input id="collectionLinkUrl" placeholder="https://example.com or #movies"></div>
+<div class="form-group full"><label for="collectionImage">COLLECTION IMAGE URL</label><input id="collectionImage" type="url" placeholder="https://example.com/collection.jpg"><div class="upload-box"><label for="collectionFile">UPLOAD COLLECTION IMAGE</label><input id="collectionFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div><div id="collectionStatus" class="upload-status"></div><img id="collectionPreview" class="image-preview wide-preview" alt="Collection preview"></div></div>
+<div class="form-group full"><label for="collectionActive">COLLECTION STATUS</label><select id="collectionActive"><option value="true">Active — Show on website</option><option value="false">Inactive — Hide on website</option></select></div>
+</div><div class="form-actions"><button class="btn btn-gold" type="submit" id="collectionSaveBtn">Save Collection</button><button class="btn hidden" type="button" id="collectionCancelBtn">Cancel Edit</button><button class="btn" type="reset" id="collectionResetBtn">Clear Form</button></div></form>
+<hr class="divider"><div class="toolbar"><div><h3>Existing Collections</h3><p class="page-subtitle">Edit, reorder or remove a collection.</p></div><button class="btn" type="button" id="collectionRefreshBtn">Refresh</button></div>
+<div id="collectionList" class="collection-list"><div class="loading">Loading collections...</div></div>
+</section>
 </main>
-
 <footer>CINEVAULT ADMIN PANEL · PREMIUM BLACK &amp; GOLD</footer>
-
 <script>
 "use strict";
 
@@ -381,6 +157,7 @@ const API="/api/admin";
 const MAX_IMAGE_SIZE=5*1024*1024;
 const ALLOWED_IMAGE_TYPES=["image/jpeg","image/png","image/webp","image/avif"];
 const PAGE_SIZE=25;
+const MAX_BANNERS=10;
 const $=id=>document.getElementById(id);
 
 let movies=[];
@@ -389,41 +166,34 @@ let editingId=null;
 let editingCollectionId=null;
 let activeUploads=0;
 let currentMoviePage=1;
+let heroBanners=[];
+let bannerEditId=null;
 
 const SETTINGS_FIELDS=[
-  "siteName","logoText",
-  "collectionsEyebrow","collectionsEyebrowUrl",
-  "collectionsHeading","collectionsHeadingHighlight",
-  "collectionsHeadingUrl","collectionsDescription",
-  "collectionsDescriptionUrl",
-  "moviesEyebrow","moviesEyebrowUrl",
-  "moviesHeading","moviesHeadingHighlight",
-  "moviesHeadingUrl","moviesDescription","moviesDescriptionUrl",
-  "aboutEyebrow","aboutEyebrowUrl",
-  "aboutTitle","aboutTitleUrl",
-  "aboutHighlight","aboutHighlightUrl",
-  "aboutDescription","aboutDescriptionUrl",
-  "aboutButtonText","aboutButtonUrl",
-  "footerDescription","footerDescriptionUrl",
-  "footerTagline","footerTaglineUrl",
-  "copyrightText","copyrightUrl"
+"siteName","logoText",
+"collectionsEyebrow","collectionsEyebrowUrl","collectionsHeading",
+"collectionsHeadingHighlight","collectionsHeadingUrl","collectionsDescription",
+"collectionsDescriptionUrl","moviesEyebrow","moviesEyebrowUrl",
+"moviesHeading","moviesHeadingHighlight","moviesHeadingUrl",
+"moviesDescription","moviesDescriptionUrl","aboutEyebrow","aboutEyebrowUrl",
+"aboutTitle","aboutTitleUrl","aboutHighlight","aboutHighlightUrl",
+"aboutDescription","aboutDescriptionUrl","aboutButtonText","aboutButtonUrl",
+"footerDescription","footerDescriptionUrl","footerTagline","footerTaglineUrl",
+"copyrightText","copyrightUrl"
 ];
 
 const HERO_FIELDS=[
-  "heroEyebrow","heroEyebrowUrl","heroTitle","heroTitleUrl",
-  "heroHighlight","heroHighlightUrl","heroDescription",
-  "heroDescriptionUrl","heroImage","heroButton1Text",
-  "heroButton1Url","heroButton2Text","heroButton2Url"
+"heroEyebrow","heroEyebrowUrl","heroTitle","heroTitleUrl",
+"heroHighlight","heroHighlightUrl","heroDescription","heroDescriptionUrl",
+"heroImage","heroButton1Text","heroButton1Url","heroButton2Text","heroButton2Url"
 ];
 
 const URL_FIELDS=[
-  "heroEyebrowUrl","heroTitleUrl","heroHighlightUrl","heroDescriptionUrl",
-  "heroButton1Url","heroButton2Url",
-  "collectionsEyebrowUrl","collectionsHeadingUrl","collectionsDescriptionUrl",
-  "moviesEyebrowUrl","moviesHeadingUrl","moviesDescriptionUrl",
-  "aboutEyebrowUrl","aboutTitleUrl","aboutHighlightUrl",
-  "aboutDescriptionUrl","aboutButtonUrl",
-  "footerDescriptionUrl","footerTaglineUrl","copyrightUrl"
+"heroEyebrowUrl","heroTitleUrl","heroHighlightUrl","heroDescriptionUrl",
+"heroButton1Url","heroButton2Url","collectionsEyebrowUrl","collectionsHeadingUrl",
+"collectionsDescriptionUrl","moviesEyebrowUrl","moviesHeadingUrl","moviesDescriptionUrl",
+"aboutEyebrowUrl","aboutTitleUrl","aboutHighlightUrl","aboutDescriptionUrl",
+"aboutButtonUrl","footerDescriptionUrl","footerTaglineUrl","copyrightUrl"
 ];
 
 function showNotice(id,message,type="success"){
@@ -432,8 +202,8 @@ function showNotice(id,message,type="success"){
   box.textContent=String(message||"");
   box.className="notice show "+type;
   if(id==="mainNotice"){
-    window.clearTimeout(box._hideTimer);
-    box._hideTimer=window.setTimeout(()=>box.className="notice",6000);
+    clearTimeout(box._hideTimer);
+    box._hideTimer=setTimeout(()=>box.className="notice",6000);
   }
 }
 
@@ -456,7 +226,7 @@ function validLink(value){
   const input=String(value??"").trim();
   if(!input)return true;
   if(input.startsWith("//"))return false;
-  if(input.startsWith("#")||input.startsWith("/"))return true;
+  if(input.startsWith("#")||input.startsWith("/")||input.startsWith("./")||input.startsWith("../"))return true;
   if(/^(javascript|data|vbscript):/i.test(input))return false;
   try{
     const url=new URL(input,window.location.origin);
@@ -484,7 +254,6 @@ async function apiRequest(path,options={}){
 
   let data={};
   try{data=await response.json()}catch(_){}
-
   if(response.status===401){
     showLogin();
     throw new Error("Your session has expired. Please log in again.");
@@ -515,9 +284,7 @@ async function checkSession(){
     if(data.authenticated){
       showDashboard();
       await Promise.all([loadMovies(),loadSettings(),loadCollections()]);
-    }else{
-      showLogin();
-    }
+    }else showLogin();
   }catch(error){
     showLogin();
     console.warn(error.message);
@@ -532,7 +299,6 @@ $("loginForm").addEventListener("submit",async event=>{
 
   $("loginBtn").disabled=true;
   $("loginBtn").textContent="Signing in...";
-
   try{
     await apiRequest("/login",{method:"POST",body:JSON.stringify({password})});
     $("adminPassword").value="";
@@ -550,15 +316,14 @@ $("loginForm").addEventListener("submit",async event=>{
 /* LOGOUT */
 $("logoutBtn").addEventListener("click",async()=>{
   if(!confirm("Are you sure you want to logout?"))return;
-  try{
-    await apiRequest("/logout",{method:"POST"});
-  }catch(error){
-    console.warn(error.message);
-  }
+  try{await apiRequest("/logout",{method:"POST"});}
+  catch(error){console.warn(error.message);}
   movies=[];
   collections=[];
+  heroBanners=[];
   $("movieList").innerHTML="";
   $("collectionList").innerHTML="";
+  $("bannerList").innerHTML="";
   $("adminPassword").value="";
   showLogin();
 });
@@ -571,13 +336,13 @@ document.querySelectorAll(".tab").forEach(button=>{
 function openTab(name){
   const allowed=["library","add","settings","hero","collections"];
   if(!allowed.includes(name))return;
-
   document.querySelectorAll(".tab").forEach(tab=>{
     tab.classList.toggle("active",tab.dataset.tab===name);
   });
   allowed.forEach(tab=>{
     $(tab+"Tab").classList.toggle("hidden",tab!==name);
   });
+  if(name==="hero")loadHeroBanners();
 }
 
 /* IMAGE PREVIEW */
@@ -591,13 +356,10 @@ function updatePreview(field){
   const input=$(getImageUrlInputId(field));
   const preview=$(field+"Preview");
   if(!preview||!input)return;
-
   const url=input.value.trim();
   preview.classList.remove("visible");
   preview.removeAttribute("src");
-  if(!url)return;
-
-  if(!validHttpUrl(url))return;
+  if(!url||!validHttpUrl(url))return;
   preview.onload=()=>preview.classList.add("visible");
   preview.onerror=()=>preview.classList.remove("visible");
   preview.src=url;
@@ -638,13 +400,8 @@ async function uploadImage(type,file){
     const formData=new FormData();
     formData.append("file",file);
     formData.append("type",type);
-
     const data=await apiRequest("/upload",{method:"POST",body:formData});
-
-    if(!data.url||!validHttpUrl(data.url)){
-      throw new Error("Cloudinary did not return a valid image URL.");
-    }
-
+    if(!data.url||!validHttpUrl(data.url))throw new Error("Cloudinary did not return a valid image URL.");
     urlInput.value=data.url;
     updatePreview(type);
     status.textContent="Upload successful. Image URL has been added.";
@@ -661,7 +418,7 @@ async function uploadImage(type,file){
 }
 
 function updateSaveButtons(){
-  ["saveBtn","settingsSaveBtn","heroSaveBtn","collectionSaveBtn"].forEach(id=>{
+  ["saveBtn","settingsSaveBtn","heroSaveBtn","collectionSaveBtn","saveBannersBtn"].forEach(id=>{
     if($(id))$(id).disabled=activeUploads>0;
   });
 }
@@ -677,7 +434,6 @@ async function loadMovies(){
   $("movieList").innerHTML='<div class="loading">Loading movies...</div>';
   $("databaseStatus").textContent="Connecting...";
   $("databaseStatus").style.color="var(--gold)";
-
   try{
     const data=await apiRequest("/movies");
     movies=Array.isArray(data.movies)?data.movies:[];
@@ -697,15 +453,10 @@ async function loadMovies(){
 function getFilteredMovies(){
   const query=$("movieSearch").value.trim().toLowerCase();
   const sort=$("movieSort").value;
-
   const filtered=movies.filter(movie=>{
-    const searchable=[
-      movie.title,movie.genre,movie.year,movie.language,
-      movie.country,movie.director,movie.quality
-    ].join(" ").toLowerCase();
+    const searchable=[movie.title,movie.genre,movie.year,movie.language,movie.country,movie.director,movie.quality].join(" ").toLowerCase();
     return searchable.includes(query);
   });
-
   filtered.sort((a,b)=>{
     if(sort==="oldest")return Number(a.id)-Number(b.id);
     if(sort==="title")return String(a.title||"").localeCompare(String(b.title||""));
@@ -713,7 +464,6 @@ function getFilteredMovies(){
     if(sort==="rating")return Number(b.rating||0)-Number(a.rating||0);
     return Number(b.id)-Number(a.id);
   });
-
   return filtered;
 }
 
@@ -721,38 +471,30 @@ function renderMovies(){
   const filtered=getFilteredMovies();
   const totalPages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
   currentMoviePage=Math.min(currentMoviePage,totalPages);
-
   $("resultCount").textContent=filtered.length+" movies";
   $("moviePagination").innerHTML="";
-
   if(!filtered.length){
     $("movieList").innerHTML='<div class="empty">No movies found. Try another search.</div>';
     return;
   }
 
   const start=(currentMoviePage-1)*PAGE_SIZE;
-  const pageItems=filtered.slice(start,start+PAGE_SIZE);
-
-  $("movieList").innerHTML=pageItems.map(movie=>{
-    const meta=[movie.year,movie.genre,movie.language,movie.quality]
-      .filter(Boolean).map(escapeHTML).join(" · ");
+  $("movieList").innerHTML=filtered.slice(start,start+PAGE_SIZE).map(movie=>{
+    const meta=[movie.year,movie.genre,movie.language,movie.quality].filter(Boolean).map(escapeHTML).join(" · ");
     const adCount=Number(movie.adCount??4);
-
-    return `
-      <article class="movie-item">
-        <img class="movie-poster" src="${escapeHTML(movie.poster||"")}" alt="" loading="lazy">
-        <div>
-          <div class="movie-title">${escapeHTML(movie.title||"Untitled")}</div>
-          <div class="movie-meta">${meta||"Movie details unavailable"}</div>
-          <div class="movie-meta">ID: ${escapeHTML(movie.id)} · Rating: ${escapeHTML(movie.rating??"N/A")}</div>
-          <div class="movie-meta">Watch: ${movie.watchUrl?"Configured":"Not set"} · Downloads: ${movie.downloadUrl?"1":"0"}${movie.downloadUrl2?" + 2":" "}</div>
-          <div class="movie-meta">Ad count: ${escapeHTML(adCount)} · Ad URL: ${movie.adUrl?"Configured":"Not set"}</div>
-        </div>
-        <div class="movie-actions">
-          <button class="btn btn-small edit-btn" data-id="${escapeHTML(movie.id)}" type="button">Edit</button>
-          <button class="btn btn-danger btn-small delete-btn" data-id="${escapeHTML(movie.id)}" type="button">Delete</button>
-        </div>
-      </article>`;
+    return `<article class="movie-item">
+      <img class="movie-poster" src="${escapeHTML(movie.poster||"")}" alt="" loading="lazy">
+      <div>
+        <div class="movie-title">${escapeHTML(movie.title||"Untitled")}</div>
+        <div class="movie-meta">${meta||"Movie details unavailable"}</div>
+        <div class="movie-meta">ID: ${escapeHTML(movie.id)} · Rating: ${escapeHTML(movie.rating??"N/A")}</div>
+        <div class="movie-meta">Watch: ${movie.watchUrl?"Configured":"Not set"} · Downloads: ${movie.downloadUrl?"1":"0"}${movie.downloadUrl2?" + 2":""}</div>
+        <div class="movie-meta">Ad count: ${escapeHTML(adCount)} · Ad URL: ${movie.adUrl?"Configured":"Not set"}</div>
+      </div>
+      <div class="movie-actions">
+        <button class="btn btn-small edit-btn" data-id="${escapeHTML(movie.id)}" type="button">Edit</button>
+        <button class="btn btn-danger btn-small delete-btn" data-id="${escapeHTML(movie.id)}" type="button">Delete</button>
+      </div></article>`;
   }).join("");
 
   $("movieList").querySelectorAll(".movie-poster").forEach(img=>{
@@ -760,58 +502,35 @@ function renderMovies(){
   });
 
   if(totalPages>1){
-    const previous=document.createElement("button");
-    previous.className="btn btn-small";
-    previous.type="button";
-    previous.textContent="Previous";
-    previous.disabled=currentMoviePage===1;
-    previous.addEventListener("click",()=>{
-      currentMoviePage--;
-      renderMovies();
-      $("libraryTab").scrollIntoView({behavior:"smooth",block:"start"});
-    });
-    $("moviePagination").appendChild(previous);
+    const prev=document.createElement("button");
+    prev.className="btn btn-small";prev.type="button";prev.textContent="Previous";
+    prev.disabled=currentMoviePage===1;
+    prev.addEventListener("click",()=>{currentMoviePage--;renderMovies();$("libraryTab").scrollIntoView({behavior:"smooth",block:"start"});});
+    $("moviePagination").appendChild(prev);
 
     for(let page=1;page<=totalPages;page++){
       const button=document.createElement("button");
       button.className="btn btn-small"+(page===currentMoviePage?" active":"");
-      button.type="button";
-      button.textContent=String(page);
-      button.addEventListener("click",()=>{
-        currentMoviePage=page;
-        renderMovies();
-      });
+      button.type="button";button.textContent=String(page);
+      button.addEventListener("click",()=>{currentMoviePage=page;renderMovies();});
       $("moviePagination").appendChild(button);
     }
 
     const next=document.createElement("button");
-    next.className="btn btn-small";
-    next.type="button";
-    next.textContent="Next";
+    next.className="btn btn-small";next.type="button";next.textContent="Next";
     next.disabled=currentMoviePage===totalPages;
-    next.addEventListener("click",()=>{
-      currentMoviePage++;
-      renderMovies();
-      $("libraryTab").scrollIntoView({behavior:"smooth",block:"start"});
-    });
+    next.addEventListener("click",()=>{currentMoviePage++;renderMovies();$("libraryTab").scrollIntoView({behavior:"smooth",block:"start"});});
     $("moviePagination").appendChild(next);
   }
 }
 
-$("movieSearch").addEventListener("input",()=>{
-  currentMoviePage=1;
-  renderMovies();
-});
-$("movieSort").addEventListener("change",()=>{
-  currentMoviePage=1;
-  renderMovies();
-});
+$("movieSearch").addEventListener("input",()=>{currentMoviePage=1;renderMovies();});
+$("movieSort").addEventListener("change",()=>{currentMoviePage=1;renderMovies();});
 $("refreshBtn").addEventListener("click",loadMovies);
 
 $("movieList").addEventListener("click",event=>{
   const editButton=event.target.closest(".edit-btn");
   const deleteButton=event.target.closest(".delete-btn");
-
   if(editButton){
     const movie=movies.find(item=>String(item.id)===editButton.dataset.id);
     if(movie)editMovie(movie);
@@ -821,27 +540,20 @@ $("movieList").addEventListener("click",event=>{
 
 function editMovie(movie){
   editingId=movie.id;
-  const fields=[
-    "title","year","genre","language","country","rating",
-    "duration","director","quality","poster","backdrop",
-    "description","watchUrl","downloadUrl","downloadUrl2","adUrl"
-  ];
-
-  fields.forEach(field=>{$(field).value=movie[field]??"";});
+  ["title","year","genre","language","country","rating","duration","director","quality","poster","backdrop","description","watchUrl","downloadUrl","downloadUrl2","adUrl"].forEach(field=>{
+    $(field).value=movie[field]??"";
+  });
   $("adCount").value=movie.adCount??4;
   $("movieId").value=movie.id;
   $("posterFile").value="";
   $("backdropFile").value="";
   $("posterStatus").textContent="";
   $("backdropStatus").textContent="";
-  updatePreview("poster");
-  updatePreview("backdrop");
-
+  updatePreview("poster");updatePreview("backdrop");
   $("formHeading").textContent="Edit Movie";
   $("formSubtitle").textContent="Update the selected movie information.";
   $("saveBtn").textContent="Update Movie";
   $("cancelEditBtn").classList.remove("hidden");
-
   openTab("add");
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -851,100 +563,59 @@ function resetMovieForm(){
   $("movieId").value="";
   $("adCount").value=4;
   editingId=null;
-
   ["poster","backdrop"].forEach(field=>{
     $(field+"Status").textContent="";
     $(field+"Status").className="upload-status";
     $(field+"Preview").classList.remove("visible");
     $(field+"Preview").removeAttribute("src");
   });
-
   $("formHeading").textContent="Add New Movie";
   $("formSubtitle").textContent="Add a movie to your CineVault database.";
   $("saveBtn").textContent="Save Movie";
   $("cancelEditBtn").classList.add("hidden");
 }
 
-$("cancelEditBtn").addEventListener("click",()=>{
-  resetMovieForm();
-  openTab("library");
-});
-$("resetBtn").addEventListener("click",()=>{
-  window.setTimeout(resetMovieForm,0);
-});
+$("cancelEditBtn").addEventListener("click",()=>{resetMovieForm();openTab("library");});
+$("resetBtn").addEventListener("click",()=>setTimeout(resetMovieForm,0));
 
 $("movieForm").addEventListener("submit",async event=>{
   event.preventDefault();
-
-  if(activeUploads>0){
-    showNotice("mainNotice","Please wait until image uploads finish.","error");
-    return;
-  }
+  if(activeUploads>0){showNotice("mainNotice","Please wait until image uploads finish.","error");return;}
 
   const movie={
     title:$("title").value.trim(),
     year:$("year").value?Number($("year").value):null,
-    genre:$("genre").value.trim(),
-    language:$("language").value.trim(),
+    genre:$("genre").value.trim(),language:$("language").value.trim(),
     country:$("country").value.trim(),
     rating:$("rating").value?Number($("rating").value):0,
-    duration:$("duration").value.trim(),
-    director:$("director").value.trim(),
-    quality:$("quality").value.trim(),
-    poster:$("poster").value.trim(),
-    backdrop:$("backdrop").value.trim(),
-    description:$("description").value.trim(),
-    watchUrl:$("watchUrl").value.trim(),
-    downloadUrl:$("downloadUrl").value.trim(),
-    downloadUrl2:$("downloadUrl2").value.trim(),
-    adUrl:$("adUrl").value.trim(),
+    duration:$("duration").value.trim(),director:$("director").value.trim(),
+    quality:$("quality").value.trim(),poster:$("poster").value.trim(),
+    backdrop:$("backdrop").value.trim(),description:$("description").value.trim(),
+    watchUrl:$("watchUrl").value.trim(),downloadUrl:$("downloadUrl").value.trim(),
+    downloadUrl2:$("downloadUrl2").value.trim(),adUrl:$("adUrl").value.trim(),
     adCount:Number($("adCount").value)
   };
 
-  if(!movie.title){
-    showNotice("mainNotice","Movie title is required.","error");
-    return;
-  }
-  if(movie.year!==null&&(!Number.isInteger(movie.year)||movie.year<1888||movie.year>2100)){
-    showNotice("mainNotice","Please enter a valid release year.","error");
-    return;
-  }
-  if(!Number.isFinite(movie.rating)||movie.rating<0||movie.rating>10){
-    showNotice("mainNotice","Rating must be between 0 and 10.","error");
-    return;
-  }
-  if(!Number.isSafeInteger(movie.adCount)||movie.adCount<4||movie.adCount>1000){
-    showNotice("mainNotice","Advertisement count must be a whole number from 4 to 1000.","error");
-    return;
-  }
-
+  if(!movie.title){showNotice("mainNotice","Movie title is required.","error");return;}
+  if(movie.year!==null&&(!Number.isInteger(movie.year)||movie.year<1888||movie.year>2100)){showNotice("mainNotice","Please enter a valid release year.","error");return;}
+  if(!Number.isFinite(movie.rating)||movie.rating<0||movie.rating>10){showNotice("mainNotice","Rating must be between 0 and 10.","error");return;}
+  if(!Number.isSafeInteger(movie.adCount)||movie.adCount<4||movie.adCount>1000){showNotice("mainNotice","Advertisement count must be a whole number from 4 to 1000.","error");return;}
   for(const field of ["poster","backdrop","watchUrl","downloadUrl","downloadUrl2","adUrl"]){
-    if(movie[field]&&!validHttpUrl(movie[field])){
-      showNotice("mainNotice","Please enter a valid HTTP or HTTPS URL for "+field+".","error");
-      return;
-    }
+    if(movie[field]&&!validHttpUrl(movie[field])){showNotice("mainNotice","Please enter a valid HTTP or HTTPS URL for "+field+".","error");return;}
   }
 
   const isEditing=editingId!==null;
-  const currentId=editingId;
-  const endpoint=isEditing?"/movies/"+encodeURIComponent(currentId):"/movies";
-
+  const endpoint=isEditing?"/movies/"+encodeURIComponent(editingId):"/movies";
   $("saveBtn").disabled=true;
   $("saveBtn").textContent=isEditing?"Updating...":"Saving...";
-
   try{
-    await apiRequest(endpoint,{
-      method:isEditing?"PUT":"POST",
-      body:JSON.stringify(movie)
-    });
-
+    await apiRequest(endpoint,{method:isEditing?"PUT":"POST",body:JSON.stringify(movie)});
     showNotice("mainNotice",isEditing?"Movie updated successfully.":"Movie added successfully.","success");
     resetMovieForm();
     await loadMovies();
     openTab("library");
-  }catch(error){
-    showNotice("mainNotice",error.message,"error");
-  }finally{
+  }catch(error){showNotice("mainNotice",error.message,"error");}
+  finally{
     $("saveBtn").disabled=activeUploads>0;
     $("saveBtn").textContent=editingId!==null?"Update Movie":"Save Movie";
   }
@@ -953,28 +624,20 @@ $("movieForm").addEventListener("submit",async event=>{
 async function deleteMovie(id){
   const movie=movies.find(item=>String(item.id)===String(id));
   if(!confirm('Delete "'+(movie?.title||"this movie")+'" permanently from the database?'))return;
-
   try{
     await apiRequest("/movies/"+encodeURIComponent(id),{method:"DELETE"});
     showNotice("mainNotice","Movie deleted successfully.","success");
     await loadMovies();
-  }catch(error){
-    showNotice("mainNotice",error.message,"error");
-  }
+  }catch(error){showNotice("mainNotice",error.message,"error");}
 }
 
 /* WEBSITE SETTINGS */
 function fillFields(fields,data){
-  fields.forEach(field=>{
-    if($(field))$(field).value=data?.[field]??"";
-  });
+  fields.forEach(field=>{if($(field))$(field).value=data?.[field]??"";});
 }
-
 function collectFields(fields){
   const result={};
-  fields.forEach(field=>{
-    if($(field))result[field]=$(field).value.trim();
-  });
+  fields.forEach(field=>{if($(field))result[field]=$(field).value.trim();});
   return result;
 }
 
@@ -985,42 +648,28 @@ async function loadSettings(){
     fillFields(SETTINGS_FIELDS,settings);
     fillFields(HERO_FIELDS,settings);
     updatePreview("hero");
+    heroBanners=parseHeroBanners(settings.heroBanners);
+    renderHeroBanners();
   }catch(error){
     showNotice("mainNotice","Could not load website settings: "+error.message,"error");
   }
 }
 
 async function saveSettings(fields,buttonId,defaultText,successMessage){
-  if(activeUploads>0){
-    showNotice("mainNotice","Please wait until uploads finish.","error");
-    return;
-  }
-
+  if(activeUploads>0){showNotice("mainNotice","Please wait until uploads finish.","error");return;}
   const settings=collectFields(fields);
-
   try{
     validateLinks(settings);
-    if(settings.heroImage&&!validHttpUrl(settings.heroImage)){
-      throw new Error("Please enter a valid HTTP or HTTPS Hero image URL.");
-    }
-  }catch(error){
-    showNotice("mainNotice",error.message,"error");
-    return;
-  }
+    if(settings.heroImage&&!validHttpUrl(settings.heroImage))throw new Error("Please enter a valid HTTP or HTTPS Hero image URL.");
+  }catch(error){showNotice("mainNotice",error.message,"error");return;}
 
   const button=$(buttonId);
-  button.disabled=true;
-  button.textContent="Saving...";
-
+  button.disabled=true;button.textContent="Saving...";
   try{
     await apiRequest("/settings",{method:"PUT",body:JSON.stringify(settings)});
     showNotice("mainNotice",successMessage,"success");
-  }catch(error){
-    showNotice("mainNotice",error.message,"error");
-  }finally{
-    button.disabled=activeUploads>0;
-    button.textContent=defaultText;
-  }
+  }catch(error){showNotice("mainNotice",error.message,"error");}
+  finally{button.disabled=activeUploads>0;button.textContent=defaultText;}
 }
 
 $("settingsForm").addEventListener("submit",event=>{
@@ -1028,12 +677,321 @@ $("settingsForm").addEventListener("submit",event=>{
   saveSettings(SETTINGS_FIELDS,"settingsSaveBtn","Save Website Settings","Website settings saved successfully.");
 });
 $("settingsReloadBtn").addEventListener("click",loadSettings);
-
 $("heroForm").addEventListener("submit",event=>{
   event.preventDefault();
-  saveSettings(HERO_FIELDS,"heroSaveBtn","Save Hero Banner","Hero Banner settings saved successfully.");
+  saveSettings(HERO_FIELDS,"heroSaveBtn","Save Legacy Hero Settings","Legacy Hero settings saved successfully.");
 });
 $("heroReloadBtn").addEventListener("click",loadSettings);
+
+/* MULTIPLE HERO BANNERS */
+function parseHeroBanners(value){
+  if(Array.isArray(value))return value.map(normalizeBanner).slice(0,MAX_BANNERS);
+  if(typeof value==="string"&&value.trim()){
+    try{
+      const parsed=JSON.parse(value);
+      if(Array.isArray(parsed))return parsed.map(normalizeBanner).slice(0,MAX_BANNERS);
+    }catch(error){console.warn("Could not parse heroBanners setting.",error);}
+  }
+  return [];
+}
+
+function normalizeBanner(item={}){
+  return {
+    id:String(item.id||createBannerId()),
+    enabled:item.enabled!==false&&item.enabled!==0&&item.enabled!=="0",
+    image:String(item.image||""),
+    clickUrl:String(item.clickUrl||""),
+    eyebrow:String(item.eyebrow||""),
+    title:String(item.title||""),
+    highlight:String(item.highlight||""),
+    description:String(item.description||""),
+    button1Text:String(item.button1Text||""),
+    button1Url:String(item.button1Url||""),
+    button2Text:String(item.button2Text||""),
+    button2Url:String(item.button2Url||""),
+    textColor:String(item.textColor||"#ffffff"),
+    highlightColor:String(item.highlightColor||"#d6b36a"),
+    overlay:Number.isFinite(Number(item.overlay))?Math.min(90,Math.max(0,Number(item.overlay))):45,
+    textPosition:["left","center","right"].includes(item.textPosition)?item.textPosition:"left",
+    duration:Number.isFinite(Number(item.duration))?Math.min(15,Math.max(3,Number(item.duration))):6
+  };
+}
+
+function createBannerId(){
+  if(window.crypto&&typeof window.crypto.randomUUID==="function")return window.crypto.randomUUID();
+  return "banner-"+Date.now()+"-"+Math.random().toString(36).slice(2,10);
+}
+
+async function loadHeroBanners(){
+  $("bannerList").innerHTML='<div class="loading">Loading banners...</div>';
+  try{
+    const data=await apiRequest("/settings");
+    const settings=data.settings||{};
+    heroBanners=parseHeroBanners(settings.heroBanners);
+    renderHeroBanners();
+  }catch(error){
+    $("bannerList").innerHTML='<div class="empty">Could not load banners: '+escapeHTML(error.message)+'</div>';
+    showNotice("bannerNotice",error.message,"error");
+  }
+}
+
+function renderHeroBanners(){
+  $("bannerCount").textContent=heroBanners.length+" / "+MAX_BANNERS+" banners";
+  $("addBannerBtn").disabled=heroBanners.length>=MAX_BANNERS;
+
+  if(!heroBanners.length){
+    $("bannerList").innerHTML='<div class="empty">No multiple banners configured yet. Add your first banner. The legacy single Hero settings remain available below.</div>';
+    return;
+  }
+
+  $("bannerList").innerHTML=heroBanners.map((banner,index)=>`
+  <article class="banner-card" data-banner-id="${escapeHTML(banner.id)}">
+    <div class="banner-card-head">
+      <div>
+        <div class="banner-card-title">Banner ${index+1}</div>
+        <div class="banner-status">${banner.enabled?"Enabled":"Disabled"} · ${escapeHTML(banner.duration)} seconds · ${escapeHTML(banner.textPosition)} aligned</div>
+      </div>
+      <div class="banner-actions">
+        <button class="btn btn-small" type="button" data-banner-action="up" data-id="${escapeHTML(banner.id)}" ${index===0?"disabled":""}>↑ Up</button>
+        <button class="btn btn-small" type="button" data-banner-action="down" data-id="${escapeHTML(banner.id)}" ${index===heroBanners.length-1?"disabled":""}>↓ Down</button>
+        <button class="btn btn-small" type="button" data-banner-action="edit" data-id="${escapeHTML(banner.id)}">Edit</button>
+        <button class="btn btn-danger btn-small" type="button" data-banner-action="delete" data-id="${escapeHTML(banner.id)}">Delete</button>
+      </div>
+    </div>
+    <label class="banner-enabled"><input type="checkbox" data-banner-action="toggle" data-id="${escapeHTML(banner.id)}" ${banner.enabled?"checked":""}> Enable this banner on the homepage</label>
+    <div class="banner-preview">
+      <img src="${escapeHTML(banner.image)}" alt="Banner ${index+1} preview" onerror="this.style.visibility='hidden'">
+      <div class="banner-preview-text">
+        <strong style="color:${escapeHTML(banner.textColor)}">${escapeHTML(banner.eyebrow)}</strong>
+        <div style="font-size:17px;font-weight:800;color:${escapeHTML(banner.textColor)}">${escapeHTML(banner.title)} <span style="color:${escapeHTML(banner.highlightColor)}">${escapeHTML(banner.highlight)}</span></div>
+        <div>${escapeHTML(banner.description)}</div>
+        <div class="banner-status">Image: ${banner.image?"Configured":"Not set"} · Background link: ${banner.clickUrl?"Configured":"Not set"} · Buttons: ${(banner.button1Url?"1 ":"")+(banner.button2Url?"2":"")||"None"}</div>
+      </div>
+    </div>
+  </article>`).join("");
+}
+
+function bannerInput(label,key,value,type="text",placeholder=""){
+  const safe=escapeHTML(value);
+  if(type==="textarea"){
+    return `<div class="form-group full"><label>${label}</label><textarea data-banner-field="${key}" placeholder="${placeholder}">${safe}</textarea></div>`;
+  }
+  if(type==="select"){
+    const options=key==="textPosition"?["left","center","right"].map(v=>`<option value="${v}" ${value===v?"selected":""}>${v.charAt(0).toUpperCase()+v.slice(1)}</option>`).join(""):"";
+    return `<div class="form-group"><label>${label}</label><select data-banner-field="${key}">${options}</select></div>`;
+  }
+  if(type==="color"){
+    return `<div class="form-group"><label>${label}</label><input type="color" data-banner-field="${key}" value="${safe}"></div>`;
+  }
+  return `<div class="form-group"><label>${label}</label><input type="${type}" data-banner-field="${key}" value="${safe}" placeholder="${placeholder}"></div>`;
+}
+
+function openBannerEditor(id=null){
+  if(activeUploads>0){showNotice("bannerNotice","Please wait until the current upload finishes.","error");return;}
+  const existing=id?heroBanners.find(item=>item.id===id):null;
+  const banner=existing?{...existing}:normalizeBanner({
+    id:createBannerId(),enabled:true,textColor:"#ffffff",highlightColor:"#d6b36a",
+    overlay:45,textPosition:"left",duration:6
+  });
+  if(!banner){showNotice("bannerNotice","Banner not found.","error");return;}
+  bannerEditId=banner.id;
+
+  const editor=document.createElement("div");
+  editor.className="banner-card";
+  editor.id="bannerEditor";
+  editor.innerHTML=`
+    <div class="banner-card-head"><div class="banner-card-title">${existing?"Edit Banner":"Create New Banner"}</div><button class="btn btn-small" type="button" id="closeBannerEditor">Close</button></div>
+    <div class="form-grid">
+      ${bannerInput("EYEBROW TEXT","eyebrow",banner.eyebrow)}
+      ${bannerInput("MAIN TITLE","title",banner.title)}
+      ${bannerInput("TITLE HIGHLIGHT","highlight",banner.highlight)}
+      ${bannerInput("DESCRIPTION","description",banner.description,"textarea")}
+      ${bannerInput("BACKGROUND IMAGE URL","image",banner.image,"url","https://example.com/banner.jpg")}
+      <div class="form-group full">
+        <label>UPLOAD BANNER IMAGE TO CLOUDINARY</label>
+        <input type="file" id="bannerImageFile" accept="image/jpeg,image/png,image/webp,image/avif">
+        <div class="upload-help">JPG, PNG, WEBP or AVIF · Maximum 5 MB</div>
+        <div id="bannerUploadStatus" class="upload-status"></div>
+      </div>
+      ${bannerInput("BACKGROUND CLICK URL","clickUrl",banner.clickUrl,"text","#movies or https://example.com")}
+      ${bannerInput("TEXT COLOR","textColor",banner.textColor,"color")}
+      ${bannerInput("HIGHLIGHT COLOR","highlightColor",banner.highlightColor,"color")}
+      <div class="form-group full"><hr class="divider"><h3>Button 1</h3></div>
+      ${bannerInput("BUTTON 1 TEXT","button1Text",banner.button1Text)}
+      ${bannerInput("BUTTON 1 URL","button1Url",banner.button1Url,"text","#movies or https://example.com")}
+      <div class="form-group full"><hr class="divider"><h3>Button 2</h3></div>
+      ${bannerInput("BUTTON 2 TEXT","button2Text",banner.button2Text)}
+      ${bannerInput("BUTTON 2 URL","button2Url",banner.button2Url,"text","#collections or https://example.com")}
+      <div class="form-group"><label>OVERLAY DARKNESS (0–90)</label><input type="number" min="0" max="90" step="1" data-banner-field="overlay" value="${banner.overlay}"></div>
+      ${bannerInput("TEXT POSITION","textPosition",banner.textPosition,"select")}
+      <div class="form-group"><label>SLIDE DURATION (3–15 SECONDS)</label><input type="number" min="3" max="15" step="1" data-banner-field="duration" value="${banner.duration}"></div>
+      <div class="form-group"><label>STATUS</label><select data-banner-field="enabled"><option value="true" ${banner.enabled?"selected":""}>Enabled</option><option value="false" ${!banner.enabled?"selected":""}>Disabled</option></select></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-gold" type="button" id="applyBannerBtn">${existing?"Update This Banner":"Add This Banner"}</button><button class="btn" type="button" id="cancelBannerBtn">Cancel</button></div>
+  `;
+
+  const old=$("bannerEditor");
+  if(old)old.remove();
+  $("bannerList").prepend(editor);
+
+  $("closeBannerEditor").addEventListener("click",()=>editor.remove());
+  $("cancelBannerBtn").addEventListener("click",()=>editor.remove());
+
+  $("bannerImageFile").addEventListener("change",async event=>{
+    const file=event.target.files[0];
+    if(!file)return;
+    const status=$("bannerUploadStatus");
+    if(!ALLOWED_IMAGE_TYPES.includes(file.type)||file.size<=0||file.size>MAX_IMAGE_SIZE){
+      status.textContent="Invalid image. Use JPG, PNG, WEBP or AVIF up to 5 MB.";
+      status.className="upload-status error";
+      event.target.value="";
+      return;
+    }
+    event.target.disabled=true;
+    activeUploads++;
+    updateSaveButtons();
+    status.textContent="Uploading to Cloudinary...";
+    status.className="upload-status";
+    try{
+      const formData=new FormData();
+      formData.append("file",file);
+      formData.append("type","hero");
+      const result=await apiRequest("/upload",{method:"POST",body:formData});
+      if(!result.url||!validHttpUrl(result.url))throw new Error("Invalid image URL returned from Cloudinary.");
+      editor.querySelector('[data-banner-field="image"]').value=result.url;
+      status.textContent="Upload successful. Image URL added.";
+      status.className="upload-status success";
+    }catch(error){
+      status.textContent=error.message;
+      status.className="upload-status error";
+    }finally{
+      event.target.disabled=false;
+      event.target.value="";
+      activeUploads=Math.max(0,activeUploads-1);
+      updateSaveButtons();
+    }
+  });
+
+  $("applyBannerBtn").addEventListener("click",()=>{
+    if(activeUploads>0){showNotice("bannerNotice","Please wait until the image upload finishes.","error");return;}
+    const values={...banner};
+    editor.querySelectorAll("[data-banner-field]").forEach(input=>{
+      const key=input.dataset.bannerField;
+      values[key]=input.value;
+    });
+    values.enabled=values.enabled===true||values.enabled==="true";
+    values.overlay=Number(values.overlay);
+    values.duration=Number(values.duration);
+    values.id=banner.id;
+
+    if(!values.image||!validHttpUrl(values.image)){
+      showNotice("bannerNotice","Please provide a valid HTTP or HTTPS banner image URL.","error");return;
+    }
+    for(const key of ["clickUrl","button1Url","button2Url"]){
+      if(values[key]&&!validLink(values[key])){
+        showNotice("bannerNotice","Invalid link in "+key+". Use HTTP, HTTPS, relative path or anchor URL.","error");return;
+      }
+    }
+    if(!/^#[0-9a-f]{6}$/i.test(values.textColor)||!/^#[0-9a-f]{6}$/i.test(values.highlightColor)){
+      showNotice("bannerNotice","Please choose valid text and highlight colors.","error");return;
+    }
+    if(!Number.isInteger(values.overlay)||values.overlay<0||values.overlay>90){
+      showNotice("bannerNotice","Overlay must be a whole number from 0 to 90.","error");return;
+    }
+    if(!Number.isInteger(values.duration)||values.duration<3||values.duration>15){
+      showNotice("bannerNotice","Slide duration must be 3 to 15 seconds.","error");return;
+    }
+    if(!["left","center","right"].includes(values.textPosition)){
+      showNotice("bannerNotice","Invalid text position.","error");return;
+    }
+
+    const index=heroBanners.findIndex(item=>item.id===banner.id);
+    if(index>=0)heroBanners[index]=normalizeBanner(values);
+    else{
+      if(heroBanners.length>=MAX_BANNERS){showNotice("bannerNotice","Maximum 10 banners allowed.","error");return;}
+      heroBanners.push(normalizeBanner(values));
+    }
+    editor.remove();
+    renderHeroBanners();
+    showNotice("bannerNotice","Banner changes are ready. Click Save All Banner Changes to publish them.","success");
+  });
+}
+
+$("addBannerBtn").addEventListener("click",()=>openBannerEditor());
+$("bannerReloadBtn").addEventListener("click",loadHeroBanners);
+
+$("bannerList").addEventListener("click",event=>{
+  const button=event.target.closest("[data-banner-action]");
+  if(!button)return;
+  const id=button.dataset.id;
+  const action=button.dataset.bannerAction;
+  const index=heroBanners.findIndex(item=>item.id===id);
+  if(index<0)return;
+
+  if(action==="edit")openBannerEditor(id);
+
+  if(action==="delete"){
+    if(!confirm("Delete this banner?"))return;
+    heroBanners.splice(index,1);
+    renderHeroBanners();
+    showNotice("bannerNotice","Banner removed from the editor. Save all changes to publish.","success");
+  }
+
+  if(action==="up"&&index>0){
+    [heroBanners[index-1],heroBanners[index]]=[heroBanners[index],heroBanners[index-1]];
+    renderHeroBanners();
+  }
+
+  if(action==="down"&&index<heroBanners.length-1){
+    [heroBanners[index+1],heroBanners[index]]=[heroBanners[index],heroBanners[index+1]];
+    renderHeroBanners();
+  }
+});
+
+$("bannerList").addEventListener("change",event=>{
+  const input=event.target.closest('[data-banner-action="toggle"]');
+  if(!input)return;
+  const banner=heroBanners.find(item=>item.id===input.dataset.id);
+  if(!banner)return;
+  banner.enabled=input.checked;
+  renderHeroBanners();
+});
+
+$("saveBannersBtn").addEventListener("click",async()=>{
+  if(activeUploads>0){showNotice("bannerNotice","Please wait until all image uploads finish.","error");return;}
+  if(heroBanners.length>MAX_BANNERS){showNotice("bannerNotice","Maximum 10 banners allowed.","error");return;}
+
+  for(const banner of heroBanners){
+    if(!banner.id||banner.id.length>80){
+      showNotice("bannerNotice","A banner has an invalid ID. Please edit and save it again.","error");return;
+    }
+    if(!banner.image||!validHttpUrl(banner.image)){
+      showNotice("bannerNotice","Every banner must have a valid HTTP or HTTPS image URL.","error");return;
+    }
+    for(const key of ["clickUrl","button1Url","button2Url"]){
+      if(banner[key]&&!validLink(banner[key])){
+        showNotice("bannerNotice","Invalid URL found in banner link: "+key,"error");return;
+      }
+    }
+  }
+
+  const button=$("saveBannersBtn");
+  button.disabled=true;
+  button.textContent="Saving Banners...";
+  try{
+    await apiRequest("/settings",{
+      method:"PUT",
+      body:JSON.stringify({heroBanners:heroBanners})
+    });
+    showNotice("bannerNotice","All hero banners saved successfully.","success");
+    await loadHeroBanners();
+  }catch(error){
+    showNotice("bannerNotice",error.message,"error");
+  }finally{
+    button.disabled=activeUploads>0;
+    button.textContent="Save All Banner Changes";
+  }
+});
 
 /* COLLECTIONS */
 function normalizeCollection(item){
@@ -1055,7 +1013,6 @@ function resetCollectionForm(){
   $("collectionStatus").className="upload-status";
   $("collectionPreview").classList.remove("visible");
   $("collectionPreview").removeAttribute("src");
-
   editingCollectionId=null;
   $("collectionFormHeading").textContent="Add New Collection";
   $("collectionSaveBtn").textContent="Save Collection";
@@ -1064,7 +1021,6 @@ function resetCollectionForm(){
 
 async function loadCollections(){
   $("collectionList").innerHTML='<div class="loading">Loading collections...</div>';
-
   try{
     const data=await apiRequest("/collections");
     collections=Array.isArray(data.collections)?data.collections.map(normalizeCollection):[];
@@ -1080,22 +1036,14 @@ function renderCollections(){
     $("collectionList").innerHTML='<div class="empty">No collections found. Add your first collection above.</div>';
     return;
   }
-
-  const ordered=[...collections].sort((a,b)=>{
-    return Number(a.sortOrder)-Number(b.sortOrder)||Number(a.id)-Number(b.id);
-  });
-
+  const ordered=[...collections].sort((a,b)=>Number(a.sortOrder)-Number(b.sortOrder)||Number(a.id)-Number(b.id));
   $("collectionList").innerHTML=ordered.map(item=>`
     <article class="collection-item">
       <img class="collection-image" src="${escapeHTML(item.image||"")}" alt="" loading="lazy">
       <div>
         <div class="movie-title">${escapeHTML(item.icon||"")} ${escapeHTML(item.name||"Untitled Collection")}</div>
         <div class="movie-meta">${escapeHTML(item.description||"No description")}</div>
-        <div class="movie-meta">
-          Genre: ${escapeHTML(item.genre||"Not set")} ·
-          Order: ${escapeHTML(item.sortOrder)} ·
-          ${item.isActive===false||item.isActive===0||item.isActive==="0"?"Inactive":"Active"}
-        </div>
+        <div class="movie-meta">Genre: ${escapeHTML(item.genre||"Not set")} · Order: ${escapeHTML(item.sortOrder)} · ${item.isActive===false||item.isActive===0||item.isActive==="0"?"Inactive":"Active"}</div>
         <div class="movie-meta">Click URL: ${escapeHTML(item.linkUrl||"Not set")}</div>
         <div class="movie-meta">ID: ${escapeHTML(item.id)}</div>
       </div>
@@ -1103,8 +1051,7 @@ function renderCollections(){
         <button class="btn btn-small collection-edit-btn" data-id="${escapeHTML(item.id)}" type="button">Edit</button>
         <button class="btn btn-danger btn-small collection-delete-btn" data-id="${escapeHTML(item.id)}" type="button">Delete</button>
       </div>
-    </article>
-  `).join("");
+    </article>`).join("");
 
   $("collectionList").querySelectorAll(".collection-image").forEach(img=>{
     img.addEventListener("error",()=>img.style.visibility="hidden");
@@ -1114,7 +1061,6 @@ function renderCollections(){
 $("collectionList").addEventListener("click",event=>{
   const editButton=event.target.closest(".collection-edit-btn");
   const deleteButton=event.target.closest(".collection-delete-btn");
-
   if(editButton){
     const item=collections.find(c=>String(c.id)===editButton.dataset.id);
     if(item)editCollection(item);
@@ -1125,7 +1071,6 @@ $("collectionList").addEventListener("click",event=>{
 function editCollection(item){
   item=normalizeCollection(item);
   editingCollectionId=item.id;
-
   $("collectionId").value=item.id;
   $("collectionName").value=item.name??"";
   $("collectionGenre").value=item.genre??"";
@@ -1134,35 +1079,24 @@ function editCollection(item){
   $("collectionDescription").value=item.description??"";
   $("collectionImage").value=item.image??"";
   $("collectionLinkUrl").value=item.linkUrl??"";
-  $("collectionActive").value=
-    (item.isActive===false||item.isActive===0||item.isActive==="0")
-    ?"false":"true";
-
+  $("collectionActive").value=(item.isActive===false||item.isActive===0||item.isActive==="0")?"false":"true";
   $("collectionFile").value="";
   $("collectionStatus").textContent="";
   updatePreview("collection");
-
   $("collectionFormHeading").textContent="Edit Collection";
   $("collectionSaveBtn").textContent="Update Collection";
   $("collectionCancelBtn").classList.remove("hidden");
-
   openTab("collections");
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
 $("collectionCancelBtn").addEventListener("click",resetCollectionForm);
-$("collectionResetBtn").addEventListener("click",()=>{
-  window.setTimeout(resetCollectionForm,0);
-});
+$("collectionResetBtn").addEventListener("click",()=>setTimeout(resetCollectionForm,0));
 $("collectionRefreshBtn").addEventListener("click",loadCollections);
 
 $("collectionForm").addEventListener("submit",async event=>{
   event.preventDefault();
-
-  if(activeUploads>0){
-    showNotice("mainNotice","Please wait until image uploads finish.","error");
-    return;
-  }
+  if(activeUploads>0){showNotice("mainNotice","Please wait until image uploads finish.","error");return;}
 
   const collection={
     name:$("collectionName").value.trim(),
@@ -1175,61 +1109,36 @@ $("collectionForm").addEventListener("submit",async event=>{
     isActive:$("collectionActive").value==="true"
   };
 
-  if(!collection.name){
-    showNotice("mainNotice","Collection name is required.","error");
-    return;
-  }
-  if(!Number.isFinite(collection.sortOrder)){
-    showNotice("mainNotice","Please enter a valid collection sort order.","error");
-    return;
-  }
-  if(collection.image&&!validHttpUrl(collection.image)){
-    showNotice("mainNotice","Please enter a valid collection image URL.","error");
-    return;
-  }
-  if(!validLink(collection.linkUrl)){
-    showNotice("mainNotice","Please enter a valid Collection URL.","error");
-    return;
-  }
+  if(!collection.name){showNotice("mainNotice","Collection name is required.","error");return;}
+  if(!Number.isFinite(collection.sortOrder)){showNotice("mainNotice","Please enter a valid collection sort order.","error");return;}
+  if(collection.image&&!validHttpUrl(collection.image)){showNotice("mainNotice","Please enter a valid collection image URL.","error");return;}
+  if(!validLink(collection.linkUrl)){showNotice("mainNotice","Please enter a valid Collection URL.","error");return;}
 
   const isEditing=editingCollectionId!==null;
-  const endpoint=isEditing
-    ?"/collections/"+encodeURIComponent(editingCollectionId)
-    :"/collections";
-
+  const endpoint=isEditing?"/collections/"+encodeURIComponent(editingCollectionId):"/collections";
   $("collectionSaveBtn").disabled=true;
   $("collectionSaveBtn").textContent=isEditing?"Updating...":"Saving...";
 
   try{
-    await apiRequest(endpoint,{
-      method:isEditing?"PUT":"POST",
-      body:JSON.stringify(collection)
-    });
-
+    await apiRequest(endpoint,{method:isEditing?"PUT":"POST",body:JSON.stringify(collection)});
     showNotice("mainNotice",isEditing?"Collection updated successfully.":"Collection created successfully.","success");
-
     resetCollectionForm();
     await loadCollections();
-  }catch(error){
-    showNotice("mainNotice",error.message,"error");
-  }finally{
+  }catch(error){showNotice("mainNotice",error.message,"error");}
+  finally{
     $("collectionSaveBtn").disabled=activeUploads>0;
-    $("collectionSaveBtn").textContent=
-      editingCollectionId!==null?"Update Collection":"Save Collection";
+    $("collectionSaveBtn").textContent=editingCollectionId!==null?"Update Collection":"Save Collection";
   }
 });
 
 async function deleteCollection(id){
   const item=collections.find(c=>String(c.id)===String(id));
   if(!confirm('Delete "'+(item?.name||"this collection")+'" permanently?'))return;
-
   try{
     await apiRequest("/collections/"+encodeURIComponent(id),{method:"DELETE"});
     showNotice("mainNotice","Collection deleted successfully.","success");
     await loadCollections();
-  }catch(error){
-    showNotice("mainNotice",error.message,"error");
-  }
+  }catch(error){showNotice("mainNotice",error.message,"error");}
 }
 
 /* START */
