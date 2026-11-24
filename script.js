@@ -3,6 +3,7 @@
    CINEVAULT — MAIN APPLICATION
    CLOUDFLARE D1 DATABASE
    DYNAMIC HERO • COLLECTIONS • SETTINGS
+   SECTION LINKS • COLLECTION LINKS
    SEARCH • FILTER • SORT • WATCHLIST
    PAGINATION • MOBILE RESPONSIVE
    ========================================= */
@@ -13,29 +14,30 @@ document.addEventListener("DOMContentLoaded", () => {
      DOM ELEMENTS
   ========================================= */
 
-  const movieGrid = document.getElementById("movieGrid");
-  const watchlistGrid = document.getElementById("watchlistGrid");
-  const watchlistEmpty = document.getElementById("watchlistEmpty");
+  const $ = id => document.getElementById(id);
 
-  const searchInput = document.getElementById("movieSearch");
-  const clearSearch = document.getElementById("clearSearch");
-  const sortSelect = document.getElementById("sortMovies");
+  const movieGrid = $("movieGrid");
+  const watchlistGrid = $("watchlistGrid");
+  const watchlistEmpty = $("watchlistEmpty");
 
-  const genreFilter = document.getElementById("genreFilter");
-  const languageFilter = document.getElementById("languageFilter");
-  const yearFilter = document.getElementById("yearFilter");
-  const ratingFilter = document.getElementById("ratingFilter");
+  const searchInput = $("movieSearch");
+  const clearSearch = $("clearSearch");
+  const sortSelect = $("sortMovies");
 
-  const filterPanel = document.getElementById("filterPanel");
-  const filterToggle = document.getElementById("filterToggle");
+  const genreFilter = $("genreFilter");
+  const languageFilter = $("languageFilter");
+  const yearFilter = $("yearFilter");
+  const ratingFilter = $("ratingFilter");
 
-  const resultsCount = document.getElementById("resultsCount");
-  const emptyState = document.getElementById("emptyState");
-  const pagination = document.getElementById("pagination");
+  const filterPanel = $("filterPanel");
+  const filterToggle = $("filterToggle");
 
-  const watchlistCount = document.getElementById("watchlistCount");
+  const resultsCount = $("resultsCount");
+  const emptyState = $("emptyState");
+  const pagination = $("pagination");
 
-  const collectionGrid = document.getElementById("collectionGrid");
+  const watchlistCount = $("watchlistCount");
+  const collectionGrid = $("collectionGrid");
 
   const PAGE_SIZE = 40;
 
@@ -66,39 +68,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================================
-     API HELPER
+     SAFE URL VALIDATION
   ========================================= */
 
-  async function apiRequest(url) {
+  function safeLink(value, fallback = "") {
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      },
-      cache: "no-store"
-    });
+    const link = String(value ?? "").trim();
 
-    if (!response.ok) {
-      throw new Error(
-        `API request failed: ${response.status}`
-      );
+    if (!link) return fallback;
+
+    if (/[\u0000-\u001F]/.test(link)) {
+      return fallback;
     }
 
-    const data = await response.json();
-
-    if (!data || data.success !== true) {
-      throw new Error(
-        data?.message || "Invalid API response"
-      );
+    if (
+      link.startsWith("#") ||
+      link.startsWith("/") ||
+      link.startsWith("./") ||
+      link.startsWith("../")
+    ) {
+      return link;
     }
 
-    return data;
+    try {
+
+      const parsed = new URL(link);
+
+      if (
+        parsed.protocol === "https:" ||
+        parsed.protocol === "http:"
+      ) {
+        return parsed.href;
+      }
+
+    } catch {
+      return fallback;
+    }
+
+    return fallback;
   }
-
-  /* =========================================
-     SAFE IMAGE URL
-  ========================================= */
 
   function safeImageURL(value) {
 
@@ -107,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!url) return "";
 
     try {
+
       const parsed = new URL(url, window.location.origin);
 
       if (
@@ -121,6 +130,102 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return "";
+  }
+
+  /* =========================================
+     API HELPER
+  ========================================= */
+
+  async function apiRequest(url) {
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      },
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data || data.success !== true) {
+      throw new Error(data?.message || "Invalid API response");
+    }
+
+    return data;
+  }
+
+  /* =========================================
+     LINK HELPERS
+  ========================================= */
+
+  function makeLink(content, url, className = "") {
+
+    const link = safeLink(url);
+
+    if (!link) {
+      return content;
+    }
+
+    return `
+      <a
+        href="${escapeHTML(link)}"
+        ${className ? `class="${escapeHTML(className)}"` : ""}
+      >${content}</a>
+    `;
+  }
+
+  function setLinkedText(element, text, url) {
+
+    if (!element) return;
+
+    const safeText = String(text ?? "");
+    const link = safeLink(url);
+
+    element.replaceChildren();
+
+    if (!link) {
+      element.textContent = safeText;
+      return;
+    }
+
+    const anchor = document.createElement("a");
+
+    anchor.href = link;
+    anchor.textContent = safeText;
+    anchor.className = "content-link";
+
+    element.appendChild(anchor);
+  }
+
+  function setLinkedNodes(element, nodes, url) {
+
+    if (!element) return;
+
+    const link = safeLink(url);
+
+    element.replaceChildren();
+
+    if (link) {
+
+      const anchor = document.createElement("a");
+
+      anchor.href = link;
+      anchor.className = "content-link";
+
+      nodes.forEach(node => anchor.appendChild(node));
+
+      element.appendChild(anchor);
+
+    } else {
+
+      nodes.forEach(node => element.appendChild(node));
+
+    }
   }
 
   /* =========================================
@@ -212,34 +317,25 @@ document.addEventListener("DOMContentLoaded", () => {
       ...movie,
 
       id: Number(movie.id),
-
       title: movie.title || "Untitled",
-
       year: Number(movie.year) || "",
-
       genre: movie.genre || "",
-
       language: movie.language || "",
-
       country: movie.country || "",
-
       rating: Number(movie.rating) || 0,
-
       duration: movie.duration || "",
-
       director: movie.director || "",
-
       poster: movie.poster || "",
-
       backdrop: movie.backdrop || "",
-
       description: movie.description || "",
 
       watchUrl: movie.watchUrl || movie.watch_url || "",
 
-      downloadUrl: movie.downloadUrl || movie.download_url || "",
+      downloadUrl:
+        movie.downloadUrl || movie.download_url || "",
 
-      downloadUrl2: movie.downloadUrl2 || movie.download_url2 || ""
+      downloadUrl2:
+        movie.downloadUrl2 || movie.download_url_2 || ""
     };
   }
 
@@ -253,13 +349,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const siteName = settings.siteName || "CINEVAULT";
 
     const iconElements = [
-      document.getElementById("headerLogoIcon"),
-      document.getElementById("footerLogoIcon")
+      $("headerLogoIcon"),
+      $("footerLogoIcon")
     ];
 
     const textElements = [
-      document.getElementById("headerLogoText"),
-      document.getElementById("footerLogoText")
+      $("headerLogoText"),
+      $("footerLogoText")
     ];
 
     iconElements.forEach(element => {
@@ -274,7 +370,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!element) return;
 
-      const splitAt = Math.max(1, Math.ceil(siteName.length / 2));
+      const splitAt = Math.max(
+        1,
+        Math.ceil(siteName.length / 2)
+      );
 
       const firstPart = siteName.slice(0, splitAt);
       const secondPart = siteName.slice(splitAt);
@@ -297,7 +396,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    document.title = `${siteName} — Discover Movies & Entertainment`;
+    document.title =
+      `${siteName} — Discover Movies & Entertainment`;
 
   }
 
@@ -307,67 +407,123 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateHero(settings) {
 
-    const eyebrow = document.getElementById("heroEyebrow");
-    const title = document.getElementById("heroTitle");
-    const description = document.getElementById("heroDescription");
+    const eyebrow = $("heroEyebrow");
+    const title = $("heroTitle");
+    const description = $("heroDescription");
 
-    const button1 = document.getElementById("heroButton1");
-    const button1Text = document.getElementById("heroButton1Text");
+    const button1 = $("heroButton1");
+    const button1Text = $("heroButton1Text");
+    const button2 = $("heroButton2");
 
-    const button2 = document.getElementById("heroButton2");
+    /* Eyebrow */
 
-    if (eyebrow) {
-      eyebrow.textContent =
-        settings.heroEyebrow || "YOUR WORLD OF CINEMA";
-    }
+    setLinkedText(
+      eyebrow,
+      settings.heroEyebrow || "YOUR WORLD OF CINEMA",
+      settings.heroEyebrowUrl
+    );
+
+    /* Main title */
 
     if (title) {
 
-      const mainTitle =
+      const mainTitle = document.createElement("span");
+
+      mainTitle.textContent =
         settings.heroTitle || "Discover Stories.";
 
-      const highlight =
+      const highlight = document.createElement("span");
+
+      highlight.className = "gold-text";
+      highlight.textContent =
         settings.heroHighlight || "Experience Cinema.";
 
-      const gold = document.createElement("span");
+      const breakElement = document.createElement("br");
 
-      gold.className = "gold-text";
-      gold.textContent = highlight;
+      const mainLink = safeLink(settings.heroTitleUrl);
+      const highlightLink = safeLink(settings.heroHighlightUrl);
 
-      title.replaceChildren(
-        document.createTextNode(mainTitle),
-        document.createElement("br"),
-        gold
-      );
+      const nodes = [];
+
+      if (mainLink) {
+
+        const anchor = document.createElement("a");
+
+        anchor.href = mainLink;
+        anchor.className = "content-link";
+        anchor.appendChild(mainTitle);
+
+        nodes.push(anchor);
+
+      } else {
+
+        nodes.push(mainTitle);
+
+      }
+
+      nodes.push(breakElement);
+
+      if (highlightLink) {
+
+        const anchor = document.createElement("a");
+
+        anchor.href = highlightLink;
+        anchor.className = "content-link";
+        anchor.appendChild(highlight);
+
+        nodes.push(anchor);
+
+      } else {
+
+        nodes.push(highlight);
+
+      }
+
+      title.replaceChildren(...nodes);
 
     }
 
-    if (description) {
-      description.textContent =
-        settings.heroDescription || "";
-    }
+    /* Description */
+
+    setLinkedText(
+      description,
+      settings.heroDescription || "",
+      settings.heroDescriptionUrl
+    );
+
+    /* Button 1 */
 
     if (button1Text) {
+
       button1Text.textContent =
         settings.heroButton1Text || "Explore Movies";
+
     }
 
     if (button1) {
 
-      button1.href =
-        safeLink(settings.heroButton1Url, "#movies");
+      button1.href = safeLink(
+        settings.heroButton1Url,
+        "#movies"
+      );
+
     }
+
+    /* Button 2 */
 
     if (button2) {
 
       button2.textContent =
         settings.heroButton2Text || "Browse Collections";
 
-      button2.href =
-        safeLink(settings.heroButton2Url, "#collections");
+      button2.href = safeLink(
+        settings.heroButton2Url,
+        "#collections"
+      );
+
     }
 
-    /* Hero Background Image */
+    /* Background image */
 
     const heroImage = safeImageURL(settings.heroImage);
 
@@ -394,22 +550,99 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================================
-     SAFE LINK
+     DYNAMIC SECTION HEADINGS
   ========================================= */
 
-  function safeLink(value, fallback) {
+  function updateSectionHeadings(settings) {
 
-    const link = String(value || fallback).trim();
+    /* COLLECTIONS EYEBROW */
 
-    if (
-      link.startsWith("#") ||
-      link.startsWith("/") ||
-      /^https?:\/\//i.test(link)
-    ) {
-      return link;
+    setLinkedText(
+      $("collectionsEyebrow"),
+      settings.collectionsEyebrow || "EXPLORE BY CATEGORY",
+      settings.collectionsEyebrowUrl
+    );
+
+    /* COLLECTIONS HEADING */
+
+    const collectionsHeading = $("collectionsHeading");
+
+    if (collectionsHeading) {
+
+      const main = document.createElement("span");
+
+      main.id = "collectionsHeadingText";
+      main.textContent =
+        settings.collectionsHeading || "Movie";
+
+      const highlight = document.createElement("span");
+
+      highlight.id = "collectionsHeadingHighlight";
+      highlight.className = "gold-text";
+      highlight.textContent =
+        settings.collectionsHeadingHighlight || "Collections";
+
+      setLinkedNodes(
+        collectionsHeading,
+        [main, document.createTextNode(" "), highlight],
+        settings.collectionsHeadingUrl
+      );
+
     }
 
-    return fallback;
+    /* COLLECTIONS DESCRIPTION */
+
+    setLinkedText(
+      $("collectionsDescription"),
+      settings.collectionsDescription ||
+        "Discover movies from your favourite genres.",
+      settings.collectionsDescriptionUrl
+    );
+
+    /* MOVIES EYEBROW */
+
+    setLinkedText(
+      $("moviesEyebrow"),
+      settings.moviesEyebrow || "YOUR NEXT WATCH",
+      settings.moviesEyebrowUrl
+    );
+
+    /* MOVIES HEADING */
+
+    const moviesHeading = $("moviesHeading");
+
+    if (moviesHeading) {
+
+      const main = document.createElement("span");
+
+      main.id = "moviesHeadingText";
+      main.textContent =
+        settings.moviesHeading || "Explore";
+
+      const highlight = document.createElement("span");
+
+      highlight.id = "moviesHeadingHighlight";
+      highlight.className = "gold-text";
+      highlight.textContent =
+        settings.moviesHeadingHighlight || "Movies";
+
+      setLinkedNodes(
+        moviesHeading,
+        [main, document.createTextNode(" "), highlight],
+        settings.moviesHeadingUrl
+      );
+
+    }
+
+    /* MOVIES DESCRIPTION */
+
+    setLinkedText(
+      $("moviesDescription"),
+      settings.moviesDescription ||
+        "Browse the latest additions and discover your next favourite movie.",
+      settings.moviesDescriptionUrl
+    );
+
   }
 
   /* =========================================
@@ -418,39 +651,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateAbout(settings) {
 
-    const eyebrow = document.getElementById("aboutEyebrow");
-    const title = document.getElementById("aboutTitle");
-    const description = document.getElementById("aboutDescription");
+    setLinkedText(
+      $("aboutEyebrow"),
+      settings.aboutEyebrow || "WELCOME TO CINEVAULT",
+      settings.aboutEyebrowUrl
+    );
 
-    if (eyebrow) {
-      eyebrow.textContent =
-        settings.aboutEyebrow || "WELCOME TO CINEVAULT";
-    }
+    const title = $("aboutTitle");
 
     if (title) {
 
-      const mainTitle =
+      const main = document.createElement("span");
+
+      main.textContent =
         settings.aboutTitle || "More Than Movies.";
 
-      const highlight =
+      const highlight = document.createElement("span");
+
+      highlight.className = "gold-text";
+      highlight.textContent =
         settings.aboutHighlight || "A Cinema Experience.";
 
-      const gold = document.createElement("span");
-
-      gold.className = "gold-text";
-      gold.textContent = highlight;
-
-      title.replaceChildren(
-        document.createTextNode(mainTitle),
+      const nodes = [
+        main,
         document.createElement("br"),
-        gold
-      );
+        highlight
+      ];
+
+      const mainLink = safeLink(settings.aboutTitleUrl);
+      const highlightLink = safeLink(settings.aboutHighlightUrl);
+
+      if (mainLink) {
+
+        const anchor = document.createElement("a");
+
+        anchor.href = mainLink;
+        anchor.className = "content-link";
+        anchor.appendChild(main);
+
+        nodes[0] = anchor;
+
+      }
+
+      if (highlightLink) {
+
+        const anchor = document.createElement("a");
+
+        anchor.href = highlightLink;
+        anchor.className = "content-link";
+        anchor.appendChild(highlight);
+
+        nodes[2] = anchor;
+
+      }
+
+      title.replaceChildren(...nodes);
 
     }
 
-    if (description) {
-      description.textContent =
-        settings.aboutDescription || "";
+    setLinkedText(
+      $("aboutDescription"),
+      settings.aboutDescription || "",
+      settings.aboutDescriptionUrl
+    );
+
+    const aboutButton = $("aboutButton");
+
+    if (aboutButton) {
+
+      const buttonText =
+        settings.aboutButtonText || "Discover Movies";
+
+      const buttonLink = safeLink(
+        settings.aboutButtonUrl,
+        "#movies"
+      );
+
+      aboutButton.href = buttonLink;
+
+      const textElement = $("aboutButtonText");
+
+      if (textElement) {
+        textElement.textContent = buttonText;
+      } else {
+        aboutButton.textContent = buttonText;
+      }
+
     }
 
   }
@@ -461,51 +747,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateFooter(settings) {
 
-    const footerDescription =
-      document.getElementById("footerDescription");
+    setLinkedText(
+      $("footerDescription"),
+      settings.footerDescription ||
+        "Discover cinema. Explore stories. Build your collection.",
+      settings.footerDescriptionUrl
+    );
 
-    const footerTagline =
-      document.getElementById("footerTagline");
+    setLinkedText(
+      $("footerTagline"),
+      settings.footerTagline || "Made for movie lovers.",
+      settings.footerTaglineUrl
+    );
 
-    const copyright =
-      document.getElementById("copyrightText");
-
-    const currentYear =
-      document.getElementById("currentYear");
-
-    if (footerDescription) {
-
-      footerDescription.textContent =
-        settings.footerDescription || "";
-    }
-
-    if (footerTagline) {
-
-      footerTagline.textContent =
-        settings.footerTagline || "";
-    }
+    const copyright = $("copyrightText");
 
     if (copyright) {
 
       const year = new Date().getFullYear();
 
-      const copyrightText =
-        settings.copyrightText || "All rights reserved.";
-
-      copyright.replaceChildren(
-        document.createTextNode(`© ${year} `)
-      );
-
       const siteName =
         settings.siteName || "CINEVAULT";
 
-      copyright.appendChild(
-        document.createTextNode(
-          `${siteName}. ${copyrightText}`
-        )
+      const copyrightText =
+        settings.copyrightText || "All rights reserved.";
+
+      const copyrightLink = safeLink(
+        settings.copyrightUrl
       );
 
+      copyright.replaceChildren();
+
+      copyright.appendChild(
+        document.createTextNode(`© ${year} `)
+      );
+
+      if (copyrightLink) {
+
+        const anchor = document.createElement("a");
+
+        anchor.href = copyrightLink;
+        anchor.textContent = `${siteName}. ${copyrightText}`;
+
+        copyright.appendChild(anchor);
+
+      } else {
+
+        copyright.appendChild(
+          document.createTextNode(
+            `${siteName}. ${copyrightText}`
+          )
+        );
+
+      }
+
     }
+
+    const currentYear = $("currentYear");
 
     if (currentYear) {
       currentYear.textContent = new Date().getFullYear();
@@ -531,6 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       updateLogo(settings);
       updateHero(settings);
+      updateSectionHeadings(settings);
       updateAbout(settings);
       updateFooter(settings);
 
@@ -566,6 +865,9 @@ document.addEventListener("DOMContentLoaded", () => {
       icon: collection.icon || "✧",
 
       genre: collection.genre || collection.name || "",
+
+      linkUrl:
+        collection.linkUrl || collection.link_url || "",
 
       sortOrder: Number(
         collection.sortOrder ??
@@ -618,11 +920,18 @@ document.addEventListener("DOMContentLoaded", () => {
             </span>
           `;
 
+        const link = safeLink(collection.linkUrl);
+
+        const tag = link ? "a" : "button";
+
+        const attributes = link
+          ? `href="${escapeHTML(link)}"`
+          : `type="button" data-genre="${escapeHTML(collection.genre)}"`;
+
         return `
-          <button
+          <${tag}
             class="collection-card"
-            type="button"
-            data-genre="${escapeHTML(collection.genre)}"
+            ${attributes}
             data-collection-id="${collection.id}"
           >
 
@@ -636,7 +945,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ${escapeHTML(collection.description)}
             </span>
 
-          </button>
+          </${tag}>
         `;
 
       })
@@ -645,7 +954,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================================
-     LOAD COLLECTIONS FROM D1 API
+     LOAD COLLECTIONS FROM D1
   ========================================= */
 
   async function loadCollections() {
@@ -707,6 +1016,9 @@ document.addEventListener("DOMContentLoaded", () => {
       <article
         class="movie-card"
         data-movie-id="${Number(movie.id)}"
+        tabindex="0"
+        role="link"
+        aria-label="View ${escapeHTML(movie.title)}"
       >
 
         <div class="movie-poster">
@@ -852,30 +1164,24 @@ document.addEventListener("DOMContentLoaded", () => {
     switch (sortSelect?.value) {
 
       case "newest":
-
         result.sort((a, b) => b.year - a.year);
         break;
 
       case "oldest":
-
         result.sort((a, b) => a.year - b.year);
         break;
 
       case "rating":
-
         result.sort((a, b) => b.rating - a.rating);
         break;
 
       case "az":
-
         result.sort((a, b) =>
           a.title.localeCompare(b.title)
         );
-
         break;
 
       default:
-
         result.sort((a, b) => b.id - a.id);
 
     }
@@ -913,7 +1219,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         renderMovies();
 
-        document.getElementById("movies")?.scrollIntoView({
+        $("movies")?.scrollIntoView({
           behavior: "smooth"
         });
 
@@ -924,12 +1230,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     if (currentPage > 1) {
-
-      createPageButton(
-        "‹",
-        currentPage - 1
-      );
-
+      createPageButton("‹", currentPage - 1);
     }
 
     for (let page = 1; page <= totalPages; page++) {
@@ -943,12 +1244,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (currentPage < totalPages) {
-
-      createPageButton(
-        "›",
-        currentPage + 1
-      );
-
+      createPageButton("›", currentPage + 1);
     }
 
   }
@@ -989,14 +1285,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    const resultsLabel =
-      document.getElementById("resultsLabel");
+    const resultsLabel = $("resultsLabel");
 
     if (resultsLabel) {
-
-      resultsLabel.textContent =
-        `${PAGE_SIZE} MOVIES PER PAGE`;
-
+      resultsLabel.textContent = `${PAGE_SIZE} MOVIES PER PAGE`;
     }
 
     if (emptyState) {
@@ -1024,17 +1316,11 @@ document.addEventListener("DOMContentLoaded", () => {
       .join("");
 
     if (watchlistEmpty) {
-
-      watchlistEmpty.hidden =
-        savedMovies.length > 0;
-
+      watchlistEmpty.hidden = savedMovies.length > 0;
     }
 
     if (watchlistCount) {
-
-      watchlistCount.textContent =
-        savedMovies.length;
-
+      watchlistCount.textContent = savedMovies.length;
     }
 
   }
@@ -1051,9 +1337,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isInWatchlist(id)) {
 
-      watchlist = watchlist.filter(
-        item => item !== id
-      );
+      watchlist = watchlist.filter(item => item !== id);
 
     } else {
 
@@ -1107,8 +1391,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderMovies();
       renderWatchlist();
 
-      const totalMoviesElement =
-        document.getElementById("totalMovies");
+      const totalMoviesElement = $("totalMovies");
 
       if (totalMoviesElement) {
         totalMoviesElement.textContent = movies.length;
@@ -1140,8 +1423,7 @@ document.addEventListener("DOMContentLoaded", () => {
         emptyState.hidden = false;
       }
 
-      const totalMoviesElement =
-        document.getElementById("totalMovies");
+      const totalMoviesElement = $("totalMovies");
 
       if (totalMoviesElement) {
         totalMoviesElement.textContent = "0";
@@ -1158,7 +1440,6 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput?.addEventListener("input", () => {
 
     currentPage = 1;
-
     renderMovies();
 
   });
@@ -1193,7 +1474,6 @@ document.addEventListener("DOMContentLoaded", () => {
     element.addEventListener("change", () => {
 
       currentPage = 1;
-
       renderMovies();
 
     });
@@ -1212,25 +1492,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resetFilters() {
 
-    if (searchInput) {
-      searchInput.value = "";
-    }
-
-    if (genreFilter) {
-      genreFilter.value = "";
-    }
-
-    if (languageFilter) {
-      languageFilter.value = "";
-    }
-
-    if (yearFilter) {
-      yearFilter.value = "";
-    }
-
-    if (ratingFilter) {
-      ratingFilter.value = "";
-    }
+    if (searchInput) searchInput.value = "";
+    if (genreFilter) genreFilter.value = "";
+    if (languageFilter) languageFilter.value = "";
+    if (yearFilter) yearFilter.value = "";
+    if (ratingFilter) ratingFilter.value = "";
 
     if (sortSelect) {
       sortSelect.value = "newest";
@@ -1242,23 +1508,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
-  document.getElementById("resetFilters")
-    ?.addEventListener("click", resetFilters);
+  $("resetFilters")?.addEventListener("click", resetFilters);
 
-  document.getElementById("emptyReset")
-    ?.addEventListener("click", resetFilters);
+  $("emptyReset")?.addEventListener("click", resetFilters);
 
   /* =========================================
-     DYNAMIC COLLECTION CLICK
+     COLLECTION CLICK
   ========================================= */
 
   collectionGrid?.addEventListener("click", event => {
 
-    const button = event.target.closest(".collection-card");
+    const card = event.target.closest(".collection-card");
 
-    if (!button) return;
+    if (!card) return;
 
-    const genre = button.dataset.genre || "";
+    // A collection with its own URL follows that URL.
+    if (card.tagName === "A") {
+      return;
+    }
+
+    const genre = card.dataset.genre || "";
 
     if (genreFilter) {
 
@@ -1268,11 +1537,9 @@ document.addEventListener("DOMContentLoaded", () => {
         option.value.toLowerCase() === genre.toLowerCase()
       );
 
-      if (matchingOption) {
-        genreFilter.value = matchingOption.value;
-      } else {
-        genreFilter.value = "";
-      }
+      genreFilter.value = matchingOption
+        ? matchingOption.value
+        : "";
 
     }
 
@@ -1284,7 +1551,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderMovies();
 
-    document.getElementById("movies")?.scrollIntoView({
+    $("movies")?.scrollIntoView({
       behavior: "smooth"
     });
 
@@ -1331,15 +1598,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
+  /* Keyboard access for movie cards */
+
+  document.addEventListener("keydown", event => {
+
+    if (
+      event.key !== "Enter" &&
+      event.key !== " "
+    ) {
+      return;
+    }
+
+    const card = event.target.closest("[data-movie-id]");
+
+    if (!card || event.target.closest("button")) return;
+
+    event.preventDefault();
+
+    const movieId = card.dataset.movieId;
+
+    if (movieId) {
+      window.location.href =
+        `movie.html?id=${encodeURIComponent(movieId)}`;
+    }
+
+  });
+
   /* =========================================
      MOBILE MENU
   ========================================= */
 
-  const menuToggle =
-    document.getElementById("menuToggle");
-
-  const mainNav =
-    document.getElementById("mainNav");
+  const menuToggle = $("menuToggle");
+  const mainNav = $("mainNav");
 
   menuToggle?.addEventListener("click", () => {
 
@@ -1361,23 +1651,21 @@ document.addEventListener("DOMContentLoaded", () => {
      SEARCH ICON
   ========================================= */
 
-  document.getElementById("searchToggle")
-    ?.addEventListener("click", () => {
+  $("searchToggle")?.addEventListener("click", () => {
 
-      searchInput?.focus();
+    searchInput?.focus();
 
-      document.getElementById("movies")?.scrollIntoView({
-        behavior: "smooth"
-      });
-
+    $("movies")?.scrollIntoView({
+      behavior: "smooth"
     });
+
+  });
 
   /* =========================================
      CURRENT YEAR
   ========================================= */
 
-  const currentYearElement =
-    document.getElementById("currentYear");
+  const currentYearElement = $("currentYear");
 
   if (currentYearElement) {
 
@@ -1391,9 +1679,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ========================================= */
 
   loadSettings();
-
   loadCollections();
-
   loadMovies();
 
 });
