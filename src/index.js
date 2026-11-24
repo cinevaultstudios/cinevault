@@ -243,11 +243,13 @@ async function ensureCustomizationSchema(env) {
         watch_url: "TEXT DEFAULT ''",
         ad_url: "TEXT DEFAULT ''",
         ad_count: "INTEGER DEFAULT 4",
-        created_at: "TEXT DEFAULT CURRENT_TIMESTAMP",
-        updated_at: "TEXT DEFAULT CURRENT_TIMESTAMP"
+
+        /* Safe ALTER TABLE defaults */
+        created_at: "TEXT DEFAULT ''",
+        updated_at: "TEXT DEFAULT ''"
       });
 
-      /* Existing NULL values are normalized safely. */
+      /* Normalize existing movie data and timestamps. */
 
       await db.prepare(`
         UPDATE movies
@@ -270,7 +272,15 @@ async function ensureCustomizationSchema(env) {
           ad_count = CASE
             WHEN ad_count IS NULL OR ad_count < 4 THEN 4
             ELSE ad_count
-          END
+          END,
+          created_at = COALESCE(
+            NULLIF(created_at, ''),
+            CURRENT_TIMESTAMP
+          ),
+          updated_at = COALESCE(
+            NULLIF(updated_at, ''),
+            CURRENT_TIMESTAMP
+          )
       `).run();
 
       /* COLLECTIONS TABLE */
@@ -299,9 +309,26 @@ async function ensureCustomizationSchema(env) {
         link_url: "TEXT DEFAULT ''",
         sort_order: "INTEGER DEFAULT 0",
         is_active: "INTEGER DEFAULT 1",
-        created_at: "TEXT DEFAULT CURRENT_TIMESTAMP",
-        updated_at: "TEXT DEFAULT CURRENT_TIMESTAMP"
+
+        /* Safe ALTER TABLE defaults */
+        created_at: "TEXT DEFAULT ''",
+        updated_at: "TEXT DEFAULT ''"
       });
+
+      /* Normalize existing collection timestamps. */
+
+      await db.prepare(`
+        UPDATE collections
+        SET
+          created_at = COALESCE(
+            NULLIF(created_at, ''),
+            CURRENT_TIMESTAMP
+          ),
+          updated_at = COALESCE(
+            NULLIF(updated_at, ''),
+            CURRENT_TIMESTAMP
+          )
+      `).run();
 
       /* WEBSITE SETTINGS TABLE */
 
