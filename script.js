@@ -594,93 +594,94 @@ document.addEventListener("DOMContentLoaded", () => {
      17. MULTIPLE HERO BANNER — RENDER SLIDE
   ======================================================= */
 
-  function renderHeroSlide(banner, index) {
-    const overlay = banner.overlay / 100;
-    const positionClass = `hero-text-${banner.textPosition}`;
+function renderHeroSlide(banner, index) {
+  const overlay = banner.overlay;
+  const positionClass = `hero-text-${banner.textPosition}`;
 
-    const backgroundImage =
-  `url("${banner.image.replace(/["\\]/g, "")}")`;
+  const button1 = createHeroButton(
+    banner.button1Text,
+    banner.button1Url,
+    "btn-primary",
+    "#movies"
+  );
 
-    const button1 = createHeroButton(
-      banner.button1Text,
-      banner.button1Url,
-      "btn-primary",
-      "#movies"
-    );
+  const button2 = createHeroButton(
+    banner.button2Text,
+    banner.button2Url,
+    "btn-outline",
+    "#collections"
+  );
 
-    const button2 = createHeroButton(
-      banner.button2Text,
-      banner.button2Url,
-      "btn-outline",
-      "#collections"
-    );
+  const hasBackgroundLink = Boolean(banner.clickUrl);
 
-    const hasBackgroundLink = Boolean(banner.clickUrl);
+  return `
+    <article
+      class="hero-slide ${index === 0 ? "hero-slide-active" : ""} ${positionClass}"
+      data-hero-index="${index}"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="${index + 1} of ${heroBanners.length}"
+      ${hasBackgroundLink ? 'tabindex="0"' : ""}
+      style="
+        color:${banner.textColor};
+        --hero-text-color:${banner.textColor};
+        --hero-highlight-color:${banner.highlightColor};
+        --hero-overlay:${overlay};
+      "
+    >
 
-    return `
-      <article
-        class="hero-slide ${index === 0 ? "hero-slide-active" : ""} ${positionClass}"
-        data-hero-index="${index}"
-        role="group"
-        aria-roledescription="slide"
-        aria-label="${index + 1} of ${heroBanners.length}"
-        ${hasBackgroundLink ? 'tabindex="0"' : ""}
-        style="
-          background-image:${backgroundImage};
-          background-size:cover;
-          background-position:center;
-          color:${banner.textColor};
-          --hero-text-color:${banner.textColor};
-          --hero-highlight-color:${banner.highlightColor};
-          --hero-overlay:${overlay};
-        "
+      <img
+        class="hero-slide-image"
+        src="${escapeHTML(banner.image)}"
+        alt=""
+        aria-hidden="true"
+        loading="${index === 0 ? "eager" : "lazy"}"
+        decoding="async"
+        ${index === 0 ? 'fetchpriority="high"' : ""}
       >
 
-        <div class="hero-overlay"></div>
+      <div class="hero-overlay"></div>
 
-        <div class="hero-content">
-
-          ${
-            banner.eyebrow
-              ? `<span class="hero-eyebrow">${escapeHTML(banner.eyebrow)}</span>`
-              : ""
-          }
-
-          <h1 class="hero-slide-title">
-
-            ${escapeHTML(banner.title)}
-
-            ${
-              banner.highlight
-                ? `<span class="gold-text hero-slide-highlight">${escapeHTML(banner.highlight)}</span>`
-                : ""
-            }
-
-          </h1>
-
-          ${
-            banner.description
-              ? `<p>${escapeHTML(banner.description)}</p>`
-              : ""
-          }
-
-          ${
-            button1 || button2
-              ? `<div class="hero-buttons">${button1}${button2}</div>`
-              : ""
-          }
-
-        </div>
+      <div class="hero-content">
 
         ${
-          index === 0
-            ? `<div class="hero-decoration" aria-hidden="true"><span>C</span></div>`
+          banner.eyebrow
+            ? `<span class="hero-eyebrow">${escapeHTML(banner.eyebrow)}</span>`
             : ""
         }
 
-      </article>
-    `;
-  }
+        <h1 class="hero-slide-title">
+          ${escapeHTML(banner.title)}
+          ${
+            banner.highlight
+              ? `<span class="gold-text hero-slide-highlight">${escapeHTML(banner.highlight)}</span>`
+              : ""
+          }
+        </h1>
+
+        ${
+          banner.description
+            ? `<p>${escapeHTML(banner.description)}</p>`
+            : ""
+        }
+
+        ${
+          button1 || button2
+            ? `<div class="hero-buttons">${button1}${button2}</div>`
+            : ""
+        }
+
+      </div>
+
+      ${
+        index === 0
+          ? `<div class="hero-decoration" aria-hidden="true"><span>C</span></div>`
+          : ""
+      }
+
+    </article>
+  `;
+}
 
   /* =======================================================
      18. MULTIPLE HERO BANNER — DOTS
