@@ -379,6 +379,7 @@
 
     const watchUrl = validURL(movie.watchUrl);
     const downloadUrl = validURL(movie.downloadUrl);
+    const downloadUrl2 = validURL(movie.downloadUrl2);
 
     const watchButton = watchUrl
       ? `<a class="watch-button"
@@ -387,11 +388,18 @@
              rel="noopener noreferrer">▶ WATCH NOW</a>`
       : "";
 
-    const downloadButton = downloadUrl
+    const downloadButton1 = downloadUrl
       ? `<a class="download-button"
              href="${escapeHTML(downloadUrl)}"
              target="_blank"
-             rel="noopener noreferrer">↓ DOWNLOAD</a>`
+             rel="noopener noreferrer">↓ DOWNLOAD 1</a>`
+      : "";
+
+    const downloadButton2 = downloadUrl2
+      ? `<a class="download-button"
+             href="${escapeHTML(downloadUrl2)}"
+             target="_blank"
+             rel="noopener noreferrer">↓ DOWNLOAD 2</a>`
       : "";
 
     const similar = movies
@@ -497,10 +505,11 @@
 
           <div class="movie-action-buttons">
             ${watchButton}
-            ${downloadButton}
+            ${downloadButton1}
+            ${downloadButton2}
           </div>
 
-          ${!watchUrl && !downloadUrl
+          ${!watchUrl && !downloadUrl && !downloadUrl2
             ? `<p class="movie-unavailable">
                 Viewing and download links have not been added
                 for this movie yet.
@@ -553,6 +562,7 @@
           ...movie,
           watchUrl: movie.watchUrl || movie.watch_url || "",
           downloadUrl: movie.downloadUrl || movie.download_url || "",
+          downloadUrl2: movie.downloadUrl2 || movie.download_url_2 || "",
           adUrl: movie.adUrl || movie.ad_url || "",
           adCount: Number(movie.adCount ?? movie.ad_count ?? 4)
         };
