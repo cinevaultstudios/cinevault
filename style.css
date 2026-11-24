@@ -1880,15 +1880,17 @@ button:disabled {
 
 }
 
-/* CINEVAULT — HERO BANNER IMAGE DISPLAY FIX */
+/* CINEVAULT — HERO BANNER FINAL LAYER FIX */
 
 .hero-slide {
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
 }
 
 .hero-slide > .hero-slide-image {
   position: absolute !important;
-  inset: 0;
+  inset: 0 !important;
   z-index: 0 !important;
   display: block !important;
   width: 100% !important;
@@ -1899,14 +1901,21 @@ button:disabled {
 }
 
 .hero-slide > .hero-overlay {
+  position: absolute !important;
+  inset: 0 !important;
   z-index: 1 !important;
 }
 
 .hero-slide .hero-content {
-  position: relative;
+  position: relative !important;
   z-index: 2 !important;
+  opacity: 1;
+  visibility: visible;
 }
 
 .hero-slide .hero-decoration {
-  z-index: 2;
+  position: absolute;
+  z-index: 2 !important;
+  pointer-events: none;
 }
+
