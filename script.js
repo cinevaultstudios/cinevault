@@ -2,8 +2,8 @@
 /* =========================================================
    CINEVAULT — MAIN APPLICATION
    CLOUDFLARE WORKERS + D1 DATABASE
-   DYNAMIC SETTINGS • HERO • COLLECTIONS
-   MOVIES • SEARCH • FILTER • SORT
+   DYNAMIC SETTINGS • MULTIPLE HERO BANNERS
+   COLLECTIONS • MOVIES • SEARCH • FILTER • SORT
    WATCHLIST • PAGINATION • RESPONSIVE NAVIGATION
    CONFIGURABLE LINKS OPEN IN NEW TAB
    ========================================================= */
@@ -61,6 +61,26 @@ document.addEventListener("DOMContentLoaded", () => {
   let watchlist = loadWatchlist();
 
   /* =======================================================
+     HERO SLIDER STATE
+  ======================================================= */
+
+  let heroBanners = [];
+  let currentHeroIndex = 0;
+  let heroTimer = null;
+  let heroPaused = false;
+
+  const heroSlider = $("heroSlider");
+  const heroSliderTrack = $("heroSliderTrack");
+  const heroSliderPrev = $("heroSliderPrev");
+  const heroSliderNext = $("heroSliderNext");
+  const heroSliderDots = $("heroSliderDots");
+  const heroSliderNavigation = $("heroSliderNavigation");
+
+  const prefersReducedMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* =======================================================
      SAFE TEXT / HTML
   ======================================================= */
 
@@ -90,17 +110,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return fallback;
     }
 
-    // Allow page anchors.
     if (link.startsWith("#")) {
       return link;
     }
 
-    // Allow root-relative paths, but reject protocol-relative URLs.
     if (link.startsWith("/") && !link.startsWith("//")) {
       return link;
     }
 
-    // Allow normal relative paths such as about.html.
     if (
       link.startsWith("./") ||
       link.startsWith("../") ||
@@ -117,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Allow only HTTP and HTTPS absolute URLs.
     try {
       const parsed = new URL(link);
 
@@ -155,6 +171,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return "";
+  }
+
+  /* =======================================================
+     SAFE COLOR VALIDATION
+  ======================================================= */
+
+  function safeColor(value, fallback) {
+    const color = String(value ?? "").trim();
+
+    return /^#[0-9a-fA-F]{6}$/.test(color)
+      ? color
+      : fallback;
+  }
+
+  function safeOverlay(value) {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) return 45;
+
+    return Math.min(90, Math.max(0, number));
+  }
+
+  function safeDuration(value) {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) return 5;
+
+    return Math.min(15, Math.max(3, number));
+  }
+
+  function safeTextPosition(value) {
+    const position = String(value ?? "").toLowerCase();
+
+    return ["left", "center", "right"].includes(position)
+      ? position
+      : "left";
   }
 
   /* =======================================================
@@ -426,7 +478,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     DYNAMIC HERO
+     LEGACY SINGLE HERO
+     USED WHEN NO ACTIVE MULTIPLE BANNERS EXIST
   ======================================================= */
 
   function updateHero(data) {
@@ -536,17 +589,494 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const heroImage = safeImageURL(data.heroImage);
-    const heroSection = document.querySelector(".hero-section");
+    const fallbackSlide = $("heroFallbackSlide");
 
-    if (heroSection && heroImage) {
-      heroSection.style.backgroundImage = [
-        "linear-gradient(110deg, rgba(8,10,15,.94) 10%, rgba(17,23,34,.78) 65%, rgba(8,10,15,.88))",
-        `url(${JSON.stringify(heroImage)})`
-      ].join(", ");
+    if (fallbackSlide && heroImage) {
+      fallbackSlide.style.backgroundImage = `
+        linear-gradient(
+          110deg,
+          rgba(8,10,15,.94) 10%,
+          rgba(17,23,34,.78) 65%,
+          rgba(8,10,15,.88)
+        ),
+        url("${heroImage.replace(/["\\]/g, "")}")
+      `;
 
-      heroSection.style.backgroundSize = "cover";
-      heroSection.style.backgroundPosition = "center";
+      fallbackSlide.style.backgroundSize = "cover";
+      fallbackSlide.style.backgroundPosition = "center";
     }
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — NORMALIZE
+  ======================================================= */
+
+  function normalizeHeroBanner(banner, index) {
+    const item = banner || {};
+
+    return {
+      id: textValue(item.id, `hero-${index + 1}`),
+
+      enabled: item.enabled !== false &&
+        item.enabled !== 0 &&
+        item.enabled !== "false",
+
+      image: safeImageURL(item.image),
+
+      clickUrl: safeLink(item.clickUrl),
+
+      eyebrow: textValue(item.eyebrow),
+      title: textValue(item.title),
+      highlight: textValue(item.highlight),
+      description: textValue(item.description),
+
+      button1Text: textValue(item.button1Text),
+      button1Url: safeLink(item.button1Url),
+
+      button2Text: textValue(item.button2Text),
+      button2Url: safeLink(item.button2Url),
+
+      textColor: safeColor(item.textColor, "#FFFFFF"),
+      highlightColor: safeColor(item.highlightColor, "#D6B36A"),
+
+      overlay: safeOverlay(item.overlay),
+
+      textPosition: safeTextPosition(item.textPosition),
+
+      duration: safeDuration(item.duration)
+    };
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — PARSE SETTINGS
+  ======================================================= */
+
+  function getHeroBannersFromSettings(data) {
+    let raw = data.heroBanners;
+
+    if (typeof raw === "string") {
+      try {
+        raw = JSON.parse(raw || "[]");
+      } catch (error) {
+        console.warn("Invalid heroBanners setting:", error);
+        raw = [];
+      }
+    }
+
+    if (!Array.isArray(raw)) {
+      return [];
+    }
+
+    return raw
+      .map(normalizeHeroBanner)
+      .filter(banner =>
+        banner.enabled &&
+        banner.image
+      );
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — BUTTON HTML
+  ======================================================= */
+
+  function createHeroButton(text, url, styleClass, fallbackUrl) {
+    const label = textValue(text);
+
+    if (!label) return "";
+
+    const link = safeLink(url);
+
+    if (!link && !fallbackUrl) {
+      return "";
+    }
+
+    const finalUrl = link || fallbackUrl;
+
+    const opensNewTab = Boolean(link);
+
+    return `
+      <a
+        href="${escapeHTML(finalUrl)}"
+        class="btn ${escapeHTML(styleClass)}"
+        ${opensNewTab ? 'target="_blank" rel="noopener noreferrer"' : ""}
+      >
+        ${escapeHTML(label)}
+        <span aria-hidden="true">→</span>
+      </a>
+    `;
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — RENDER SLIDE
+  ======================================================= */
+
+  function renderHeroSlide(banner, index) {
+    const overlay = banner.overlay / 100;
+
+    const position = banner.textPosition;
+
+    const positionClass = `hero-text-${position}`;
+
+    const backgroundImage = `
+      linear-gradient(
+        110deg,
+        rgba(8,10,15,${Math.min(0.98, overlay + 0.18)}) 0%,
+        rgba(8,10,15,${overlay}) 55%,
+        rgba(8,10,15,${Math.max(0, overlay - 0.12)}) 100%
+      ),
+      url("${banner.image.replace(/["\\]/g, "")}")
+    `;
+
+    const button1 = createHeroButton(
+      banner.button1Text,
+      banner.button1Url,
+      "btn-primary",
+      "#movies"
+    );
+
+    const button2 = createHeroButton(
+      banner.button2Text,
+      banner.button2Url,
+      "btn-outline",
+      "#collections"
+    );
+
+    const hasBackgroundLink = Boolean(banner.clickUrl);
+
+    return `
+      <article
+        class="hero-slide ${index === 0 ? "hero-slide-active" : ""} ${positionClass}"
+        data-hero-index="${index}"
+        role="group"
+        aria-roledescription="slide"
+        aria-label="${index + 1} of ${heroBanners.length}"
+        ${hasBackgroundLink ? 'tabindex="0" role="link"' : ""}
+        style="
+          background-image:${backgroundImage};
+          background-size:cover;
+          background-position:center;
+          color:${banner.textColor};
+          --hero-text-color:${banner.textColor};
+          --hero-highlight-color:${banner.highlightColor};
+          --hero-overlay:${overlay};
+        "
+      >
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+
+          ${
+            banner.eyebrow
+              ? `<span class="hero-eyebrow">${escapeHTML(banner.eyebrow)}</span>`
+              : ""
+          }
+
+          <h1 class="hero-slide-title">
+
+            ${escapeHTML(banner.title)}
+
+            ${
+              banner.highlight
+                ? `<span class="gold-text hero-slide-highlight">${escapeHTML(banner.highlight)}</span>`
+                : ""
+            }
+
+          </h1>
+
+          ${
+            banner.description
+              ? `<p>${escapeHTML(banner.description)}</p>`
+              : ""
+          }
+
+          ${
+            button1 || button2
+              ? `<div class="hero-buttons">${button1}${button2}</div>`
+              : ""
+          }
+
+        </div>
+
+        ${
+          index === 0
+            ? `<div class="hero-decoration" aria-hidden="true"><span>C</span></div>`
+            : ""
+        }
+
+      </article>
+    `;
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — DOTS
+  ======================================================= */
+
+  function renderHeroDots() {
+    if (!heroSliderDots) return;
+
+    if (heroBanners.length <= 1) {
+      heroSliderDots.hidden = true;
+      heroSliderDots.replaceChildren();
+      return;
+    }
+
+    heroSliderDots.hidden = false;
+
+    heroSliderDots.innerHTML = heroBanners.map((banner, index) => `
+      <button
+        type="button"
+        class="hero-slider-dot ${index === currentHeroIndex ? "active" : ""}"
+        data-hero-dot="${index}"
+        aria-label="Go to banner ${index + 1}"
+        aria-current="${index === currentHeroIndex ? "true" : "false"}"
+      ></button>
+    `).join("");
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — SLIDE CHANGE
+  ======================================================= */
+
+  function showHeroSlide(index, resetTimer = true) {
+    if (!heroSliderTrack || !heroBanners.length) return;
+
+    currentHeroIndex =
+      (index + heroBanners.length) % heroBanners.length;
+
+    const slides = heroSliderTrack.querySelectorAll(".hero-slide");
+
+    slides.forEach((slide, slideIndex) => {
+      const active = slideIndex === currentHeroIndex;
+
+      slide.classList.toggle("hero-slide-active", active);
+
+      slide.setAttribute(
+        "aria-hidden",
+        active ? "false" : "true"
+      );
+
+      if (active) {
+        slide.removeAttribute("inert");
+      } else {
+        slide.setAttribute("inert", "");
+      }
+    });
+
+    renderHeroDots();
+
+    if (resetTimer) {
+      startHeroAutoplay();
+    }
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — AUTOPLAY
+  ======================================================= */
+
+  function stopHeroAutoplay() {
+    if (heroTimer) {
+      clearTimeout(heroTimer);
+      heroTimer = null;
+    }
+  }
+
+  function startHeroAutoplay() {
+    stopHeroAutoplay();
+
+    if (
+      heroBanners.length <= 1 ||
+      heroPaused ||
+      prefersReducedMotion
+    ) {
+      return;
+    }
+
+    const activeBanner = heroBanners[currentHeroIndex];
+
+    const duration = safeDuration(
+      activeBanner?.duration
+    ) * 1000;
+
+    heroTimer = setTimeout(() => {
+      showHeroSlide(currentHeroIndex + 1);
+    }, duration);
+  }
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — NAVIGATION
+  ======================================================= */
+
+  function initializeHeroControls() {
+    const hasMultiple = heroBanners.length > 1;
+
+    if (heroSliderNavigation) {
+      heroSliderNavigation.hidden = !hasMultiple;
+    }
+
+    if (heroSliderPrev) {
+      heroSliderPrev.hidden = !hasMultiple;
+    }
+
+    if (heroSliderNext) {
+      heroSliderNext.hidden = !hasMultiple;
+    }
+
+    if (heroSliderDots) {
+      heroSliderDots.hidden = !hasMultiple;
+    }
+
+    if (hasMultiple) {
+      renderHeroDots();
+      startHeroAutoplay();
+    } else {
+      stopHeroAutoplay();
+    }
+  }
+
+  heroSliderPrev?.addEventListener("click", () => {
+    showHeroSlide(currentHeroIndex - 1);
+  });
+
+  heroSliderNext?.addEventListener("click", () => {
+    showHeroSlide(currentHeroIndex + 1);
+  });
+
+  heroSliderDots?.addEventListener("click", event => {
+    const button = event.target.closest("[data-hero-dot]");
+
+    if (!button) return;
+
+    const index = Number(button.dataset.heroDot);
+
+    if (Number.isInteger(index)) {
+      showHeroSlide(index);
+    }
+  });
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — PAUSE ON HOVER
+  ======================================================= */
+
+  heroSlider?.addEventListener("mouseenter", () => {
+    heroPaused = true;
+    stopHeroAutoplay();
+  });
+
+  heroSlider?.addEventListener("mouseleave", () => {
+    heroPaused = false;
+    startHeroAutoplay();
+  });
+
+  heroSlider?.addEventListener("focusin", () => {
+    heroPaused = true;
+    stopHeroAutoplay();
+  });
+
+  heroSlider?.addEventListener("focusout", event => {
+    if (
+      heroSlider.contains(event.relatedTarget)
+    ) {
+      return;
+    }
+
+    heroPaused = false;
+    startHeroAutoplay();
+  });
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — BACKGROUND CLICK
+  ======================================================= */
+
+  function openHeroBackgroundLink(slide) {
+    if (!slide) return;
+
+    const index = Number(slide.dataset.heroIndex);
+
+    if (!Number.isInteger(index)) return;
+
+    const banner = heroBanners[index];
+
+    if (!banner?.clickUrl) return;
+
+    const link = safeLink(banner.clickUrl);
+
+    if (!link) return;
+
+    window.open(link, "_blank", "noopener,noreferrer");
+  }
+
+  heroSliderTrack?.addEventListener("click", event => {
+    const slide = event.target.closest(".hero-slide");
+
+    if (!slide) return;
+
+    // Buttons and links must retain their own destinations.
+    if (event.target.closest("a, button")) {
+      return;
+    }
+
+    openHeroBackgroundLink(slide);
+  });
+
+  heroSliderTrack?.addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    const slide = event.target.closest(".hero-slide");
+
+    if (!slide || !slide.dataset.heroIndex) return;
+
+    if (event.target.closest("a, button")) return;
+
+    event.preventDefault();
+
+    openHeroBackgroundLink(slide);
+  });
+
+  /* =======================================================
+     MULTIPLE HERO BANNER — RENDER
+  ======================================================= */
+
+  function renderHeroBanners(data) {
+    if (!heroSliderTrack) return;
+
+    heroBanners = getHeroBannersFromSettings(data);
+
+    currentHeroIndex = 0;
+
+    stopHeroAutoplay();
+
+    heroPaused = false;
+
+    if (!heroBanners.length) {
+      // Keep the existing legacy single-banner HTML.
+      const fallbackSlide = $("heroFallbackSlide");
+
+      if (fallbackSlide) {
+        fallbackSlide.hidden = false;
+        fallbackSlide.classList.add("hero-slide-active");
+        fallbackSlide.removeAttribute("aria-hidden");
+      }
+
+      heroSliderTrack.innerHTML = "";
+
+      if (fallbackSlide) {
+        heroSliderTrack.appendChild(fallbackSlide);
+      }
+
+      initializeHeroControls();
+      return;
+    }
+
+    heroSliderTrack.innerHTML = heroBanners
+      .map((banner, index) => renderHeroSlide(banner, index))
+      .join("");
+
+    showHeroSlide(0, false);
+
+    initializeHeroControls();
   }
 
   /* =======================================================
@@ -589,7 +1119,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setLinkedText(
       $("moviesEyebrow"),
-      data.moviesEyebrow || "YOUR NEXT WATCH",
+      data.moviesEyebrow || "THE CINEVAULT LIBRARY",
       data.moviesEyebrowUrl
     );
 
@@ -616,7 +1146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setLinkedText(
       $("moviesDescription"),
       data.moviesDescription ||
-        "Browse the latest additions and discover your next favourite movie.",
+        "Discover your next favourite movie from our collection.",
       data.moviesDescriptionUrl
     );
   }
@@ -794,6 +1324,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       updateLogo(settings);
       updateHero(settings);
+      renderHeroBanners(settings);
       updateSectionHeadings(settings);
       updateAbout(settings);
       updateFooter(settings);
@@ -1523,7 +2054,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!card) return;
 
-    // Links with their own destination are handled normally.
     if (card.tagName === "A") return;
 
     const genre = card.dataset.genre || "";
@@ -1570,7 +2100,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!card) return;
 
-    // Do not hijack clicks on actual interactive elements.
     if (event.target.closest("a, button, input, select, textarea")) {
       return;
     }
