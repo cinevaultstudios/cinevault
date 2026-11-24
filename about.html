@@ -1,1 +1,515 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Learn about CineVault, an independent movie discovery concept."><title>About — CineVault</title><link rel="stylesheet" href="style.css"></head><body><header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">C</span><span>CINE<span>VAULT</span></span></a><a class="header-cta" href="index.html">Back to CineVault ↗</a></header><main class="simple-page"><div class="eyebrow">OUR STORY</div><h1>About <em>CineVault</em></h1><p>CineVault is an independent movie discovery concept built to help film lovers explore stories across genres, languages and eras. Our goal is to make discovering your next film simple, enjoyable and beautifully organised.</p><h2>What CineVault does</h2><p>CineVault provides curated sample movie information, genre browsing, search, sorting and a personal watchlist. It is a discovery guide—not a streaming or download service.</p><h2>Content and accuracy</h2><p>This initial version uses a small, manually curated demonstration catalogue and original CSS-generated artwork. Details may be incomplete and should be checked against official sources.</p><h2>Independent project</h2><p>CineVault is an independent project and is not affiliated with or endorsed by any film studio, streaming service or movie database.</p></main><footer class="site-footer"><div class="footer-bottom"><span>© <span id="year"></span> CineVault</span><div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div></div></footer><script>document.getElementById('year').textContent=new Date().getFullYear()</script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>About Us | CineVault — Discover Cinema</title>
+
+  <meta name="description" content="Learn about CineVault, a modern movie discovery platform for exploring films, curated collections and building your personal watchlist.">
+
+  <meta name="keywords" content="About CineVault, movie discovery, cinema, movie collections, watchlist">
+
+  <meta name="author" content="CineVault">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#080a0f">
+
+  <meta property="og:title" content="About Us | CineVault">
+  <meta property="og:description" content="Discover the vision behind CineVault and explore a world of cinema.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CineVault">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .about-hero {
+      position: relative;
+      min-height: 390px;
+      display: flex;
+      align-items: center;
+      padding: 75px 8%;
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          ellipse at 80% 45%,
+          rgba(214,179,106,.17),
+          transparent 45%
+        ),
+        linear-gradient(110deg,#080a0f,#111722,#080a0f);
+
+      border-bottom: 1px solid var(--line);
+    }
+
+    .about-hero::after {
+      content: "C";
+      position: absolute;
+      right: 12%;
+      top: 50%;
+      transform: translateY(-50%);
+
+      font-family: var(--heading);
+      font-size: clamp(220px,32vw,390px);
+      font-weight: 800;
+      color: rgba(214,179,106,.045);
+      pointer-events: none;
+    }
+
+    .about-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 750px;
+    }
+
+    .about-hero h1 {
+      margin: 20px 0;
+      font-family: var(--heading);
+      font-size: clamp(38px,6vw,65px);
+      line-height: 1.15;
+      letter-spacing: -2px;
+    }
+
+    .about-hero p {
+      max-width: 600px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    .about-container {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      padding: 75px 5%;
+    }
+
+    .about-block {
+      margin-bottom: 48px;
+    }
+
+    .about-block h2 {
+      margin-bottom: 16px;
+      font-family: var(--heading);
+      font-size: clamp(22px,3vw,30px);
+      line-height: 1.4;
+    }
+
+    .about-block p {
+      margin-bottom: 15px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .about-features {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 18px;
+      margin: 30px 0 55px;
+    }
+
+    .feature-card {
+      padding: 25px 22px;
+      background: linear-gradient(145deg,#161e2b,#0d121b);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      transition: .25s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold-line);
+    }
+
+    .feature-icon {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 17px;
+
+      color: var(--gold);
+      background: rgba(214,179,106,.1);
+      border-radius: 10px;
+      font-size: 23px;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 9px;
+      font-family: var(--heading);
+      font-size: 16px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    .about-note {
+      padding: 25px;
+      background: rgba(214,179,106,.055);
+      border: 1px solid var(--gold-line);
+      border-radius: 12px;
+    }
+
+    .about-note h3 {
+      margin-bottom: 10px;
+      color: var(--gold);
+      font-family: var(--heading);
+      font-size: 17px;
+    }
+
+    .about-note p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .about-cta {
+      margin-top: 50px;
+      padding: 40px 25px;
+      text-align: center;
+      background: linear-gradient(145deg,#171e2a,#0d1119);
+      border: 1px solid var(--gold-line);
+      border-radius: 14px;
+    }
+
+    .about-cta h2 {
+      margin-bottom: 12px;
+      font-family: var(--heading);
+      font-size: clamp(23px,3vw,32px);
+    }
+
+    .about-cta p {
+      max-width: 550px;
+      margin: 0 auto 22px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .about-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .about-footer-links a {
+      color: var(--muted);
+      font-size: 12px;
+      transition: .2s ease;
+    }
+
+    .about-footer-links a:hover {
+      color: var(--gold);
+    }
+
+    @media(max-width:700px) {
+      .about-hero {
+        min-height: 340px;
+        padding: 65px 6%;
+      }
+
+      .about-features {
+        grid-template-columns: 1fr;
+      }
+
+      .about-container {
+        padding: 55px 6%;
+      }
+
+      .about-block {
+        margin-bottom: 38px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <a class="skip-link" href="#main-content">
+    Skip to main content
+  </a>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <a href="index.html" class="brand" aria-label="CineVault Home">
+        <span class="brand-icon">C</span>
+        <span>CINE<span class="gold-text">VAULT</span></span>
+      </a>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-outline">
+          Back to Home →
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main id="main-content">
+
+    <section class="about-hero">
+      <div class="about-hero-content">
+
+        <span class="section-eyebrow">
+          WELCOME TO CINEVAULT
+        </span>
+
+        <h1>
+          About <span class="gold-text">CineVault</span>
+        </h1>
+
+        <p>
+          A place to discover movies, explore different worlds
+          of cinema and keep your favourite stories within reach.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ABOUT CONTENT -->
+    <section class="about-container">
+
+      <div class="about-block">
+
+        <span class="section-eyebrow">
+          OUR STORY
+        </span>
+
+        <h2>
+          Discover Stories. <span class="gold-text">Experience Cinema.</span>
+        </h2>
+
+        <p>
+          CineVault is a movie discovery platform created for
+          people who love exploring cinema. Our goal is to bring
+          movie information, curated collections and useful
+          discovery features together in one organised and
+          easy-to-use destination.
+        </p>
+
+        <p>
+          From popular titles to interesting discoveries across
+          genres and languages, CineVault aims to make exploring
+          movies more convenient and enjoyable.
+        </p>
+
+      </div>
+
+      <!-- FEATURES -->
+      <div class="about-block">
+
+        <span class="section-eyebrow">
+          WHAT WE OFFER
+        </span>
+
+        <h2>
+          Explore the <span class="gold-text">CineVault Experience</span>
+        </h2>
+
+        <div class="about-features">
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">⌕</div>
+
+            <h3>Movie Discovery</h3>
+
+            <p>
+              Explore movie listings and discover films using
+              available search, sorting and filtering options.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">▦</div>
+
+            <h3>Curated Collections</h3>
+
+            <p>
+              Browse organised movie collections and explore
+              different genres, languages and categories.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">♡</div>
+
+            <h3>Personal Watchlist</h3>
+
+            <p>
+              Keep track of movies you are interested in and
+              organise your personal list for later.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+
+      <!-- OUR APPROACH -->
+      <div class="about-block">
+
+        <span class="section-eyebrow">
+          OUR APPROACH
+        </span>
+
+        <h2>
+          Designed for <span class="gold-text">Movie Lovers</span>
+        </h2>
+
+        <p>
+          We believe discovering a movie should be simple.
+          CineVault focuses on a clean interface, organised
+          information and a consistent browsing experience
+          across desktop, tablet and mobile devices.
+        </p>
+
+        <p>
+          Our movie catalogue and selected website content
+          may be updated from time to time. Information,
+          availability and external destinations can change
+          without notice.
+        </p>
+
+      </div>
+
+      <!-- CONTENT & LINKS -->
+      <div class="about-block">
+
+        <span class="section-eyebrow">
+          CONTENT & EXTERNAL LINKS
+        </span>
+
+        <h2>
+          Information and <span class="gold-text">Availability</span>
+        </h2>
+
+        <p>
+          Movie titles, descriptions, images, ratings and other
+          information are presented for discovery and
+          informational purposes. We aim to keep the catalogue
+          organised, but we do not guarantee that every detail
+          is complete, current or error-free.
+        </p>
+
+        <p>
+          Some movie pages may contain links to external
+          websites or third-party services. Those destinations
+          operate independently of CineVault. Their content,
+          availability, privacy practices and terms are governed
+          by their respective operators.
+        </p>
+
+        <p>
+          Users should review the terms and policies of any
+          third-party website before using its services.
+        </p>
+
+      </div>
+
+      <!-- INDEPENDENCE -->
+      <div class="about-block">
+
+        <span class="section-eyebrow">
+          INDEPENDENT PROJECT
+        </span>
+
+        <h2>
+          Our <span class="gold-text">Commitment</span>
+        </h2>
+
+        <p>
+          CineVault is an independent movie discovery project.
+          Unless explicitly stated otherwise, it is not affiliated
+          with, endorsed by or officially connected to any film
+          studio, production company, streaming platform or
+          entertainment brand.
+        </p>
+
+        <p>
+          All third-party names, trademarks, logos and related
+          materials belong to their respective owners.
+        </p>
+
+      </div>
+
+      <!-- IMPORTANT NOTE -->
+      <div class="about-note">
+
+        <h3>Important Notice</h3>
+
+        <p>
+          CineVault does not claim ownership of third-party
+          movie content, images or trademarks. If you believe
+          that material accessible through this website raises
+          a copyright concern, please contact us through our
+          designated contact page with the relevant details.
+        </p>
+
+      </div>
+
+      <!-- CTA -->
+      <div class="about-cta">
+
+        <h2>
+          Ready to Explore <span class="gold-text">Cinema?</span>
+        </h2>
+
+        <p>
+          Discover movies, explore collections and build
+          your personal watchlist with CineVault.
+        </p>
+
+        <a href="index.html#movies" class="btn btn-primary">
+          Explore Movies →
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <div class="footer-bottom">
+
+      <p>
+        © <span id="currentYear"></span>
+        CineVault. All rights reserved.
+      </p>
+
+      <div class="about-footer-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="dmca.html">DMCA</a>
+      </div>
+
+    </div>
+
+  </footer>
+
+  <script>
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+  </script>
+
+</body>
+</html>
