@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -653,12 +654,30 @@ footer{
           <input id="watchUrl" type="url" placeholder="https://example.com/watch">
         </div>
 
+        <!-- DOWNLOAD URL 1 -->
         <div class="form-group full">
-          <label for="downloadUrl">DOWNLOAD URL</label>
-          <input id="downloadUrl" type="url" placeholder="https://example.com/download">
+          <label for="downloadUrl">DOWNLOAD URL 1 — FIRST DOWNLOAD LINK</label>
+          <input
+            id="downloadUrl"
+            type="url"
+            placeholder="https://example.com/download-1"
+          >
         </div>
 
-        <!-- PER MOVIE ADVERTISEMENT SETTINGS -->
+        <!-- DOWNLOAD URL 2 -->
+        <div class="form-group full">
+          <label for="downloadUrl2">DOWNLOAD URL 2 — SECOND DOWNLOAD LINK</label>
+          <input
+            id="downloadUrl2"
+            type="url"
+            placeholder="https://example.com/download-2"
+          >
+          <div class="upload-help">
+            Optional second download link. It will be saved separately in the D1 database.
+          </div>
+        </div>
+
+        <!-- EXISTING ADVERTISEMENT SETTINGS PRESERVED -->
         <div class="form-group full">
           <label for="adUrl">ADVERTISEMENT URL</label>
           <input
@@ -667,7 +686,7 @@ footer{
             placeholder="https://example.com/advertisement"
           >
           <div class="upload-help">
-            Advertisement destination URL for this movie.
+            Existing advertisement URL data is preserved.
           </div>
         </div>
 
@@ -682,7 +701,7 @@ footer{
             required
           >
           <div class="upload-help">
-            Minimum 4. You can set a higher number for each movie.
+            Existing advertisement count setting is preserved.
           </div>
         </div>
 
@@ -757,6 +776,8 @@ function escapeHTML(value) {
 }
 
 function validHttpUrl(value) {
+  if (!value) return true;
+
   try {
     const url = new URL(value);
     return ["http:", "https:"].includes(url.protocol);
@@ -1078,7 +1099,11 @@ function renderMovies() {
             ID: ${escapeHTML(movie.id)}
           </div>
           <div class="movie-meta">
-            Ad settings: ${adCount} ·
+            Download links: ${movie.downloadUrl ? "1" : "0"} configured ·
+            ${movie.downloadUrl2 ? "2nd link configured" : "2nd link not configured"}
+          </div>
+          <div class="movie-meta">
+            Existing ad settings: ${adCount} ·
             ${movie.adUrl ? "URL configured" : "URL not configured"}
           </div>
         </div>
@@ -1143,6 +1168,7 @@ function editMovie(movie) {
     "description",
     "watchUrl",
     "downloadUrl",
+    "downloadUrl2",
     "adUrl"
   ];
 
@@ -1241,9 +1267,15 @@ $("movieForm").addEventListener("submit", async event => {
     backdrop: $("backdrop").value.trim(),
     description: $("description").value.trim(),
     watchUrl: $("watchUrl").value.trim(),
+
+    // Two independent download links
     downloadUrl: $("downloadUrl").value.trim(),
+    downloadUrl2: $("downloadUrl2").value.trim(),
+
+    // Existing advertisement fields preserved
     adUrl: $("adUrl").value.trim(),
     adCount: Number($("adCount").value),
+
     featured: $("featured").checked
   };
 
@@ -1269,6 +1301,7 @@ $("movieForm").addEventListener("submit", async event => {
     "backdrop",
     "watchUrl",
     "downloadUrl",
+    "downloadUrl2",
     "adUrl"
   ];
 
