@@ -23,7 +23,7 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <script src="movies.js" defer></script>
+  <!-- D1 is the only movie database -->
   <script src="script.js" defer></script>
 </head>
 
@@ -33,9 +33,9 @@
   <header class="site-header">
     <div class="header-inner">
 
-      <a href="index.html" class="brand">
-        <span class="brand-icon">C</span>
-        <span>CINE<span class="gold-text">VAULT</span></span>
+      <a href="index.html" class="brand" id="headerBrand">
+        <span class="brand-icon" id="headerLogoIcon">C</span>
+        <span id="headerLogoText">CINE<span class="gold-text">VAULT</span></span>
       </a>
 
       <nav class="main-nav" id="mainNav">
@@ -46,6 +46,7 @@
       </nav>
 
       <div class="header-actions">
+
         <button class="icon-button" id="searchToggle" aria-label="Open search">
           <span>⌕</span>
         </button>
@@ -58,6 +59,7 @@
         <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
           ☰
         </button>
+
       </div>
 
     </div>
@@ -66,69 +68,67 @@
 
   <main>
 
-    <!-- HERO -->
+    <!-- HERO BANNER -->
     <section class="hero-section" id="home">
+
       <div class="hero-overlay"></div>
 
       <div class="hero-content">
-        <span class="hero-eyebrow">YOUR WORLD OF CINEMA</span>
 
-        <h1>
+        <span class="hero-eyebrow" id="heroEyebrow">
+          YOUR WORLD OF CINEMA
+        </span>
+
+        <h1 id="heroTitle">
           Discover Stories.<br>
-          <span class="gold-text">Experience Cinema.</span>
+          <span class="gold-text" id="heroHighlight">
+            Experience Cinema.
+          </span>
         </h1>
 
-        <p>
+        <p id="heroDescription">
           Explore a curated world of movies, discover hidden gems
           and find your next unforgettable experience.
         </p>
 
         <div class="hero-buttons">
-          <a href="#movies" class="btn btn-primary">
-            Explore Movies <span>→</span>
+
+          <a href="#movies" class="btn btn-primary" id="heroButton1">
+            <span id="heroButton1Text">Explore Movies</span>
+            <span>→</span>
           </a>
 
-          <a href="#collections" class="btn btn-outline">
+          <a href="#collections" class="btn btn-outline" id="heroButton2">
             Browse Collections
           </a>
+
         </div>
 
         <div class="hero-stats">
+
           <div>
-            <strong id="totalMovies">40+</strong>
+            <strong id="totalMovies">0</strong>
             <span>Movies</span>
           </div>
+
           <div>
             <strong>Worldwide</strong>
             <span>Cinema</span>
           </div>
+
           <div>
             <strong>Premium</strong>
             <span>Experience</span>
           </div>
+
         </div>
+
       </div>
 
       <div class="hero-decoration">
         <span>C</span>
       </div>
-    </section>
 
-
-    <!-- FEATURED MOVIES -->
-    <section class="section featured-section">
-      <div class="section-heading">
-        <div>
-          <span class="section-eyebrow">HANDPICKED FOR YOU</span>
-          <h2>Featured <span class="gold-text">Movies</span></h2>
-        </div>
-
-        <a href="#movies" class="text-link">Explore all →</a>
-      </div>
-
-      <div class="featured-grid" id="featuredMovies">
-        <!-- Featured movies loaded by JavaScript -->
-      </div>
     </section>
 
 
@@ -136,85 +136,83 @@
     <section class="section collections-section" id="collections">
 
       <div class="section-heading">
+
         <div>
-          <span class="section-eyebrow">EXPLORE BY CATEGORY</span>
-          <h2>Movie <span class="gold-text">Collections</span></h2>
+          <span class="section-eyebrow" id="collectionsEyebrow">
+            EXPLORE BY CATEGORY
+          </span>
+
+          <h2 id="collectionsHeading">
+            Movie <span class="gold-text">Collections</span>
+          </h2>
+
+          <p class="section-description" id="collectionsDescription">
+            Explore movies from your favourite genres.
+          </p>
         </div>
-      </div>
-
-      <div class="collection-grid">
-
-        <button class="collection-card" data-genre="Action">
-          <span class="collection-icon">⚔</span>
-          <strong>Action</strong>
-          <span>Thrilling adventures</span>
-        </button>
-
-        <button class="collection-card" data-genre="Drama">
-          <span class="collection-icon">◈</span>
-          <strong>Drama</strong>
-          <span>Stories that move you</span>
-        </button>
-
-        <button class="collection-card" data-genre="Sci-Fi">
-          <span class="collection-icon">✧</span>
-          <strong>Sci-Fi</strong>
-          <span>Beyond imagination</span>
-        </button>
-
-        <button class="collection-card" data-genre="Thriller">
-          <span class="collection-icon">◉</span>
-          <strong>Thriller</strong>
-          <span>Feel the suspense</span>
-        </button>
-
-        <button class="collection-card" data-genre="Romance">
-          <span class="collection-icon">♡</span>
-          <strong>Romance</strong>
-          <span>Stories of love</span>
-        </button>
-
-        <button class="collection-card" data-genre="Comedy">
-          <span class="collection-icon">☻</span>
-          <strong>Comedy</strong>
-          <span>Enjoy every moment</span>
-        </button>
 
       </div>
+
+      <div class="collection-grid" id="collectionGrid">
+
+        <!-- Collections loaded dynamically from D1 API -->
+
+        <p class="loading-message" id="collectionsLoading">
+          Loading collections...
+        </p>
+
+      </div>
+
     </section>
 
 
-    <!-- ALL MOVIES -->
+    <!-- EXPLORE MOVIES -->
     <section class="section movies-section" id="movies">
 
       <div class="section-heading">
+
         <div>
-          <span class="section-eyebrow">THE CINEVAULT LIBRARY</span>
-          <h2>Explore <span class="gold-text">Movies</span></h2>
-          <p class="section-description">
+
+          <span class="section-eyebrow" id="moviesEyebrow">
+            THE CINEVAULT LIBRARY
+          </span>
+
+          <h2 id="moviesHeading">
+            Explore <span class="gold-text">Movies</span>
+          </h2>
+
+          <p class="section-description" id="moviesDescription">
             Discover your next favourite movie from our collection.
           </p>
+
         </div>
+
       </div>
 
 
-      <!-- SEARCH -->
+      <!-- SEARCH AND SORT -->
       <div class="movie-toolbar">
 
         <div class="search-box" id="mainSearchBox">
+
           <span>⌕</span>
+
           <input
             type="search"
             id="movieSearch"
             placeholder="Search movies, actors or genres..."
             autocomplete="off"
           >
-          <button id="clearSearch" aria-label="Clear search">×</button>
+
+          <button id="clearSearch" aria-label="Clear search">
+            ×
+          </button>
+
         </div>
 
         <div class="toolbar-actions">
+
           <select id="sortMovies" aria-label="Sort movies">
-            <option value="featured">Featured</option>
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
             <option value="rating">Top Rated</option>
@@ -224,6 +222,7 @@
           <button class="filter-toggle" id="filterToggle">
             ☷ Filters
           </button>
+
         </div>
 
       </div>
@@ -234,6 +233,7 @@
 
         <div class="filter-group">
           <label for="genreFilter">Genre</label>
+
           <select id="genreFilter">
             <option value="">All Genres</option>
             <option value="Action">Action</option>
@@ -251,8 +251,10 @@
           </select>
         </div>
 
+
         <div class="filter-group">
           <label for="languageFilter">Language</label>
+
           <select id="languageFilter">
             <option value="">All Languages</option>
             <option value="English">English</option>
@@ -263,15 +265,19 @@
           </select>
         </div>
 
+
         <div class="filter-group">
           <label for="yearFilter">Release Year</label>
+
           <select id="yearFilter">
             <option value="">All Years</option>
           </select>
         </div>
 
+
         <div class="filter-group">
           <label for="ratingFilter">Minimum Rating</label>
+
           <select id="ratingFilter">
             <option value="">Any Rating</option>
             <option value="9">9.0+</option>
@@ -281,6 +287,7 @@
           </select>
         </div>
 
+
         <button id="resetFilters" class="reset-filters">
           Reset Filters
         </button>
@@ -288,27 +295,43 @@
       </div>
 
 
-      <!-- RESULT INFO -->
+      <!-- RESULT INFORMATION -->
       <div class="results-bar">
-        <p id="resultsCount">Showing movies</p>
-        <span class="results-label">40 MOVIES ON FIRST PAGE</span>
+
+        <p id="resultsCount">
+          Loading movies...
+        </p>
+
+        <span class="results-label" id="resultsLabel">
+          40 MOVIES PER PAGE
+        </span>
+
       </div>
 
 
       <!-- MOVIE GRID -->
       <div class="movie-grid" id="movieGrid">
-        <!-- 40 movies will be loaded here -->
+
+        <p class="loading-message">
+          Loading movies...
+        </p>
+
       </div>
 
 
       <!-- EMPTY STATE -->
       <div class="empty-state" id="emptyState" hidden>
+
         <div class="empty-icon">⌕</div>
+
         <h3>No movies found</h3>
+
         <p>Try changing your search or filters.</p>
+
         <button class="btn btn-primary" id="emptyReset">
           Clear Filters
         </button>
+
       </div>
 
 
@@ -324,13 +347,23 @@
     <section class="section watchlist-section" id="watchlist">
 
       <div class="section-heading">
+
         <div>
-          <span class="section-eyebrow">YOUR PERSONAL COLLECTION</span>
-          <h2>My <span class="gold-text">Watchlist</span></h2>
+
+          <span class="section-eyebrow">
+            YOUR PERSONAL COLLECTION
+          </span>
+
+          <h2>
+            My <span class="gold-text">Watchlist</span>
+          </h2>
+
           <p class="section-description">
             Keep your favourite movies in one place.
           </p>
+
         </div>
+
       </div>
 
       <div class="movie-grid" id="watchlistGrid">
@@ -346,17 +379,31 @@
 
     <!-- ABOUT -->
     <section class="about-section" id="about">
+
       <div class="about-content">
-        <span class="section-eyebrow">WELCOME TO CINEVAULT</span>
-        <h2>More Than Movies.<br>
-          <span class="gold-text">A Cinema Experience.</span>
+
+        <span class="section-eyebrow" id="aboutEyebrow">
+          WELCOME TO CINEVAULT
+        </span>
+
+        <h2 id="aboutTitle">
+          More Than Movies.<br>
+          <span class="gold-text" id="aboutHighlight">
+            A Cinema Experience.
+          </span>
         </h2>
-        <p>
+
+        <p id="aboutDescription">
           CineVault brings together movie discovery, curated collections
           and a personal watchlist in one elegant destination.
         </p>
-        <a href="#movies" class="btn btn-primary">Discover Movies →</a>
+
+        <a href="#movies" class="btn btn-primary" id="aboutButton">
+          Discover Movies →
+        </a>
+
       </div>
+
     </section>
 
   </main>
@@ -365,9 +412,18 @@
   <!-- MOVIE DETAILS MODAL -->
   <div class="modal-backdrop" id="movieModal" aria-hidden="true">
 
-    <div class="movie-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div
+      class="movie-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+    >
 
-      <button class="modal-close" id="modalClose" aria-label="Close details">
+      <button
+        class="modal-close"
+        id="modalClose"
+        aria-label="Close details"
+      >
         ×
       </button>
 
@@ -386,38 +442,61 @@
     <div class="footer-main">
 
       <div class="footer-brand">
-        <a href="#home" class="brand">
-          <span class="brand-icon">C</span>
-          <span>CINE<span class="gold-text">VAULT</span></span>
+
+        <a href="#home" class="brand" id="footerBrand">
+
+          <span class="brand-icon" id="footerLogoIcon">C</span>
+
+          <span id="footerLogoText">
+            CINE<span class="gold-text">VAULT</span>
+          </span>
+
         </a>
 
-        <p>
+        <p id="footerDescription">
           Discover cinema. Explore stories. Build your collection.
         </p>
+
       </div>
 
+
       <div class="footer-links">
+
         <h4>Explore</h4>
+
         <a href="#home">Home</a>
         <a href="#movies">Movies</a>
         <a href="#collections">Collections</a>
         <a href="#watchlist">Watchlist</a>
+
       </div>
 
+
       <div class="footer-links">
+
         <h4>Information</h4>
+
         <a href="about.html">About Us</a>
         <a href="contact.html">Contact</a>
         <a href="privacy.html">Privacy Policy</a>
         <a href="terms.html">Terms & Conditions</a>
         <a href="dmca.html">DMCA</a>
+
       </div>
 
     </div>
 
+
     <div class="footer-bottom">
-      <p>© <span id="currentYear">2026</span> CineVault. All rights reserved.</p>
-      <p>Made for movie lovers.</p>
+
+      <p id="copyrightText">
+        © <span id="currentYear">2026</span> CineVault. All rights reserved.
+      </p>
+
+      <p id="footerTagline">
+        Made for movie lovers.
+      </p>
+
     </div>
 
   </footer>
