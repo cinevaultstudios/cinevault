@@ -1,1 +1,714 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="CineVault privacy information."><title>Privacy Policy — CineVault</title><link rel="stylesheet" href="style.css"></head><body><header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">C</span><span>CINE<span>VAULT</span></span></a><a class="header-cta" href="index.html">Back to CineVault ↗</a></header><main class="simple-page"><div class="eyebrow">YOUR PRIVACY</div><h1>Privacy <em>Policy</em></h1><p><strong>Last updated: November 2026</strong></p><p>This is a starter privacy notice for the CineVault prototype. It must be reviewed and updated to reflect the services, analytics, advertising partners and data practices actually used before public monetisation.</p><h2>Information stored on your device</h2><p>The watchlist feature uses your browser's local storage to remember saved titles on that device. This information is not sent to CineVault servers by this prototype.</p><h2>Cookies, analytics and advertising</h2><p>This prototype does not intentionally set advertising or analytics cookies. If analytics, advertising networks or other third-party services are added later, this policy must be updated to identify them and explain their data practices and user choices.</p><h2>Third-party services</h2><p>Google Fonts may be requested from Google's servers when the site loads. External links may take you to third-party websites governed by their own privacy policies.</p><h2>Contact</h2><p>Before publishing this page as a final policy, add a real contact email address controlled by the site owner and obtain appropriate legal review for the countries where the site operates.</p></main><footer class="site-footer"><div class="footer-bottom"><span>© <span id="year"></span> CineVault</span><div class="footer-links"><a href="about.html">About</a><a href="terms.html">Terms</a></div></div></footer><script>document.getElementById('year').textContent=new Date().getFullYear()</script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Privacy Policy | CineVault</title>
+
+  <meta name="description" content="Read the CineVault Privacy Policy to understand how website information, browser storage, third-party services and external links are handled.">
+
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#080a0f">
+
+  <meta property="og:title" content="Privacy Policy | CineVault">
+  <meta property="og:description" content="Learn how CineVault handles information and protects your privacy.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CineVault">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .policy-hero {
+      padding: 75px 8%;
+      background:
+        radial-gradient(
+          ellipse at 80% 40%,
+          rgba(214,179,106,.15),
+          transparent 45%
+        ),
+        linear-gradient(110deg,#080a0f,#111722,#080a0f);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .policy-hero h1 {
+      margin: 18px 0 12px;
+      font-family: var(--heading);
+      font-size: clamp(36px,5vw,58px);
+      line-height: 1.2;
+    }
+
+    .policy-hero p {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .policy-container {
+      width: 100%;
+      max-width: 1050px;
+      margin: auto;
+      padding: 65px 5%;
+    }
+
+    .policy-updated {
+      display: inline-block;
+      margin-bottom: 30px;
+      padding: 9px 14px;
+      color: var(--gold);
+      background: rgba(214,179,106,.08);
+      border: 1px solid var(--gold-line);
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .policy-intro {
+      margin-bottom: 35px;
+      padding: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 11px;
+    }
+
+    .policy-intro p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .policy-section {
+      margin-bottom: 38px;
+      scroll-margin-top: 100px;
+    }
+
+    .policy-section h2 {
+      margin-bottom: 13px;
+      font-family: var(--heading);
+      font-size: clamp(19px,3vw,25px);
+      line-height: 1.5;
+    }
+
+    .policy-section p {
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .policy-section ul {
+      margin: 12px 0 15px;
+      padding-left: 22px;
+      color: var(--muted);
+    }
+
+    .policy-section li {
+      padding: 4px 0;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .policy-section a {
+      color: var(--gold);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .policy-section a:hover {
+      color: var(--gold2);
+    }
+
+    .policy-note {
+      margin-top: 18px;
+      padding: 18px;
+      background: rgba(214,179,106,.055);
+      border: 1px solid var(--gold-line);
+      border-radius: 9px;
+    }
+
+    .policy-note p {
+      margin: 0;
+    }
+
+    .policy-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .policy-footer-links a {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .policy-footer-links a:hover {
+      color: var(--gold);
+    }
+
+    @media(max-width:700px) {
+      .policy-hero {
+        padding: 55px 6%;
+      }
+
+      .policy-container {
+        padding: 45px 6%;
+      }
+
+      .policy-section {
+        margin-bottom: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <a class="skip-link" href="#main-content">
+    Skip to main content
+  </a>
+
+  <!-- HEADER -->
+  <header class="site-header">
+
+    <div class="header-inner">
+
+      <a href="index.html" class="brand" aria-label="CineVault Home">
+        <span class="brand-icon">C</span>
+        <span>CINE<span class="gold-text">VAULT</span></span>
+      </a>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-outline">
+          Back to Home →
+        </a>
+      </div>
+
+    </div>
+
+  </header>
+
+  <!-- HERO -->
+  <main id="main-content">
+
+    <section class="policy-hero">
+
+      <span class="section-eyebrow">
+        YOUR PRIVACY MATTERS
+      </span>
+
+      <h1>
+        Privacy <span class="gold-text">Policy</span>
+      </h1>
+
+      <p>
+        This Privacy Policy explains how CineVault handles
+        information when you visit and use our website.
+      </p>
+
+    </section>
+
+    <!-- POLICY CONTENT -->
+    <section class="policy-container">
+
+      <div class="policy-updated">
+        Last Updated: November 24, 2026
+      </div>
+
+      <div class="policy-intro">
+
+        <p>
+          At CineVault, we respect the privacy of our visitors.
+          This policy describes the types of information that
+          may be processed through our website, the services
+          we use, and the choices available to visitors.
+        </p>
+
+        <p>
+          By using CineVault, you acknowledge that you have
+          had an opportunity to read this policy. If you do
+          not agree with it, please discontinue use of the
+          website.
+        </p>
+
+      </div>
+
+      <!-- 1 -->
+      <section class="policy-section">
+
+        <h2>
+          1. Information We May Process
+        </h2>
+
+        <p>
+          CineVault is primarily a movie discovery website.
+          Depending on how you use the website and how
+          supporting services operate, certain information
+          may be processed, including:
+        </p>
+
+        <ul>
+          <li>Basic technical information associated with a website request.</li>
+          <li>Browser and device information made available to website infrastructure providers.</li>
+          <li>Information required to deliver website pages and public content.</li>
+          <li>Information voluntarily provided if a contact facility becomes available.</li>
+        </ul>
+
+        <p>
+          We do not currently provide visitor accounts or
+          a public profile registration system through the
+          main movie discovery interface.
+        </p>
+
+      </section>
+
+      <!-- 2 -->
+      <section class="policy-section">
+
+        <h2>
+          2. Watchlist and Browser Storage
+        </h2>
+
+        <p>
+          CineVault includes a personal watchlist feature.
+          Saved movie IDs are stored in your browser's
+          Local Storage under the key
+          <strong>cinevault_watchlist</strong>.
+        </p>
+
+        <p>
+          This allows your browser to remember your selected
+          movies when you revisit the website using the same
+          browser and device.
+        </p>
+
+        <p>
+          The watchlist is stored locally in your browser
+          rather than being saved as a visitor account in
+          the CineVault movie database.
+        </p>
+
+        <p>
+          You can remove saved entries through the website's
+          watchlist controls or clear the relevant browser
+          site data. Clearing browser data may remove your
+          saved watchlist.
+        </p>
+
+      </section>
+
+      <!-- 3 -->
+      <section class="policy-section">
+
+        <h2>
+          3. Cookies and Administrative Sessions
+        </h2>
+
+        <p>
+          The public movie browsing interface uses browser
+          Local Storage for its watchlist feature.
+        </p>
+
+        <p>
+          The administrative area uses a session cookie
+          to support authenticated administrator access.
+          This cookie is intended for website administration
+          and is not a public visitor account feature.
+        </p>
+
+        <p>
+          Cloudflare and other infrastructure providers
+          may use technical mechanisms necessary to deliver,
+          secure and operate their services. Their own
+          privacy documentation explains how they handle
+          related information.
+        </p>
+
+      </section>
+
+      <!-- 4 -->
+      <section class="policy-section">
+
+        <h2>
+          4. Cloudflare Workers and D1 Database
+        </h2>
+
+        <p>
+          CineVault uses Cloudflare infrastructure to operate
+          its website and application programming interfaces.
+          Movie information, collection information and
+          website settings are managed through a Cloudflare
+          D1 database.
+        </p>
+
+        <p>
+          When you access the website, your browser may
+          communicate with Cloudflare services to retrieve
+          public content and application data.
+        </p>
+
+        <p>
+          Cloudflare may process technical information
+          associated with requests for purposes such as
+          network delivery, reliability, security and
+          abuse prevention, according to its own policies.
+        </p>
+
+        <p>
+          Learn more:
+          <a href="https://www.cloudflare.com/privacypolicy/"
+             target="_blank"
+             rel="noopener noreferrer">
+            Cloudflare Privacy Policy
+          </a>.
+        </p>
+
+      </section>
+
+      <!-- 5 -->
+      <section class="policy-section">
+
+        <h2>
+          5. Image Hosting and Cloudinary
+        </h2>
+
+        <p>
+          CineVault uses Cloudinary to store and deliver
+          website images uploaded by the administrator,
+          such as movie posters, backdrops and other
+          website artwork.
+        </p>
+
+        <p>
+          When your browser loads an image hosted by
+          Cloudinary, a request may be sent to Cloudinary
+          to deliver that image. Cloudinary may process
+          technical request information as part of
+          providing its service.
+        </p>
+
+        <p>
+          Learn more:
+          <a href="https://cloudinary.com/privacy"
+             target="_blank"
+             rel="noopener noreferrer">
+            Cloudinary Privacy Policy
+          </a>.
+        </p>
+
+      </section>
+
+      <!-- 6 -->
+      <section class="policy-section">
+
+        <h2>
+          6. Google Fonts and External Resources
+        </h2>
+
+        <p>
+          CineVault may load fonts from Google Fonts to
+          display its website typography. When these
+          resources are requested, your browser connects
+          to Google's servers.
+        </p>
+
+        <p>
+          External links may also direct you to websites
+          and services that are not operated by CineVault.
+          Those services have their own privacy practices
+          and policies.
+        </p>
+
+        <p>
+          Learn more:
+          <a href="https://policies.google.com/privacy"
+             target="_blank"
+             rel="noopener noreferrer">
+            Google Privacy Policy
+          </a>.
+        </p>
+
+      </section>
+
+      <!-- 7 -->
+      <section class="policy-section">
+
+        <h2>
+          7. Advertising and Third-Party Services
+        </h2>
+
+        <p>
+          Some movie listings may contain links to external
+          websites. These links may include third-party
+          watch, download or other destinations.
+        </p>
+
+        <p>
+          If advertising networks, analytics tools or
+          additional third-party services are enabled on
+          CineVault, those providers may process information
+          through their own technologies, subject to their
+          respective policies and applicable requirements.
+        </p>
+
+        <p>
+          Third-party advertising and tracking practices
+          are not controlled by this policy. Visitors should
+          review the relevant provider's privacy information
+          and available consent or opt-out choices.
+        </p>
+
+        <p>
+          This policy should be updated whenever new
+          advertising, analytics or tracking services
+          are introduced.
+        </p>
+
+      </section>
+
+      <!-- 8 -->
+      <section class="policy-section">
+
+        <h2>
+          8. How Information May Be Used
+        </h2>
+
+        <p>
+          Information processed through the website and
+          its supporting services may be used where
+          necessary to:
+        </p>
+
+        <ul>
+          <li>Deliver website pages, movie information and images.</li>
+          <li>Remember watchlist selections on your device.</li>
+          <li>Maintain and secure the website infrastructure.</li>
+          <li>Manage administrative access and website content.</li>
+          <li>Diagnose technical errors and prevent misuse.</li>
+          <li>Respond to communications where a contact facility is provided.</li>
+        </ul>
+
+      </section>
+
+      <!-- 9 -->
+      <section class="policy-section">
+
+        <h2>
+          9. Data Sharing and Disclosure
+        </h2>
+
+        <p>
+          CineVault does not operate a public visitor
+          registration database through its main browsing
+          interface.
+        </p>
+
+        <p>
+          Information may nevertheless be processed by
+          service providers involved in website hosting,
+          database operations, image delivery and
+          infrastructure security.
+        </p>
+
+        <p>
+          Information may also be disclosed where required
+          by applicable law, valid legal process or where
+          reasonably necessary to protect the website,
+          its users or its legitimate interests.
+        </p>
+
+      </section>
+
+      <!-- 10 -->
+      <section class="policy-section">
+
+        <h2>
+          10. Data Retention
+        </h2>
+
+        <p>
+          Watchlist information remains in your browser's
+          Local Storage until you remove it or clear the
+          relevant browser data.
+        </p>
+
+        <p>
+          Information handled by infrastructure and
+          third-party service providers may be retained
+          according to their respective operational,
+          security and legal retention practices.
+        </p>
+
+        <p>
+          CineVault does not promise a specific retention
+          period for information maintained by independent
+          service providers.
+        </p>
+
+      </section>
+
+      <!-- 11 -->
+      <section class="policy-section">
+
+        <h2>
+          11. Data Security
+        </h2>
+
+        <p>
+          We use website infrastructure and administrative
+          access controls intended to help protect the
+          website and its stored content.
+        </p>
+
+        <p>
+          However, no internet transmission, electronic
+          storage method or online service can be
+          guaranteed to be completely secure.
+        </p>
+
+        <p>
+          Visitors should avoid sending passwords,
+          financial details or other sensitive information
+          through ordinary public website links.
+        </p>
+
+      </section>
+
+      <!-- 12 -->
+      <section class="policy-section">
+
+        <h2>
+          12. Children's Privacy
+        </h2>
+
+        <p>
+          CineVault is not designed to knowingly collect
+          personal information from children through a
+          visitor registration system.
+        </p>
+
+        <p>
+          Parents or guardians who believe that a child
+          has provided personal information through a
+          communication channel should contact the
+          website operator so the matter can be reviewed.
+        </p>
+
+      </section>
+
+      <!-- 13 -->
+      <section class="policy-section">
+
+        <h2>
+          13. Your Privacy Choices
+        </h2>
+
+        <p>
+          Depending on your browser and location, you may
+          be able to:
+        </p>
+
+        <ul>
+          <li>Remove your saved watchlist from the website or browser storage.</li>
+          <li>Manage browser permissions and site data.</li>
+          <li>Use available privacy and tracking controls in your browser.</li>
+          <li>Review the privacy choices offered by third-party services.</li>
+        </ul>
+
+        <p>
+          Privacy rights and available remedies may also
+          depend on the laws applicable to your location.
+        </p>
+
+      </section>
+
+      <!-- 14 -->
+      <section class="policy-section">
+
+        <h2>
+          14. Changes to This Privacy Policy
+        </h2>
+
+        <p>
+          We may update this Privacy Policy when website
+          features, service providers, legal requirements
+          or data practices change.
+        </p>
+
+        <p>
+          The updated version will be published on this
+          page with a revised "Last Updated" date.
+        </p>
+
+      </section>
+
+      <!-- 15 -->
+      <section class="policy-section">
+
+        <h2>
+          15. Contact
+        </h2>
+
+        <p>
+          If you have questions or concerns about this
+          Privacy Policy or the handling of information
+          through CineVault, please use the website's
+          <a href="contact.html">Contact page</a>
+          when available.
+        </p>
+
+        <div class="policy-note">
+
+          <p>
+            For privacy-related enquiries, please include
+            enough detail to help identify the issue.
+            Do not send passwords, payment credentials
+            or unnecessary sensitive information.
+          </p>
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <div class="footer-bottom">
+
+      <p>
+        © <span id="currentYear"></span>
+        CineVault. All rights reserved.
+      </p>
+
+      <div class="policy-footer-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
+        <a href="dmca.html">DMCA</a>
+      </div>
+
+    </div>
+
+  </footer>
+
+  <script>
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+  </script>
+
+</body>
+</html>
