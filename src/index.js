@@ -132,7 +132,7 @@ function cleanMovie(data) {
     throw new Error("Rating must be between 0 and 10");
   }
 
-  // Per-movie advertisement settings
+  // Existing advertisement settings are preserved.
   const rawAdCount = data.adCount ?? data.ad_count ?? 4;
   const adCount = Number(rawAdCount);
 
@@ -165,21 +165,31 @@ function cleanMovie(data) {
     director: String(data.director || ""),
     quality: String(data.quality || ""),
     featured: data.featured ? 1 : 0,
+
+    // Download URL 1
     download_url: validUrl(data.downloadUrl),
+
+    // Download URL 2
+    download_url_2: validUrl(
+      data.downloadUrl2 ?? data.download_url_2 ?? ""
+    ),
+
     watch_url: validUrl(data.watchUrl),
 
-    // New advertisement fields
+    // Existing advertisement data remains intact.
     ad_url: validUrl(data.adUrl ?? data.ad_url ?? ""),
     ad_count: adCount
   };
 }
 
+// Shared SELECT for both Public API and Admin API.
 const MOVIE_SELECT = `
   SELECT
     id, title, slug, description, poster, backdrop,
     year, genre, rating, duration, language, country,
     director, quality, featured,
     download_url AS downloadUrl,
+    download_url_2 AS downloadUrl2,
     watch_url AS watchUrl,
     ad_url AS adUrl,
     ad_count AS adCount,
@@ -435,11 +445,11 @@ async function handleAdmin(request, env, url) {
         title, slug, description, poster, backdrop,
         year, genre, rating, duration, language,
         country, director, quality, featured,
-        download_url, watch_url,
+        download_url, download_url_2, watch_url,
         ad_url, ad_count
       ) VALUES (
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `).bind(
       movie.title,
@@ -457,6 +467,7 @@ async function handleAdmin(request, env, url) {
       movie.quality,
       movie.featured,
       movie.download_url,
+      movie.download_url_2,
       movie.watch_url,
       movie.ad_url,
       movie.ad_count
@@ -493,7 +504,7 @@ async function handleAdmin(request, env, url) {
           genre = ?, rating = ?, duration = ?,
           language = ?, country = ?, director = ?,
           quality = ?, featured = ?,
-          download_url = ?, watch_url = ?,
+          download_url = ?, download_url_2 = ?, watch_url = ?,
           ad_url = ?, ad_count = ?,
           updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
@@ -513,6 +524,7 @@ async function handleAdmin(request, env, url) {
         movie.quality,
         movie.featured,
         movie.download_url,
+        movie.download_url_2,
         movie.watch_url,
         movie.ad_url,
         movie.ad_count,
