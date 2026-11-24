@@ -19,25 +19,84 @@ let schemaPromise = null;
 const DEFAULT_SETTINGS = {
   siteName: "CINEVAULT",
   logoText: "C",
+
   heroEyebrow: "YOUR WORLD OF CINEMA",
+  heroEyebrowUrl: "",
   heroTitle: "Discover Stories.",
+  heroTitleUrl: "",
   heroHighlight: "Experience Cinema.",
+  heroHighlightUrl: "",
   heroDescription: "Explore a curated world of movies, discover hidden gems and find your next unforgettable experience.",
+  heroDescriptionUrl: "",
   heroImage: "",
   heroButton1Text: "Explore Movies",
   heroButton1Url: "#movies",
   heroButton2Text: "Browse Collections",
   heroButton2Url: "#collections",
+
+  collectionsEyebrow: "EXPLORE BY CATEGORY",
+  collectionsEyebrowUrl: "",
+  collectionsHeading: "Movie",
+  collectionsHeadingHighlight: "Collections",
+  collectionsHeadingUrl: "",
+  collectionsDescription: "Discover movies from your favourite genres.",
+  collectionsDescriptionUrl: "",
+
+  moviesEyebrow: "YOUR NEXT WATCH",
+  moviesEyebrowUrl: "",
+  moviesHeading: "Explore",
+  moviesHeadingHighlight: "Movies",
+  moviesHeadingUrl: "",
+  moviesDescription: "Browse the latest additions and discover your next favourite movie.",
+  moviesDescriptionUrl: "",
+
   footerDescription: "Discover cinema. Explore stories. Build your collection.",
+  footerDescriptionUrl: "",
   footerTagline: "Made for movie lovers.",
+  footerTaglineUrl: "",
   copyrightText: "All rights reserved.",
+  copyrightUrl: "",
+
   aboutEyebrow: "WELCOME TO CINEVAULT",
+  aboutEyebrowUrl: "",
   aboutTitle: "More Than Movies.",
+  aboutTitleUrl: "",
   aboutHighlight: "A Cinema Experience.",
-  aboutDescription: "CineVault brings together movie discovery, curated collections and a personal watchlist in one elegant destination."
+  aboutHighlightUrl: "",
+  aboutDescription: "CineVault brings together movie discovery, curated collections and a personal watchlist in one elegant destination.",
+  aboutDescriptionUrl: "",
+  aboutButtonText: "Discover Movies",
+  aboutButtonUrl: "#movies"
 };
 
 const SETTING_KEYS = Object.keys(DEFAULT_SETTINGS);
+
+const URL_SETTING_KEYS = [
+  "heroEyebrowUrl",
+  "heroTitleUrl",
+  "heroHighlightUrl",
+  "heroDescriptionUrl",
+  "heroButton1Url",
+  "heroButton2Url",
+  "collectionsEyebrowUrl",
+  "collectionsHeadingUrl",
+  "collectionsDescriptionUrl",
+  "moviesEyebrowUrl",
+  "moviesHeadingUrl",
+  "moviesDescriptionUrl",
+  "footerDescriptionUrl",
+  "footerTaglineUrl",
+  "copyrightUrl",
+  "aboutEyebrowUrl",
+  "aboutTitleUrl",
+  "aboutHighlightUrl",
+  "aboutDescriptionUrl",
+  "aboutButtonUrl"
+];
+
+/* =========================================
+   DATABASE SCHEMA & SAFE MIGRATIONS
+========================================= */
 
 async function ensureCustomizationSchema(env) {
   if (!schemaPromise) {
@@ -65,6 +124,23 @@ async function ensureCustomizationSchema(env) {
         )
       `).run();
 
+      // Add link_url without deleting existing collection data.
+      const columns = await env.DB.prepare(
+        "PRAGMA table_info(collections)"
+      ).all();
+
+      const hasLinkUrl = (columns.results || []).some(
+        column => column.name === "link_url"
+      );
+
+      if (!hasLinkUrl) {
+        await env.DB.prepare(`
+          ALTER TABLE collections
+          ADD COLUMN link_url TEXT DEFAULT ''
+        `).run();
+      }
+
+      // Insert missing settings only; existing values remain untouched.
       for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
         await env.DB.prepare(`
           INSERT OR IGNORE INTO site_settings
@@ -73,6 +149,7 @@ async function ensureCustomizationSchema(env) {
         `).bind(key, value).run();
       }
 
+      // Insert default collections only when they do not already exist.
       const defaults = [
         ["Action", "Thrilling adventures", "⚔", "Action", 1],
         ["Drama", "Stories that move you", "◈", "Drama", 2],
@@ -91,7 +168,12 @@ async function ensureCustomizationSchema(env) {
             SELECT 1 FROM collections WHERE name = ?
           )
         `).bind(
-          item[0], item[1], item[2], item[3], item[4], item[0]
+          item[0],
+          item[1],
+          item[2],
+          item[3],
+          item[4],
+          item[0]
         ).run();
       }
     })().catch(error => {
@@ -103,9 +185,17 @@ async function ensureCustomizationSchema(env) {
   return schemaPromise;
 }
 
+/* =========================================
+   SESSION & AUTHENTICATION
+========================================= */
+
 function toBase64Url(bytes) {
   let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
+
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
   return btoa(binary)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -115,6 +205,7 @@ function toBase64Url(bytes) {
 function fromBase64Url(value) {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
   const binary = atob(base64);
+
   return Uint8Array.from(binary, c => c.charCodeAt(0));
 }
 
@@ -130,16 +221,19 @@ async function hmacKey(password) {
 
 async function signSession(password, payload) {
   const key = await hmacKey(password);
+
   const signature = await crypto.subtle.sign(
     "HMAC",
     key,
     new TextEncoder().encode(payload)
   );
+
   return toBase64Url(new Uint8Array(signature));
 }
 
 async function verifySession(request, password) {
   const cookieHeader = request.headers.get("Cookie") || "";
+
   const cookie = cookieHeader
     .split(";")
     .map(item => item.trim())
@@ -156,7 +250,10 @@ async function verifySession(request, password) {
     const [expires, nonce, signature] = parts;
 
     if (!/^\d+$/.test(expires)) return false;
-    if (Number(expires) < Math.floor(Date.now() / 1000)) return false;
+
+    if (Number(expires) < Math.floor(Date.now() / 1000)) {
+      return false;
+    }
 
     const payload = `${expires}.${nonce}`;
     const key = await hmacKey(password);
@@ -186,6 +283,7 @@ async function createSession(password) {
   const nonce = toBase64Url(random);
   const payload = `${expires}.${nonce}`;
   const signature = await signSession(password, payload);
+
   return `${payload}.${signature}`;
 }
 
@@ -193,6 +291,11 @@ function validOrigin(request, url) {
   return request.headers.get("Origin") === url.origin;
 }
 
+/* =========================================
+   URL VALIDATION
+========================================= */
+
+// For image URLs and external media links.
 function validUrl(value) {
   if (!value) return "";
 
@@ -205,12 +308,40 @@ function validUrl(value) {
   return parsed.toString();
 }
 
+// For website navigation links, anchors and relative paths.
+function validLink(value) {
+  const input = String(value ?? "").trim();
+
+  if (!input) return "";
+
+  if (
+    input.startsWith("#") ||
+    input.startsWith("/") ||
+    input.startsWith("./") ||
+    input.startsWith("../")
+  ) {
+    if (/[\u0000-\u001F]/.test(input)) {
+      throw new Error("Invalid link");
+    }
+
+    return input;
+  }
+
+  return validUrl(input);
+}
+
+/* =========================================
+   MOVIE DATA
+========================================= */
+
 function cleanMovie(data) {
   const title = String(data.title || "").trim();
   const year = Number(data.year) || null;
   const rating = Number(data.rating) || 0;
 
-  if (!title) throw new Error("Movie title is required");
+  if (!title) {
+    throw new Error("Movie title is required");
+  }
 
   if (rating < 0 || rating > 10) {
     throw new Error("Rating must be between 0 and 10");
@@ -220,7 +351,9 @@ function cleanMovie(data) {
   const adCount = Number(rawAdCount);
 
   if (!Number.isSafeInteger(adCount) || adCount < 4) {
-    throw new Error("Advertisement count must be a whole number of at least 4");
+    throw new Error(
+      "Advertisement count must be a whole number of at least 4"
+    );
   }
 
   const slug = title
@@ -244,7 +377,9 @@ function cleanMovie(data) {
     quality: String(data.quality || ""),
     featured: 0,
     download_url: validUrl(data.downloadUrl),
-    download_url_2: validUrl(data.downloadUrl2 ?? data.download_url_2 ?? ""),
+    download_url_2: validUrl(
+      data.downloadUrl2 ?? data.download_url_2 ?? ""
+    ),
     watch_url: validUrl(data.watchUrl),
     ad_url: validUrl(data.adUrl ?? data.ad_url ?? ""),
     ad_count: adCount
@@ -266,10 +401,21 @@ const MOVIE_SELECT = `
   FROM movies
 `;
 
+/* =========================================
+   COLLECTION DATA
+========================================= */
+
 function cleanCollection(data) {
   const name = String(data.name || "").trim();
 
-  if (!name) throw new Error("Collection name is required");
+  if (!name) {
+    throw new Error("Collection name is required");
+  }
+
+  const rawSortOrder = data.sortOrder ?? data.sort_order ?? 0;
+  const sortOrder = Number(rawSortOrder);
+
+  const rawActive = data.isActive ?? data.is_active;
 
   return {
     name,
@@ -277,17 +423,27 @@ function cleanCollection(data) {
     image: validUrl(data.image),
     icon: String(data.icon || "").trim(),
     genre: String(data.genre || "").trim(),
-    sort_order: Number.isFinite(Number(data.sortOrder))
-      ? Math.trunc(Number(data.sortOrder))
+    link_url: validLink(data.linkUrl ?? data.link_url ?? ""),
+    sort_order: Number.isFinite(sortOrder)
+      ? Math.trunc(sortOrder)
       : 0,
-    is_active: data.isActive === false || data.isActive === 0 ||
-      data.isActive === "0" ? 0 : 1
+    is_active:
+      rawActive === false ||
+      rawActive === 0 ||
+      rawActive === "0"
+        ? 0
+        : 1
   };
 }
 
+/* =========================================
+   WEBSITE SETTINGS
+========================================= */
+
 async function getSettings(env) {
   const result = await env.DB.prepare(`
-    SELECT setting_key, setting_value FROM site_settings
+    SELECT setting_key, setting_value
+    FROM site_settings
   `).all();
 
   const settings = { ...DEFAULT_SETTINGS };
@@ -300,31 +456,51 @@ async function getSettings(env) {
 }
 
 async function saveSettings(env, data) {
-  if (!data || typeof data !== "object" || Array.isArray(data)) {
+  if (
+    !data ||
+    typeof data !== "object" ||
+    Array.isArray(data)
+  ) {
     throw new Error("Invalid settings data");
   }
 
   for (const key of SETTING_KEYS) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      const value = String(data[key] ?? "").trim();
-
-      if (["heroImage"].includes(key)) validUrl(value);
-
-      await env.DB.prepare(`
-        INSERT INTO site_settings (setting_key, setting_value, updated_at)
-        VALUES (?, ?, CURRENT_TIMESTAMP)
-        ON CONFLICT(setting_key) DO UPDATE SET
-          setting_value = excluded.setting_value,
-          updated_at = CURRENT_TIMESTAMP
-      `).bind(key, value).run();
+    if (!Object.prototype.hasOwnProperty.call(data, key)) {
+      continue;
     }
+
+    const value = String(data[key] ?? "").trim();
+
+    if (key === "heroImage") {
+      validUrl(value);
+    }
+
+    if (URL_SETTING_KEYS.includes(key)) {
+      validLink(value);
+    }
+
+    await env.DB.prepare(`
+      INSERT INTO site_settings
+      (setting_key, setting_value, updated_at)
+      VALUES (?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(setting_key) DO UPDATE SET
+        setting_value = excluded.setting_value,
+        updated_at = CURRENT_TIMESTAMP
+    `).bind(key, value).run();
   }
 
   return getSettings(env);
 }
 
+/* =========================================
+   CLOUDINARY IMAGE UPLOAD
+========================================= */
+
 async function uploadToCloudinary(request, env) {
-  if (!env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET) {
+  if (
+    !env.CLOUDINARY_API_KEY ||
+    !env.CLOUDINARY_API_SECRET
+  ) {
     return json({
       success: false,
       message: "Cloudinary credentials are not configured"
@@ -336,22 +512,36 @@ async function uploadToCloudinary(request, env) {
   try {
     form = await request.formData();
   } catch {
-    return json({ success: false, message: "Invalid upload form" }, 400);
+    return json({
+      success: false,
+      message: "Invalid upload form"
+    }, 400);
   }
 
   const file = form.get("file");
   const type = String(form.get("type") || "poster");
 
   if (!file || typeof file.arrayBuffer !== "function") {
-    return json({ success: false, message: "Please select an image" }, 400);
+    return json({
+      success: false,
+      message: "Please select an image"
+    }, 400);
   }
 
-  if (!["poster", "backdrop", "hero", "collection", "logo"].includes(type)) {
-    return json({ success: false, message: "Invalid image type" }, 400);
+  if (
+    !["poster", "backdrop", "hero", "collection", "logo"].includes(type)
+  ) {
+    return json({
+      success: false,
+      message: "Invalid image type"
+    }, 400);
   }
 
   const allowedTypes = [
-    "image/jpeg", "image/png", "image/webp", "image/avif"
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/avif"
   ];
 
   if (!allowedTypes.includes(file.type)) {
@@ -369,6 +559,7 @@ async function uploadToCloudinary(request, env) {
   }
 
   const cloudForm = new FormData();
+
   cloudForm.set("file", file, file.name || "image");
   cloudForm.set("folder", `cinevault/${type}`);
 
@@ -376,14 +567,25 @@ async function uploadToCloudinary(request, env) {
     `${env.CLOUDINARY_API_KEY}:${env.CLOUDINARY_API_SECRET}`
   );
 
-  const cloudResponse = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-    {
-      method: "POST",
-      headers: { Authorization: `Basic ${credentials}` },
-      body: cloudForm
-    }
-  );
+  let cloudResponse;
+
+  try {
+    cloudResponse = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${credentials}`
+        },
+        body: cloudForm
+      }
+    );
+  } catch {
+    return json({
+      success: false,
+      message: "Could not connect to Cloudinary"
+    }, 502);
+  }
 
   let result;
 
@@ -412,6 +614,10 @@ async function uploadToCloudinary(request, env) {
   });
 }
 
+/* =========================================
+   ADMIN API
+========================================= */
+
 async function handleAdmin(request, env, url) {
   const password = env.ADMIN_PASSWORD;
 
@@ -424,9 +630,17 @@ async function handleAdmin(request, env, url) {
 
   const path = url.pathname;
 
-  if (path === "/api/admin/login" && request.method === "POST") {
+  /* LOGIN */
+
+  if (
+    path === "/api/admin/login" &&
+    request.method === "POST"
+  ) {
     if (!validOrigin(request, url)) {
-      return json({ success: false, message: "Invalid origin" }, 403);
+      return json({
+        success: false,
+        message: "Invalid origin"
+      }, 403);
     }
 
     let data;
@@ -434,18 +648,27 @@ async function handleAdmin(request, env, url) {
     try {
       data = await request.json();
     } catch {
-      return json({ success: false, message: "Invalid JSON" }, 400);
+      return json({
+        success: false,
+        message: "Invalid JSON"
+      }, 400);
     }
 
     const supplied = String(data.password || "");
     const encoder = new TextEncoder();
 
     const expectedHash = new Uint8Array(
-      await crypto.subtle.digest("SHA-256", encoder.encode(password))
+      await crypto.subtle.digest(
+        "SHA-256",
+        encoder.encode(password)
+      )
     );
 
     const suppliedHash = new Uint8Array(
-      await crypto.subtle.digest("SHA-256", encoder.encode(supplied))
+      await crypto.subtle.digest(
+        "SHA-256",
+        encoder.encode(supplied)
+      )
     );
 
     let difference = 0;
@@ -455,70 +678,145 @@ async function handleAdmin(request, env, url) {
     }
 
     if (difference !== 0) {
-      return json({ success: false, message: "Incorrect password" }, 401);
+      return json({
+        success: false,
+        message: "Incorrect password"
+      }, 401);
     }
 
     const token = await createSession(password);
 
     return json(
-      { success: true, message: "Login successful" },
+      {
+        success: true,
+        message: "Login successful"
+      },
       200,
-      { "Set-Cookie": sessionCookie(token, SESSION_SECONDS) }
+      {
+        "Set-Cookie": sessionCookie(token, SESSION_SECONDS)
+      }
     );
   }
 
-  if (path === "/api/admin/logout" && request.method === "POST") {
+  /* LOGOUT */
+
+  if (
+    path === "/api/admin/logout" &&
+    request.method === "POST"
+  ) {
     if (!validOrigin(request, url)) {
-      return json({ success: false, message: "Invalid origin" }, 403);
+      return json({
+        success: false,
+        message: "Invalid origin"
+      }, 403);
     }
 
     return json(
-      { success: true, message: "Logged out" },
+      {
+        success: true,
+        message: "Logged out"
+      },
       200,
-      { "Set-Cookie": clearSessionCookie() }
+      {
+        "Set-Cookie": clearSessionCookie()
+      }
     );
   }
 
   const authorized = await verifySession(request, password);
 
-  if (path === "/api/admin/session" && request.method === "GET") {
-    return json({ success: true, authenticated: authorized });
+  if (
+    path === "/api/admin/session" &&
+    request.method === "GET"
+  ) {
+    return json({
+      success: true,
+      authenticated: authorized
+    });
   }
 
   if (!authorized) {
-    return json({ success: false, message: "Please login first" }, 401);
+    return json({
+      success: false,
+      message: "Please login first"
+    }, 401);
   }
 
-  if (request.method !== "GET" && !validOrigin(request, url)) {
-    return json({ success: false, message: "Invalid origin" }, 403);
+  if (
+    request.method !== "GET" &&
+    !validOrigin(request, url)
+  ) {
+    return json({
+      success: false,
+      message: "Invalid origin"
+    }, 403);
   }
 
-  if (path === "/api/admin/upload" && request.method === "POST") {
+  /* IMAGE UPLOAD */
+
+  if (
+    path === "/api/admin/upload" &&
+    request.method === "POST"
+  ) {
     return uploadToCloudinary(request, env);
   }
 
-  // Website settings
-  if (path === "/api/admin/settings" && request.method === "GET") {
-    return json({ success: true, settings: await getSettings(env) });
+  /* WEBSITE SETTINGS */
+
+  if (
+    path === "/api/admin/settings" &&
+    request.method === "GET"
+  ) {
+    return json({
+      success: true,
+      settings: await getSettings(env)
+    });
   }
 
-  if (path === "/api/admin/settings" && request.method === "PUT") {
+  if (
+    path === "/api/admin/settings" &&
+    request.method === "PUT"
+  ) {
     try {
-      const settings = await saveSettings(env, await request.json());
+      const settings = await saveSettings(
+        env,
+        await request.json()
+      );
+
       return json({
         success: true,
         message: "Website settings saved successfully",
         settings
       });
     } catch (error) {
-      return json({ success: false, message: error.message }, 400);
+      return json({
+        success: false,
+        message: error.message
+      }, 400);
     }
   }
 
-  // Collection management
-  if (path === "/api/admin/collections" && request.method === "GET") {
+  /* COLLECTION LIST */
+
+  if (
+    path === "/api/admin/collections" &&
+    request.method === "GET"
+  ) {
     const result = await env.DB.prepare(`
-      SELECT * FROM collections ORDER BY sort_order ASC, id ASC
+      SELECT
+        id,
+        name,
+        description,
+        image,
+        icon,
+        genre,
+        link_url AS linkUrl,
+        sort_order AS sortOrder,
+        is_active AS isActive,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+      FROM collections
+      ORDER BY sort_order ASC, id ASC
     `).all();
 
     return json({
@@ -528,20 +826,34 @@ async function handleAdmin(request, env, url) {
     });
   }
 
-  if (path === "/api/admin/collections" && request.method === "POST") {
+  /* ADD COLLECTION */
+
+  if (
+    path === "/api/admin/collections" &&
+    request.method === "POST"
+  ) {
     try {
       const item = cleanCollection(await request.json());
 
       const result = await env.DB.prepare(`
-        INSERT INTO collections
-        (name, description, image, icon, genre, sort_order, is_active)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO collections (
+          name,
+          description,
+          image,
+          icon,
+          genre,
+          link_url,
+          sort_order,
+          is_active
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         item.name,
         item.description,
         item.image,
         item.icon,
         item.genre,
+        item.link_url,
         item.sort_order,
         item.is_active
       ).run();
@@ -551,12 +863,20 @@ async function handleAdmin(request, env, url) {
         message: "Collection added successfully",
         id: result.meta.last_row_id
       }, 201);
+
     } catch (error) {
-      return json({ success: false, message: error.message }, 400);
+      return json({
+        success: false,
+        message: error.message
+      }, 400);
     }
   }
 
-  const collectionMatch = path.match(/^\/api\/admin\/collections\/(\d+)$/);
+  /* EDIT OR DELETE COLLECTION */
+
+  const collectionMatch = path.match(
+    /^\/api\/admin\/collections\/(\d+)$/
+  );
 
   if (collectionMatch) {
     const id = Number(collectionMatch[1]);
@@ -567,8 +887,14 @@ async function handleAdmin(request, env, url) {
 
         const result = await env.DB.prepare(`
           UPDATE collections SET
-            name = ?, description = ?, image = ?, icon = ?,
-            genre = ?, sort_order = ?, is_active = ?,
+            name = ?,
+            description = ?,
+            image = ?,
+            icon = ?,
+            genre = ?,
+            link_url = ?,
+            sort_order = ?,
+            is_active = ?,
             updated_at = CURRENT_TIMESTAMP
           WHERE id = ?
         `).bind(
@@ -577,18 +903,29 @@ async function handleAdmin(request, env, url) {
           item.image,
           item.icon,
           item.genre,
+          item.link_url,
           item.sort_order,
           item.is_active,
           id
         ).run();
 
         if (!result.meta.changes) {
-          return json({ success: false, message: "Collection not found" }, 404);
+          return json({
+            success: false,
+            message: "Collection not found"
+          }, 404);
         }
 
-        return json({ success: true, message: "Collection updated successfully" });
+        return json({
+          success: true,
+          message: "Collection updated successfully"
+        });
+
       } catch (error) {
-        return json({ success: false, message: error.message }, 400);
+        return json({
+          success: false,
+          message: error.message
+        }, 400);
       }
     }
 
@@ -598,15 +935,25 @@ async function handleAdmin(request, env, url) {
       ).bind(id).run();
 
       if (!result.meta.changes) {
-        return json({ success: false, message: "Collection not found" }, 404);
+        return json({
+          success: false,
+          message: "Collection not found"
+        }, 404);
       }
 
-      return json({ success: true, message: "Collection deleted successfully" });
+      return json({
+        success: true,
+        message: "Collection deleted successfully"
+      });
     }
   }
 
-  // Admin movie list
-  if (path === "/api/admin/movies" && request.method === "GET") {
+  /* ADMIN MOVIE LIST */
+
+  if (
+    path === "/api/admin/movies" &&
+    request.method === "GET"
+  ) {
     const result = await env.DB.prepare(
       MOVIE_SELECT + " ORDER BY id DESC"
     ).all();
@@ -618,39 +965,79 @@ async function handleAdmin(request, env, url) {
     });
   }
 
-  // Add movie
-  if (path === "/api/admin/movies" && request.method === "POST") {
+  /* ADD MOVIE */
+
+  if (
+    path === "/api/admin/movies" &&
+    request.method === "POST"
+  ) {
     let movie;
 
     try {
       movie = cleanMovie(await request.json());
     } catch (error) {
-      return json({ success: false, message: error.message }, 400);
+      return json({
+        success: false,
+        message: error.message
+      }, 400);
     }
 
     await env.DB.prepare(`
       INSERT INTO movies (
-        title, slug, description, poster, backdrop,
-        year, genre, rating, duration, language,
-        country, director, quality, featured,
-        download_url, download_url_2, watch_url,
-        ad_url, ad_count
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        title,
+        slug,
+        description,
+        poster,
+        backdrop,
+        year,
+        genre,
+        rating,
+        duration,
+        language,
+        country,
+        director,
+        quality,
+        featured,
+        download_url,
+        download_url_2,
+        watch_url,
+        ad_url,
+        ad_count
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
-      movie.title, movie.slug, movie.description,
-      movie.poster, movie.backdrop, movie.year,
-      movie.genre, movie.rating, movie.duration,
-      movie.language, movie.country, movie.director,
-      movie.quality, 0, movie.download_url,
-      movie.download_url_2, movie.watch_url,
-      movie.ad_url, movie.ad_count
+      movie.title,
+      movie.slug,
+      movie.description,
+      movie.poster,
+      movie.backdrop,
+      movie.year,
+      movie.genre,
+      movie.rating,
+      movie.duration,
+      movie.language,
+      movie.country,
+      movie.director,
+      movie.quality,
+      0,
+      movie.download_url,
+      movie.download_url_2,
+      movie.watch_url,
+      movie.ad_url,
+      movie.ad_count
     ).run();
 
-    return json({ success: true, message: "Movie added successfully" }, 201);
+    return json({
+      success: true,
+      message: "Movie added successfully"
+    }, 201);
   }
 
-  // Edit or delete movie
-  const match = path.match(/^\/api\/admin\/movies\/(\d+)$/);
+  /* EDIT OR DELETE MOVIE */
+
+  const match = path.match(
+    /^\/api\/admin\/movies\/(\d+)$/
+  );
 
   if (match) {
     const id = Number(match[1]);
@@ -661,35 +1048,68 @@ async function handleAdmin(request, env, url) {
       try {
         movie = cleanMovie(await request.json());
       } catch (error) {
-        return json({ success: false, message: error.message }, 400);
+        return json({
+          success: false,
+          message: error.message
+        }, 400);
       }
 
       const result = await env.DB.prepare(`
         UPDATE movies SET
-          title = ?, slug = ?, description = ?,
-          poster = ?, backdrop = ?, year = ?,
-          genre = ?, rating = ?, duration = ?,
-          language = ?, country = ?, director = ?,
-          quality = ?, featured = 0,
-          download_url = ?, download_url_2 = ?, watch_url = ?,
-          ad_url = ?, ad_count = ?,
+          title = ?,
+          slug = ?,
+          description = ?,
+          poster = ?,
+          backdrop = ?,
+          year = ?,
+          genre = ?,
+          rating = ?,
+          duration = ?,
+          language = ?,
+          country = ?,
+          director = ?,
+          quality = ?,
+          featured = 0,
+          download_url = ?,
+          download_url_2 = ?,
+          watch_url = ?,
+          ad_url = ?,
+          ad_count = ?,
           updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `).bind(
-        movie.title, movie.slug, movie.description,
-        movie.poster, movie.backdrop, movie.year,
-        movie.genre, movie.rating, movie.duration,
-        movie.language, movie.country, movie.director,
-        movie.quality, movie.download_url,
-        movie.download_url_2, movie.watch_url,
-        movie.ad_url, movie.ad_count, id
+        movie.title,
+        movie.slug,
+        movie.description,
+        movie.poster,
+        movie.backdrop,
+        movie.year,
+        movie.genre,
+        movie.rating,
+        movie.duration,
+        movie.language,
+        movie.country,
+        movie.director,
+        movie.quality,
+        movie.download_url,
+        movie.download_url_2,
+        movie.watch_url,
+        movie.ad_url,
+        movie.ad_count,
+        id
       ).run();
 
       if (!result.meta.changes) {
-        return json({ success: false, message: "Movie not found" }, 404);
+        return json({
+          success: false,
+          message: "Movie not found"
+        }, 404);
       }
 
-      return json({ success: true, message: "Movie updated successfully" });
+      return json({
+        success: true,
+        message: "Movie updated successfully"
+      });
     }
 
     if (request.method === "DELETE") {
@@ -698,15 +1118,28 @@ async function handleAdmin(request, env, url) {
       ).bind(id).run();
 
       if (!result.meta.changes) {
-        return json({ success: false, message: "Movie not found" }, 404);
+        return json({
+          success: false,
+          message: "Movie not found"
+        }, 404);
       }
 
-      return json({ success: true, message: "Movie deleted successfully" });
+      return json({
+        success: true,
+        message: "Movie deleted successfully"
+      });
     }
   }
 
-  return json({ success: false, message: "Admin API route not found" }, 404);
+  return json({
+    success: false,
+    message: "Admin API route not found"
+  }, 404);
 }
+
+/* =========================================
+   MAIN WORKER
+========================================= */
 
 export default {
   async fetch(request, env) {
@@ -722,6 +1155,8 @@ export default {
 
       await ensureCustomizationSchema(env);
 
+      /* API HEALTH CHECK */
+
       if (url.pathname === "/api/hello") {
         return json({
           success: true,
@@ -729,18 +1164,34 @@ export default {
         });
       }
 
-      // Public website settings
-      if (url.pathname === "/api/settings" && request.method === "GET") {
+      /* PUBLIC WEBSITE SETTINGS */
+
+      if (
+        url.pathname === "/api/settings" &&
+        request.method === "GET"
+      ) {
         return json({
           success: true,
           settings: await getSettings(env)
         });
       }
 
-      // Public active collections
-      if (url.pathname === "/api/collections" && request.method === "GET") {
+      /* PUBLIC ACTIVE COLLECTIONS */
+
+      if (
+        url.pathname === "/api/collections" &&
+        request.method === "GET"
+      ) {
         const result = await env.DB.prepare(`
-          SELECT id, name, description, image, icon, genre, sort_order AS sortOrder
+          SELECT
+            id,
+            name,
+            description,
+            image,
+            icon,
+            genre,
+            link_url AS linkUrl,
+            sort_order AS sortOrder
           FROM collections
           WHERE is_active = 1
           ORDER BY sort_order ASC, id ASC
@@ -753,8 +1204,12 @@ export default {
         });
       }
 
-      // Public movie list
-      if (url.pathname === "/api/movies" && request.method === "GET") {
+      /* PUBLIC MOVIE LIST */
+
+      if (
+        url.pathname === "/api/movies" &&
+        request.method === "GET"
+      ) {
         const result = await env.DB.prepare(
           MOVIE_SELECT + " ORDER BY id DESC"
         ).all();
@@ -766,15 +1221,21 @@ export default {
         });
       }
 
+      /* ADMIN API */
+
       if (url.pathname.startsWith("/api/admin/")) {
         return await handleAdmin(request, env, url);
       }
+
+      /* STATIC WEBSITE ASSETS */
 
       if (env.ASSETS) {
         return await env.ASSETS.fetch(request);
       }
 
-      return new Response("CineVault", { status: 200 });
+      return new Response("CineVault", {
+        status: 200
+      });
 
     } catch (error) {
       return json({
