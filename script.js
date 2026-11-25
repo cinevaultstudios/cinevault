@@ -1,4 +1,3 @@
-
 /* =========================================================
    CINEVAULT — MAIN APPLICATION
    CLOUDFLARE WORKERS + D1 DATABASE
@@ -226,15 +225,21 @@ document.addEventListener("DOMContentLoaded", () => {
   ======================================================= */
 
   async function apiRequest(url, options = {}) {
+    const {
+      method = "GET",
+      headers = {},
+      ...fetchOptions
+    } = options;
+
     const response = await fetch(url, {
-      method: options.method || "GET",
+      ...fetchOptions,
+      method,
       headers: {
         Accept: "application/json",
-        ...(options.headers || {})
+        ...headers
       },
       cache: "no-store",
-      credentials: "same-origin",
-      ...options
+      credentials: "same-origin"
     });
 
     let data;
@@ -428,8 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     element.appendChild(anchor);
   }
-
-  /* =======================================================
+     /* =======================================================
      13. DYNAMIC LOGO
   ======================================================= */
 
@@ -556,7 +560,46 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     16. MULTIPLE HERO BANNER — BUTTON HTML
+     16. LINK NAVIGATION HELPER
+     INTERNAL LINKS: SAME TAB
+     EXTERNAL LINKS: NEW TAB
+  ======================================================= */
+
+  function openConfiguredLink(value) {
+    const link = safeLink(value);
+
+    if (!link) return;
+
+    if (
+      link.startsWith("#") ||
+      link.startsWith("/") ||
+      link.startsWith("./") ||
+      link.startsWith("../")
+    ) {
+      window.location.href = link;
+      return;
+    }
+
+    try {
+      const parsed = new URL(link, window.location.href);
+
+      if (parsed.origin === window.location.origin) {
+        window.location.href = link;
+        return;
+      }
+    } catch {
+      return;
+    }
+
+    window.open(
+      link,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+
+  /* =======================================================
+     17. MULTIPLE HERO BANNER — BUTTON HTML
   ======================================================= */
 
   function createHeroButton(
@@ -570,19 +613,35 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!label) return "";
 
     const link = safeLink(url);
+    const finalUrl = link || safeLink(fallbackUrl);
 
-    if (!link && !fallbackUrl) {
-      return "";
-    }
+    if (!finalUrl) return "";
 
-    const finalUrl = link || fallbackUrl;
+    const isInternal =
+      finalUrl.startsWith("#") ||
+      finalUrl.startsWith("/") ||
+      finalUrl.startsWith("./") ||
+      finalUrl.startsWith("../") ||
+      (() => {
+        try {
+          return new URL(
+            finalUrl,
+            window.location.href
+          ).origin === window.location.origin;
+        } catch {
+          return false;
+        }
+      })();
+
+    const targetAttributes = isInternal
+      ? ""
+      : 'target="_blank" rel="noopener noreferrer"';
 
     return `
       <a
         href="${escapeHTML(finalUrl)}"
         class="btn ${escapeHTML(styleClass)}"
-        target="_blank"
-        rel="noopener noreferrer"
+        ${targetAttributes}
       >
         ${escapeHTML(label)}
         <span aria-hidden="true">→</span>
@@ -591,100 +650,100 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     17. MULTIPLE HERO BANNER — RENDER SLIDE
+     18. MULTIPLE HERO BANNER — RENDER SLIDE
   ======================================================= */
 
-function renderHeroSlide(banner, index) {
-  const overlay = banner.overlay;
-  const positionClass = `hero-text-${banner.textPosition}`;
+  function renderHeroSlide(banner, index) {
+    const overlay = banner.overlay;
+    const positionClass = `hero-text-${banner.textPosition}`;
 
-  const button1 = createHeroButton(
-    banner.button1Text,
-    banner.button1Url,
-    "btn-primary",
-    "#movies"
-  );
+    const button1 = createHeroButton(
+      banner.button1Text,
+      banner.button1Url,
+      "btn-primary",
+      "#movies"
+    );
 
-  const button2 = createHeroButton(
-    banner.button2Text,
-    banner.button2Url,
-    "btn-outline",
-    "#collections"
-  );
+    const button2 = createHeroButton(
+      banner.button2Text,
+      banner.button2Url,
+      "btn-outline",
+      "#collections"
+    );
 
-  const hasBackgroundLink = Boolean(banner.clickUrl);
+    const hasBackgroundLink = Boolean(banner.clickUrl);
 
-  return `
-    <article
-      class="hero-slide ${index === 0 ? "hero-slide-active" : ""} ${positionClass}"
-      data-hero-index="${index}"
-      role="group"
-      aria-roledescription="slide"
-      aria-label="${index + 1} of ${heroBanners.length}"
-      ${hasBackgroundLink ? 'tabindex="0"' : ""}
-      style="
-        color:${banner.textColor};
-        --hero-text-color:${banner.textColor};
-        --hero-highlight-color:${banner.highlightColor};
-        --hero-overlay:${overlay};
-      "
-    >
-
-      <img
-        class="hero-slide-image"
-        src="${escapeHTML(banner.image)}"
-        alt=""
-        aria-hidden="true"
-        loading="${index === 0 ? "eager" : "lazy"}"
-        decoding="async"
-        ${index === 0 ? 'fetchpriority="high"' : ""}
+    return `
+      <article
+        class="hero-slide ${index === 0 ? "hero-slide-active" : ""} ${positionClass}"
+        data-hero-index="${index}"
+        role="group"
+        aria-roledescription="slide"
+        aria-label="${index + 1} of ${heroBanners.length}"
+        ${hasBackgroundLink ? 'tabindex="0"' : ""}
+        style="
+          color:${banner.textColor};
+          --hero-text-color:${banner.textColor};
+          --hero-highlight-color:${banner.highlightColor};
+          --hero-overlay:${overlay};
+        "
       >
 
-      <div class="hero-overlay"></div>
+        <img
+          class="hero-slide-image"
+          src="${escapeHTML(banner.image)}"
+          alt=""
+          aria-hidden="true"
+          loading="${index === 0 ? "eager" : "lazy"}"
+          decoding="async"
+          ${index === 0 ? 'fetchpriority="high"' : ""}
+        >
 
-      <div class="hero-content">
+        <div class="hero-overlay"></div>
 
-        ${
-          banner.eyebrow
-            ? `<span class="hero-eyebrow">${escapeHTML(banner.eyebrow)}</span>`
-            : ""
-        }
+        <div class="hero-content">
 
-        <h1 class="hero-slide-title">
-          ${escapeHTML(banner.title)}
           ${
-            banner.highlight
-              ? `<span class="gold-text hero-slide-highlight">${escapeHTML(banner.highlight)}</span>`
+            banner.eyebrow
+              ? `<span class="hero-eyebrow">${escapeHTML(banner.eyebrow)}</span>`
               : ""
           }
-        </h1>
+
+          <h1 class="hero-slide-title">
+            ${escapeHTML(banner.title)}
+            ${
+              banner.highlight
+                ? `<span class="gold-text hero-slide-highlight">${escapeHTML(banner.highlight)}</span>`
+                : ""
+            }
+          </h1>
+
+          ${
+            banner.description
+              ? `<p>${escapeHTML(banner.description)}</p>`
+              : ""
+          }
+
+          ${
+            button1 || button2
+              ? `<div class="hero-buttons">${button1}${button2}</div>`
+              : ""
+          }
+
+        </div>
 
         ${
-          banner.description
-            ? `<p>${escapeHTML(banner.description)}</p>`
+          index === 0
+            ? `<div class="hero-decoration" aria-hidden="true"><span>C</span></div>`
             : ""
         }
 
-        ${
-          button1 || button2
-            ? `<div class="hero-buttons">${button1}${button2}</div>`
-            : ""
-        }
-
-      </div>
-
-      ${
-        index === 0
-          ? `<div class="hero-decoration" aria-hidden="true"><span>C</span></div>`
-          : ""
-      }
-
-    </article>
-  `;
-}
+      </article>
+    `;
+  }
 
   /* =======================================================
-     18. MULTIPLE HERO BANNER — DOTS
+     19. MULTIPLE HERO BANNER — DOTS
   ======================================================= */
 
   function renderHeroDots() {
@@ -710,7 +769,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     19. MULTIPLE HERO BANNER — AUTOPLAY
+     20. MULTIPLE HERO BANNER — AUTOPLAY
      FIXED 2000 MILLISECONDS
   ======================================================= */
 
@@ -739,7 +798,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     20. MULTIPLE HERO BANNER — SLIDE CHANGE
+     21. MULTIPLE HERO BANNER — SLIDE CHANGE
   ======================================================= */
 
   function showHeroSlide(index, resetTimer = true) {
@@ -781,7 +840,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     21. MULTIPLE HERO BANNER — NAVIGATION
+     22. MULTIPLE HERO BANNER — NAVIGATION
   ======================================================= */
 
   function initializeHeroControls() {
@@ -832,7 +891,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     22. HERO SLIDER — PAUSE ON HOVER / FOCUS
+     23. HERO SLIDER — PAUSE ON HOVER / FOCUS
   ======================================================= */
 
   heroSlider?.addEventListener("mouseenter", () => {
@@ -868,7 +927,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     23. HERO SLIDER — BACKGROUND CLICK / KEYBOARD
+     24. HERO SLIDER — BACKGROUND CLICK / KEYBOARD
   ======================================================= */
 
   function openHeroBackgroundLink(slide) {
@@ -894,15 +953,7 @@ function renderHeroSlide(banner, index) {
 
     if (!banner?.clickUrl) return;
 
-    const link = safeLink(banner.clickUrl);
-
-    if (!link) return;
-
-    window.open(
-      link,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    openConfiguredLink(banner.clickUrl);
   }
 
   heroSliderTrack?.addEventListener("click", event => {
@@ -940,7 +991,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     24. MULTIPLE HERO BANNER — RENDER
+     25. MULTIPLE HERO BANNER — RENDER
      NO LEGACY STATIC HERO FALLBACK
   ======================================================= */
 
@@ -956,8 +1007,6 @@ function renderHeroSlide(banner, index) {
     heroHoverPaused = false;
     heroFocusPaused = false;
 
-    // No active banners: keep the slider empty.
-    // Never restore the old static hero banner.
     if (!heroBanners.length) {
       heroSliderTrack.replaceChildren();
 
@@ -986,7 +1035,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     25. DYNAMIC SECTION HEADINGS
+     26. DYNAMIC SECTION HEADINGS
   ======================================================= */
 
   function updateSectionHeadings(data) {
@@ -1071,7 +1120,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     26. DYNAMIC ABOUT SECTION
+     27. DYNAMIC ABOUT SECTION
   ======================================================= */
 
   function updateAbout(data) {
@@ -1102,29 +1151,23 @@ function renderHeroSlide(banner, index) {
 
       if (mainLink) {
         const anchor = document.createElement("a");
-
         anchor.href = mainLink;
         anchor.className = "content-link";
-
-        configureNewTab(anchor);
-
         anchor.appendChild(main);
+        configureNewTab(anchor);
         nodes.push(anchor);
       } else {
         nodes.push(main);
       }
 
-      nodes.push(document.createElement("br"));
+      nodes.push(document.createTextNode(" "));
 
       if (highlightLink) {
         const anchor = document.createElement("a");
-
         anchor.href = highlightLink;
         anchor.className = "content-link";
-
-        configureNewTab(anchor);
-
         anchor.appendChild(highlight);
+        configureNewTab(anchor);
         nodes.push(anchor);
       } else {
         nodes.push(highlight);
@@ -1132,7 +1175,12 @@ function renderHeroSlide(banner, index) {
 
       title.replaceChildren(...nodes);
     }
+  }
+     /* =======================================================
+     28. ABOUT SECTION — DESCRIPTION AND BUTTON
+  ======================================================= */
 
+  function updateAboutExtras(data) {
     setLinkedText(
       $("aboutDescription"),
       data.aboutDescription || "",
@@ -1141,35 +1189,38 @@ function renderHeroSlide(banner, index) {
 
     const aboutButton = $("aboutButton");
 
-    if (aboutButton) {
-      const aboutButtonUrl = safeLink(
-        data.aboutButtonUrl,
-        "#movies"
-      );
+    if (!aboutButton) return;
 
-      aboutButton.href = aboutButtonUrl;
+    const aboutButtonUrl = safeLink(
+      data.aboutButtonUrl,
+      "#movies"
+    );
 
-      if (data.aboutButtonUrl && aboutButtonUrl) {
-        configureNewTab(aboutButton);
-      } else {
-        aboutButton.removeAttribute("target");
-        aboutButton.removeAttribute("rel");
-      }
+    aboutButton.href = aboutButtonUrl;
 
-      const buttonText = $("aboutButtonText");
+    if (
+      data.aboutButtonUrl &&
+      aboutButtonUrl
+    ) {
+      configureNewTab(aboutButton);
+    } else {
+      aboutButton.removeAttribute("target");
+      aboutButton.removeAttribute("rel");
+    }
 
-      if (buttonText) {
-        buttonText.textContent =
-          data.aboutButtonText || "Discover Movies";
-      } else {
-        aboutButton.textContent =
-          data.aboutButtonText || "Discover Movies";
-      }
+    const buttonText = $("aboutButtonText");
+
+    if (buttonText) {
+      buttonText.textContent =
+        data.aboutButtonText || "Discover Movies";
+    } else {
+      aboutButton.textContent =
+        data.aboutButtonText || "Discover Movies";
     }
   }
 
   /* =======================================================
-     27. DYNAMIC FOOTER
+     29. DYNAMIC FOOTER
   ======================================================= */
 
   function updateFooter(data) {
@@ -1236,7 +1287,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     28. LOAD SETTINGS FROM D1
+     30. LOAD SETTINGS FROM D1
   ======================================================= */
 
   async function loadSettings() {
@@ -1250,13 +1301,10 @@ function renderHeroSlide(banner, index) {
       settings = response.settings;
 
       updateLogo(settings);
-
-      // Only the 4-slide banner system is used.
-      // Legacy updateHero() has been removed.
       renderHeroBanners(settings);
-
       updateSectionHeadings(settings);
       updateAbout(settings);
+      updateAboutExtras(settings);
       updateFooter(settings);
 
     } catch (error) {
@@ -1265,7 +1313,6 @@ function renderHeroSlide(banner, index) {
         error
       );
 
-      // Do not display a static fallback banner.
       if (heroSliderTrack) {
         heroSliderTrack.replaceChildren();
       }
@@ -1279,7 +1326,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     29. FILTER OPTION HELPERS
+     31. FILTER OPTION HELPERS
   ======================================================= */
 
   function populateSelect(
@@ -1320,7 +1367,10 @@ function renderHeroSlide(banner, index) {
     );
 
     const languages = movies.map(movie => movie.language);
-    const years = movies.map(movie => movie.year).filter(Boolean);
+
+    const years = movies
+      .map(movie => movie.year)
+      .filter(Boolean);
 
     populateSelect(
       genreFilter,
@@ -1349,7 +1399,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     30. COLLECTION RENDERING
+     32. COLLECTION RENDERING
   ======================================================= */
 
   function renderCollections() {
@@ -1413,7 +1463,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     31. LOAD COLLECTIONS FROM D1
+     33. LOAD COLLECTIONS FROM D1
   ======================================================= */
 
   async function loadCollections() {
@@ -1460,7 +1510,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     32. POSTER FALLBACK
+     34. POSTER FALLBACK
   ======================================================= */
 
   function fallbackPoster(title) {
@@ -1505,7 +1555,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     33. MOVIE CARD
+     35. MOVIE CARD
   ======================================================= */
 
   function movieCard(movie) {
@@ -1564,7 +1614,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     34. MOVIE POSTER ERROR HANDLING
+     36. MOVIE POSTER ERROR HANDLING
   ======================================================= */
 
   function handlePosterErrors(container) {
@@ -1588,7 +1638,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     35. SEARCH + FILTER + SORT
+     37. SEARCH + FILTER + SORT
   ======================================================= */
 
   function getFilteredMovies() {
@@ -1682,7 +1732,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     36. PAGINATION
+     38. PAGINATION
   ======================================================= */
 
   function renderPagination(totalPages) {
@@ -1780,7 +1830,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     37. MAIN MOVIE RENDER
+     39. MAIN MOVIE RENDER
   ======================================================= */
 
   function renderMovies() {
@@ -1830,9 +1880,8 @@ function renderHeroSlide(banner, index) {
 
     movieGrid.setAttribute("aria-busy", "false");
   }
-
-  /* =======================================================
-     38. WATCHLIST RENDER
+     /* =======================================================
+     40. WATCHLIST RENDER
   ======================================================= */
 
   function renderWatchlist() {
@@ -1858,7 +1907,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     39. WATCHLIST TOGGLE
+     41. WATCHLIST TOGGLE
   ======================================================= */
 
   function toggleWatchlist(id) {
@@ -1886,7 +1935,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     40. LOAD MOVIES FROM D1
+     42. LOAD MOVIES FROM D1
   ======================================================= */
 
   async function loadMovies() {
@@ -1976,7 +2025,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     41. RESET FILTERS
+     43. RESET FILTERS
   ======================================================= */
 
   function resetFilters() {
@@ -1996,7 +2045,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     42. SEARCH EVENTS
+     44. SEARCH EVENTS
   ======================================================= */
 
   searchInput?.addEventListener("input", () => {
@@ -2017,7 +2066,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     43. FILTER EVENTS
+     45. FILTER EVENTS
   ======================================================= */
 
   [
@@ -2054,7 +2103,7 @@ function renderHeroSlide(banner, index) {
   );
 
   /* =======================================================
-     44. COLLECTION CLICK
+     46. COLLECTION CLICK
   ======================================================= */
 
   collectionGrid?.addEventListener("click", event => {
@@ -2094,7 +2143,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     45. MOVIE CARD + WATCHLIST CLICK HANDLING
+     47. MOVIE CARD + WATCHLIST CLICK HANDLING
   ======================================================= */
 
   document.addEventListener("click", event => {
@@ -2136,7 +2185,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     46. KEYBOARD ACCESSIBILITY — MOVIE CARDS
+     48. KEYBOARD ACCESSIBILITY — MOVIE CARDS
   ======================================================= */
 
   document.addEventListener("keydown", event => {
@@ -2173,7 +2222,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     47. MOBILE NAVIGATION
+     49. MOBILE NAVIGATION
   ======================================================= */
 
   function closeMobileMenu() {
@@ -2214,7 +2263,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     48. SEARCH ICON
+     50. SEARCH ICON
   ======================================================= */
 
   $("searchToggle")?.addEventListener("click", () => {
@@ -2227,7 +2276,7 @@ function renderHeroSlide(banner, index) {
   });
 
   /* =======================================================
-     49. CURRENT YEAR
+     51. CURRENT YEAR
   ======================================================= */
 
   const currentYearElement = $("currentYear");
@@ -2238,7 +2287,7 @@ function renderHeroSlide(banner, index) {
   }
 
   /* =======================================================
-     50. INITIALIZE APPLICATION
+     52. INITIALIZE APPLICATION
   ======================================================= */
 
   loadSettings();
