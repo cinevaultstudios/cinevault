@@ -1,4 +1,3 @@
-
 /* =====================================================
    CINEVAULT — PREMIUM BLACK & GOLD DESIGN SYSTEM
    RESPONSIVE • ACCESSIBLE • D1 CONNECTED FRONTEND
@@ -467,8 +466,6 @@ button:disabled {
   display: none;
 }
 
-/* Slider wrapper */
-
 .hero-slider {
   position: absolute;
   inset: 0;
@@ -486,8 +483,6 @@ button:disabled {
   height: 100%;
   overflow: hidden;
 }
-
-/* Individual slides */
 
 .hero-slide {
   position: absolute;
@@ -518,8 +513,6 @@ button:disabled {
     visibility .65s ease;
 }
 
-/* Active slide */
-
 .hero-slide.active,
 .hero-slide.hero-slide-active {
   z-index: 2;
@@ -527,8 +520,6 @@ button:disabled {
   visibility: visible;
   pointer-events: auto;
 }
-
-/* Slide overlay — FIXED */
 
 .hero-slide > .hero-overlay {
   position: absolute;
@@ -547,11 +538,8 @@ button:disabled {
     rgba(8,10,15,.22) 100%
   );
 
-  /* API overlay value 45 becomes CSS opacity 0.45 */
   opacity: calc(var(--hero-overlay, 85) / 100);
 }
-
-/* Slide content */
 
 .hero-slide .hero-content {
   position: relative;
@@ -594,8 +582,6 @@ button:disabled {
   line-height: 1.8;
   opacity: .9;
 }
-
-/* Text alignment */
 
 .hero-slide.position-left,
 .hero-slide.hero-text-left {
@@ -646,8 +632,6 @@ button:disabled {
   justify-content: flex-end;
 }
 
-/* Slide buttons */
-
 .hero-slide .hero-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -660,8 +644,6 @@ button:disabled {
   position: relative;
   z-index: 3;
 }
-
-/* Slider navigation */
 
 .hero-slider-controls,
 .hero-slider-navigation {
@@ -730,16 +712,12 @@ button:disabled {
   background: var(--gold);
 }
 
-/* Hide inactive controls */
-
 .hero-slider-navigation[hidden],
 .hero-slider-controls[hidden],
 .hero-slider-dots[hidden],
 .hero-slider-arrow[hidden] {
   display: none !important;
 }
-
-/* Screen reader status */
 
 .hero-slider-status {
   position: absolute;
@@ -1197,8 +1175,6 @@ button:disabled {
   letter-spacing: 1px;
   white-space: nowrap;
 }
-
-
 /* =========================
    12. PAGINATION
 ========================= */
@@ -1880,52 +1856,13 @@ button:disabled {
 
 }
 
-/* CINEVAULT — HERO BANNER FINAL LAYER FIX */
 
-.hero-slide {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-.hero-slide > .hero-slide-image {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 0 !important;
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center center;
-  pointer-events: none;
-}
-
-.hero-slide > .hero-overlay {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 1 !important;
-}
-
-.hero-slide .hero-content {
-  position: relative !important;
-  z-index: 2 !important;
-  opacity: 1;
-  visibility: visible;
-}
-
-.hero-slide .hero-decoration {
-  position: absolute;
-  z-index: 2 !important;
-  pointer-events: none;
-}
 /* =====================================================
-   CINEVAULT — FINAL HERO SLIDER FIX
-   IMAGE + TEXT LAYERING
-   DESKTOP + MOBILE RESPONSIVE
-   PRESERVE EXISTING WEBSITE FEATURES
+   CINEVAULT — CONSOLIDATED HERO BANNER FIX
+   IMAGE + OVERLAY + TEXT LAYERING
+   DESKTOP + MOBILE
    ===================================================== */
 
-/* Hero section */
 .hero-section:has(.hero-slider) {
   position: relative;
   display: block;
@@ -1939,17 +1876,20 @@ button:disabled {
   background: #080a0f;
 }
 
-/* Slider wrapper */
+.hero-section:has(.hero-slider)::before {
+  display: none;
+}
+
 .hero-section:has(.hero-slider) .hero-slider {
   position: absolute;
   inset: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
   isolation: isolate;
 }
 
-/* Slider track */
 .hero-slider-track,
 .hero-slides {
   position: relative;
@@ -1959,7 +1899,6 @@ button:disabled {
   overflow: hidden;
 }
 
-/* Individual slides */
 .hero-slide {
   position: absolute !important;
   inset: 0 !important;
@@ -1967,14 +1906,19 @@ button:disabled {
 
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+
   width: 100%;
   height: 100%;
-
   padding: 42px 8% 65px;
+
   overflow: hidden;
   isolation: isolate;
 
   background-color: #080a0f;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 
   opacity: 0;
   visibility: hidden;
@@ -1985,7 +1929,6 @@ button:disabled {
     visibility .65s ease;
 }
 
-/* Active slide */
 .hero-slide.active,
 .hero-slide.hero-slide-active {
   z-index: 2;
@@ -1994,17 +1937,14 @@ button:disabled {
   pointer-events: auto;
 }
 
-/* Banner image — always behind text */
 .hero-slide > .hero-slide-image {
   position: absolute !important;
   inset: 0 !important;
-
   z-index: 0 !important;
 
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-
   max-width: none !important;
 
   object-fit: cover !important;
@@ -2013,11 +1953,9 @@ button:disabled {
   pointer-events: none;
 }
 
-/* Dark overlay */
 .hero-slide > .hero-overlay {
   position: absolute !important;
   inset: 0 !important;
-
   z-index: 1 !important;
 
   display: block;
@@ -2031,14 +1969,12 @@ button:disabled {
     rgba(8,10,15,.30) 100%
   );
 
-  opacity: .90;
+  opacity: calc(var(--hero-overlay, 85) / 100);
   pointer-events: none;
 }
 
-/* Banner text */
 .hero-slide .hero-content {
   position: relative !important;
-
   z-index: 2 !important;
 
   display: block;
@@ -2051,12 +1987,10 @@ button:disabled {
   visibility: visible !important;
 }
 
-/* Eyebrow */
 .hero-slide .hero-eyebrow {
   color: var(--hero-highlight-color, var(--gold));
 }
 
-/* Main heading */
 .hero-slide .hero-content h1,
 .hero-slide .hero-slide-title {
   position: relative;
@@ -2073,13 +2007,11 @@ button:disabled {
   font-weight: 800;
 }
 
-/* Highlight text */
 .hero-slide .hero-content h1 .hero-highlight,
 .hero-slide .hero-slide-highlight {
   color: var(--hero-highlight-color, var(--gold2));
 }
 
-/* Description */
 .hero-slide .hero-content p {
   max-width: 490px;
 
@@ -2090,14 +2022,12 @@ button:disabled {
   opacity: .9;
 }
 
-/* Left alignment */
 .hero-slide.position-left,
 .hero-slide.hero-text-left {
   justify-content: flex-start;
   text-align: left;
 }
 
-/* Center alignment */
 .hero-slide.position-center,
 .hero-slide.hero-text-center {
   justify-content: center;
@@ -2121,7 +2051,6 @@ button:disabled {
   justify-content: center;
 }
 
-/* Right alignment */
 .hero-slide.position-right,
 .hero-slide.hero-text-right {
   justify-content: flex-end;
@@ -2143,7 +2072,6 @@ button:disabled {
   justify-content: flex-end;
 }
 
-/* Banner buttons */
 .hero-slide .hero-buttons {
   position: relative;
   z-index: 3;
@@ -2161,14 +2089,12 @@ button:disabled {
   z-index: 3;
 }
 
-/* Decorative elements */
 .hero-slide .hero-decoration {
   position: absolute;
   z-index: 1;
   pointer-events: none;
 }
 
-/* Slider navigation */
 .hero-slider-navigation,
 .hero-slider-controls {
   position: absolute;
@@ -2181,13 +2107,11 @@ button:disabled {
   gap: 12px;
 }
 
-/* Navigation arrows */
 .hero-slider-arrow {
   position: relative;
   z-index: 10;
 }
 
-/* Slider dots */
 .hero-slider-dots {
   position: relative;
   z-index: 10;
@@ -2198,7 +2122,6 @@ button:disabled {
   gap: 8px;
 }
 
-/* Hidden controls */
 .hero-slider-navigation[hidden],
 .hero-slider-controls[hidden],
 .hero-slider-dots[hidden],
@@ -2206,8 +2129,13 @@ button:disabled {
   display: none !important;
 }
 
-/* Tablet */
+
+/* =========================
+   HERO — TABLET
+========================= */
+
 @media (max-width: 1100px) {
+
   .hero-section:has(.hero-slider) {
     height: 390px;
     min-height: 350px;
@@ -2217,10 +2145,16 @@ button:disabled {
     padding-left: 6%;
     padding-right: 6%;
   }
+
 }
 
-/* Mobile */
+
+/* =========================
+   HERO — MOBILE
+========================= */
+
 @media (max-width: 760px) {
+
   .hero-section:has(.hero-slider) {
     height: 330px;
     min-height: 300px;
@@ -2272,10 +2206,16 @@ button:disabled {
   .hero-slider-dot.active {
     width: 20px;
   }
+
 }
 
-/* Small mobile */
+
+/* =========================
+   HERO — SMALL MOBILE
+========================= */
+
 @media (max-width: 430px) {
+
   .hero-section:has(.hero-slider) {
     height: 320px;
     min-height: 300px;
@@ -2300,10 +2240,16 @@ button:disabled {
     padding: 9px 13px;
     font-size: 10px;
   }
+
 }
 
-/* Extra small screens */
+
+/* =========================
+   HERO — EXTRA SMALL SCREENS
+========================= */
+
 @media (max-width: 340px) {
+
   .hero-section:has(.hero-slider) {
     height: 310px;
     min-height: 290px;
@@ -2322,11 +2268,18 @@ button:disabled {
   .hero-slider-controls {
     gap: 6px;
   }
+
 }
 
-/* Accessibility */
+
+/* =========================
+   HERO — ACCESSIBILITY
+========================= */
+
 @media (prefers-reduced-motion: reduce) {
+
   .hero-slide {
     transition: none !important;
   }
+
 }
