@@ -6,7 +6,7 @@
   // CINEVAULT WORKER CONFIGURATION
   // =========================================
 
-  "name": "cinevault-website",
+  "name": "cinevault",
 
   "main": "src/index.js",
 
