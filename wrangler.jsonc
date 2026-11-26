@@ -10,8 +10,19 @@
 
   "main": "src/index.js",
 
-  // Keep the currently working compatibility baseline.
   "compatibility_date": "2026-11-23",
+
+  // =========================================
+  // OBSERVABILITY LOGS
+  // =========================================
+
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
 
   // =========================================
   // CLOUDFLARE STATIC ASSETS
@@ -20,8 +31,6 @@
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-
-    // API requests must reach the Worker first.
     "run_worker_first": [
       "/api/*"
     ]
