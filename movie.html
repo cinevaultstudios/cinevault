@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +9,27 @@
   <meta name="robots" content="index, follow">
 
   <title>Movie Details | CineVault</title>
+
+  <!-- Technical SEO -->
+  <link id="canonicalUrl" rel="canonical"
+        href="https://cinevault.movie24.workers.dev/movie.html">
+
+  <meta property="og:site_name" content="CineVault">
+  <meta property="og:type" content="website">
+  <meta property="og:url"
+        content="https://cinevault.movie24.workers.dev/movie.html">
+  <meta property="og:title" content="Movie Details | CineVault">
+  <meta property="og:description"
+        content="Explore movie details and information on CineVault.">
+  <meta property="og:image"
+        content="https://cinevault.movie24.workers.dev/favicon.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Movie Details | CineVault">
+  <meta name="twitter:description"
+        content="Explore movie details and information on CineVault.">
+  <meta name="twitter:image"
+        content="https://cinevault.movie24.workers.dev/favicon.png">
 
   <link rel="stylesheet" href="style.css">
 
@@ -474,7 +494,6 @@
     </div>
   </div>
 </footer>
-
 <script>
 (function () {
   "use strict";
@@ -488,6 +507,34 @@
 
   const requestedId = params.get("id");
   const requestedSlug = params.get("title");
+
+  /*
+    TECHNICAL SEO:
+    Set a canonical URL for the requested movie.
+    Keep the movie identifier in the canonical URL.
+  */
+
+  const canonicalElement = document.getElementById("canonicalUrl");
+  const ogUrlElement = document.querySelector('meta[property="og:url"]');
+
+  if (canonicalElement) {
+    const canonicalUrl = new URL(
+      window.location.pathname,
+      window.location.origin
+    );
+
+    if (requestedId) {
+      canonicalUrl.searchParams.set("id", requestedId);
+    } else if (requestedSlug) {
+      canonicalUrl.searchParams.set("title", requestedSlug);
+    }
+
+    canonicalElement.href = canonicalUrl.href;
+
+    if (ogUrlElement) {
+      ogUrlElement.content = canonicalUrl.href;
+    }
+  }
 
   let activeDownload = null;
   let currentMovie = null;
@@ -1244,32 +1291,4 @@
 
       const data = await response.json();
 
-      if (!data.success || !data.movie) {
-        throw new Error("Invalid movie API response.");
-      }
-
-      const movie = normalizeMovie(data.movie);
-
-      const similarMovies = Array.isArray(data.similarMovies)
-        ? data.similarMovies
-        : [];
-
-      renderMovie(movie, similarMovies);
-
-    } catch (error) {
-      console.error("CineVault Movie Error:", error);
-
-      showError(
-        "Unable to Load Movie",
-        "Something went wrong while loading movie details. Please refresh the page and try again."
-      );
-    }
-  }
-
-  loadMovie();
-
-})();
-</script>
-
-</body>
-</html>
+      if (!data.success || !data.movie
