@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -494,6 +495,7 @@
     </div>
   </div>
 </footer>
+
 <script>
 (function () {
   "use strict";
@@ -511,7 +513,6 @@
   /*
     TECHNICAL SEO:
     Set a canonical URL for the requested movie.
-    Keep the movie identifier in the canonical URL.
   */
 
   const canonicalElement = document.getElementById("canonicalUrl");
@@ -539,7 +540,6 @@
   let activeDownload = null;
   let currentMovie = null;
 
-  // Fallback storage for browsers where sessionStorage is unavailable.
   const memoryProgress = Object.create(null);
 
   function escapeHTML(value) {
@@ -574,7 +574,6 @@
     return validURL(value);
   }
 
-  // Open a URL in a separate tab from a direct user interaction.
   function openNewTab(url) {
     const safeUrl = validURL(url);
 
@@ -626,7 +625,6 @@
       ...movie,
 
       id: movie.id,
-
       title: movie.title || "Untitled Movie",
       poster: movie.poster || "",
       backdrop: movie.backdrop || "",
@@ -649,7 +647,6 @@
       downloadUrl2:
         movie.downloadUrl2 || movie.download_url_2 || "",
 
-      // Advertisement settings from Cloudflare D1 API.
       adUrl: validURL(movie.adUrl || movie.ad_url || ""),
 
       adCount: Number.isFinite(rawAdCount)
@@ -690,7 +687,6 @@
     `;
   }
 
-  // Unique progress key for each movie and download button.
   function getProgressKey(movieId, downloadType) {
     return "cinevault_ad_progress_" +
       String(movieId) + "_" + String(downloadType);
@@ -701,7 +697,6 @@
 
     try {
       const value = Number(sessionStorage.getItem(key) || 0);
-
       return Math.max(0, Math.floor(value));
     } catch {
       return Number(memoryProgress[key] || 0);
@@ -870,7 +865,6 @@
     }
 
     counter.textContent = completed + " / " + required;
-
     fill.style.width = percentage + "%";
 
     bar.setAttribute("aria-valuemax", String(required));
@@ -949,7 +943,6 @@
     activeDownload = null;
   }
 
-  // Open advertisement in a separate tab.
   function visitAdvertisement() {
     if (!activeDownload) return;
 
@@ -968,17 +961,11 @@
       return;
     }
 
-    /*
-      window.open is called synchronously from the click handler.
-      This gives the browser the best chance to allow the popup.
-    */
-
     const adWindow = openNewTab(movie.adUrl);
 
     if (!adWindow) {
       document.getElementById("cvAdStatus").textContent =
         "Your browser blocked the advertisement tab. Please allow pop-ups and try again.";
-
       return;
     }
 
@@ -1006,27 +993,18 @@
 
     if (!downloadUrl) return;
 
-    /*
-      The actual download URL is opened only after
-      the configured advertisement steps are completed.
-    */
-
     const downloadWindow = openNewTab(downloadUrl);
 
     if (!downloadWindow) {
       document.getElementById("cvAdStatus").textContent =
         "Your browser blocked the download tab. Please allow pop-ups and try again.";
-
       return;
     }
 
-    // Reset only the completed download button's progress.
     clearAdProgress(movie.id, type);
-
     closeAdModal();
   }
 
-  // Escape key closes the advertisement modal.
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
       closeAdModal();
@@ -1164,11 +1142,10 @@
       }
     `;
 
-    // Advertisement modal is created once per movie page.
     createAdModal();
 
     // Download button event delegation.
-    container.addEventListener("click", function (event) {
+    container.onclick = function (event) {
       const button = event.target.closest(
         "[data-download-type]"
       );
@@ -1190,7 +1167,7 @@
       if (!targetUrl) return;
 
       openAdModal(movie, type, targetUrl);
-    });
+    };
 
     const backdropElement =
       document.getElementById("movieBackdrop");
@@ -1291,8 +1268,7 @@
 
       const data = await response.json();
 
-      if (!data.success || !data.movie
-
+      // Correct API response validation.
       if (!data || !data.success || !data.movie) {
         showError(
           "Movie Not Found",
@@ -1301,7 +1277,6 @@
         return;
       }
 
-      // Normalize movie data received from Cloudflare D1 API.
       const movie = normalizeMovie(data.movie);
 
       if (movie.id === undefined || movie.id === null) {
@@ -1312,12 +1287,10 @@
         return;
       }
 
-      // Load similar movies safely.
       const similarMovies = Array.isArray(data.similarMovies)
         ? data.similarMovies
         : [];
 
-      // Render the requested movie.
       renderMovie(movie, similarMovies);
 
     } catch (error) {
