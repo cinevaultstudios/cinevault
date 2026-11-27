@@ -1292,3 +1292,49 @@
       const data = await response.json();
 
       if (!data.success || !data.movie
+
+      if (!data || !data.success || !data.movie) {
+        showError(
+          "Movie Not Found",
+          data?.message || "The requested movie could not be loaded."
+        );
+        return;
+      }
+
+      // Normalize movie data received from Cloudflare D1 API.
+      const movie = normalizeMovie(data.movie);
+
+      if (movie.id === undefined || movie.id === null) {
+        showError(
+          "Invalid Movie Data",
+          "The movie information received from the database is incomplete."
+        );
+        return;
+      }
+
+      // Load similar movies safely.
+      const similarMovies = Array.isArray(data.similarMovies)
+        ? data.similarMovies
+        : [];
+
+      // Render the requested movie.
+      renderMovie(movie, similarMovies);
+
+    } catch (error) {
+      console.error("CineVault Movie Loading Error:", error);
+
+      showError(
+        "Unable to Load Movie",
+        "We could not connect to the movie database. Please refresh the page and try again."
+      );
+    }
+  }
+
+  // Start loading the requested movie.
+  loadMovie();
+
+})();
+</script>
+
+</body>
+</html>
