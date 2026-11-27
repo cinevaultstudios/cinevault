@@ -9,11 +9,15 @@
   <meta name="google-site-verification" content="DAzJb2kNhqYszdz3aJLxDAhkN07kT_Pckvp9uXepdB0">
 
   <!-- Primary SEO -->
-  <title>CineVault — Discover Movies, New Releases &amp; Entertainment</title>
-  <meta name="description" content="Discover movies and entertainment on CineVault. Explore Hollywood, Bollywood, Korean and Bangla movies, browse genres and curated collections, and build your personal watchlist.">
-  <meta name="keywords" content="CineVault, movies, movie collection, discover movies, new movie releases, Hollywood movies, Bollywood movies, Korean movies, Bangla movies, movie genres, cinema">
+  <title>CineVault — Discover Movies &amp; Explore Cinema</title>
+
+  <meta
+    name="description"
+    content="Explore CineVault, a movie discovery platform featuring curated collections, movie information, genre browsing and a personal watchlist."
+  >
+
   <meta name="author" content="CineVault">
-  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="googlebot" content="index, follow">
   <meta name="theme-color" content="#080a0f">
   <meta name="application-name" content="CineVault">
@@ -21,23 +25,40 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://cinevault.movie24.workers.dev/">
 
-  <!-- Premium Gold CV Favicon -->
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="shortcut icon" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/favicon.svg">
 
-  <!-- Open Graph: Facebook and social sharing -->
+  <!-- Open Graph -->
   <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CineVault">
-  <meta property="og:title" content="CineVault — Discover Movies &amp; Entertainment">
-  <meta property="og:description" content="Discover movies and entertainment on CineVault. Explore Hollywood, Bollywood, Korean and Bangla movies, browse curated collections and build your personal watchlist.">
+  <meta property="og:title" content="CineVault — Discover Movies &amp; Explore Cinema">
+  <meta
+    property="og:description"
+    content="Explore movie collections, discover cinema and organize your personal watchlist with CineVault."
+  >
   <meta property="og:url" content="https://cinevault.movie24.workers.dev/">
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="CineVault — Discover Movies &amp; Entertainment">
-  <meta name="twitter:description" content="Discover movies, explore curated collections and build your personal watchlist with CineVault.">
+  <meta name="twitter:title" content="CineVault — Discover Movies &amp; Explore Cinema">
+  <meta
+    name="twitter:description"
+    content="Discover cinema, explore curated collections and organize your personal watchlist with CineVault."
+  >
+
+  <!-- Website Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "CineVault",
+    "url": "https://cinevault.movie24.workers.dev/",
+    "description": "A movie discovery platform featuring curated collections, movie information and a personal watchlist."
+  }
+  </script>
 
   <!-- Performance: Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,21 +97,10 @@
 
       <nav class="main-nav" id="mainNav" aria-label="Main navigation">
 
-        <a href="#home" class="active" aria-current="page">
-          Home
-        </a>
-
-        <a href="#movies">
-          Movies
-        </a>
-
-        <a href="#collections">
-          Collections
-        </a>
-
-        <a href="#watchlist">
-          My Watchlist
-        </a>
+        <a href="#home" class="active" aria-current="page">Home</a>
+        <a href="#movies">Movies</a>
+        <a href="#collections">Collections</a>
+        <a href="#watchlist">My Watchlist</a>
 
       </nav>
 
@@ -137,7 +147,6 @@
 
   </header>
 
-
   <!-- MAIN CONTENT -->
   <main id="main-content">
 
@@ -155,13 +164,11 @@
         aria-label="Featured content"
       >
 
-        <!-- Banners are loaded dynamically from Admin Dashboard -->
         <div
           class="hero-slider-track"
           id="heroSliderTrack"
           aria-live="polite"
-        >
-        </div>
+        ></div>
 
         <!-- SLIDER NAVIGATION -->
         <div class="hero-slider-navigation" id="heroSliderNavigation" hidden>
@@ -193,13 +200,11 @@
           role="group"
           aria-label="Choose featured banner"
           hidden
-        >
-        </div>
+        ></div>
 
       </div>
 
     </section>
-
 
     <!-- MOVIE COLLECTIONS -->
     <section
@@ -245,7 +250,6 @@
 
     </section>
 
-
     <!-- EXPLORE MOVIES -->
     <section
       class="section movies-section"
@@ -275,7 +279,6 @@
         </div>
 
       </div>
-
 
       <!-- SEARCH AND SORT -->
       <div class="movie-toolbar">
@@ -328,7 +331,6 @@
 
       </div>
 
-
       <!-- FILTERS -->
       <div
         class="filter-panel"
@@ -338,12 +340,9 @@
 
         <div class="filter-group">
 
-          <label for="genreFilter">
-            Genre
-          </label>
+          <label for="genreFilter">Genre</label>
 
           <select id="genreFilter">
-
             <option value="">All Genres</option>
             <option value="Action">Action</option>
             <option value="Adventure">Adventure</option>
@@ -357,65 +356,48 @@
             <option value="Romance">Romance</option>
             <option value="Sci-Fi">Sci-Fi</option>
             <option value="Thriller">Thriller</option>
-
           </select>
 
         </div>
 
-
         <div class="filter-group">
 
-          <label for="languageFilter">
-            Language
-          </label>
+          <label for="languageFilter">Language</label>
 
           <select id="languageFilter">
-
             <option value="">All Languages</option>
             <option value="English">English</option>
             <option value="Hindi">Hindi</option>
             <option value="Korean">Korean</option>
             <option value="Bangla">Bangla</option>
             <option value="Japanese">Japanese</option>
-
           </select>
 
         </div>
 
-
         <div class="filter-group">
 
-          <label for="yearFilter">
-            Release Year
-          </label>
+          <label for="yearFilter">Release Year</label>
 
           <select id="yearFilter">
-
             <option value="">All Years</option>
-
           </select>
 
         </div>
 
-
         <div class="filter-group">
 
-          <label for="ratingFilter">
-            Minimum Rating
-          </label>
+          <label for="ratingFilter">Minimum Rating</label>
 
           <select id="ratingFilter">
-
             <option value="">Any Rating</option>
             <option value="9">9.0+</option>
             <option value="8">8.0+</option>
             <option value="7">7.0+</option>
             <option value="6">6.0+</option>
-
           </select>
 
         </div>
-
 
         <button
           id="resetFilters"
@@ -426,7 +408,6 @@
         </button>
 
       </div>
-
 
       <!-- RESULT INFORMATION -->
       <div class="results-bar">
@@ -439,15 +420,11 @@
           Loading movies...
         </p>
 
-        <span
-          class="results-label"
-          id="resultsLabel"
-        >
+        <span class="results-label" id="resultsLabel">
           40 MOVIES PER PAGE
         </span>
 
       </div>
-
 
       <!-- MOVIE GRID -->
       <div
@@ -463,13 +440,8 @@
 
       </div>
 
-
       <!-- EMPTY STATE -->
-      <div
-        class="empty-state"
-        id="emptyState"
-        hidden
-      >
+      <div class="empty-state" id="emptyState" hidden>
 
         <div class="empty-icon" aria-hidden="true">
           ⌕
@@ -491,18 +463,14 @@
 
       </div>
 
-
       <!-- PAGINATION -->
       <nav
         class="pagination"
         id="pagination"
         aria-label="Movie pages"
-      >
-        <!-- Pagination generated by JavaScript -->
-      </nav>
+      ></nav>
 
     </section>
-
 
     <!-- WATCHLIST -->
     <section
@@ -535,9 +503,7 @@
         class="movie-grid"
         id="watchlistGrid"
         aria-live="polite"
-      >
-        <!-- Watchlist movies generated by JavaScript -->
-      </div>
+      ></div>
 
       <p
         class="watchlist-empty"
@@ -547,7 +513,6 @@
       </p>
 
     </section>
-
 
     <!-- ABOUT -->
     <section
@@ -566,7 +531,6 @@
         </span>
 
         <h2 id="aboutTitle">
-
           More Than Movies.<br>
 
           <span
@@ -575,7 +539,6 @@
           >
             A Cinema Experience.
           </span>
-
         </h2>
 
         <p id="aboutDescription">
@@ -596,7 +559,6 @@
     </section>
 
   </main>
-
 
   <!-- MOVIE DETAILS MODAL -->
   <div
@@ -624,14 +586,11 @@
       <div
         class="modal-content"
         id="modalContent"
-      >
-        <!-- Movie details generated by JavaScript -->
-      </div>
+      ></div>
 
     </div>
 
   </div>
-
 
   <!-- FOOTER -->
   <footer class="site-footer">
@@ -667,52 +626,30 @@
 
       </div>
 
-
       <!-- EXPLORE LINKS -->
       <div class="footer-links">
 
         <h4>Explore</h4>
 
-        <a href="#home">
-          Home
-        </a>
-
-        <a href="#movies">
-          Movies
-        </a>
-
-        <a href="#collections">
-          Collections
-        </a>
-
-        <a href="#watchlist">
-          Watchlist
-        </a>
+        <a href="#home">Home</a>
+        <a href="#movies">Movies</a>
+        <a href="#collections">Collections</a>
+        <a href="#watchlist">Watchlist</a>
 
       </div>
-
 
       <!-- INFORMATION LINKS -->
       <div class="footer-links">
 
         <h4>Information</h4>
 
-        <a href="about.html">
-          About Us
-        </a>
-
-        <a href="privacy.html">
-          Privacy Policy
-        </a>
-
-        <a href="terms.html">
-          Terms &amp; Conditions
-        </a>
+        <a href="about.html">About Us</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms &amp; Conditions</a>
 
       </div>
 
     </div>
-
 
     <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
