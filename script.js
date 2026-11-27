@@ -1,10 +1,11 @@
 /* =========================================================
    CINEVAULT — MAIN APPLICATION
    CLOUDFLARE WORKERS + D1 DATABASE
+   SEO IMPROVED VERSION
    DYNAMIC SETTINGS • 4 SLIDE BANNERS
    FIXED 2-SECOND AUTOPLAY • NO LEGACY HERO FALLBACK
    COLLECTIONS • MOVIES • SEARCH • FILTER • SORT
-   WATCHLIST • PAGINATION • RESPONSIVE NAVIGATION
+   WATCHLIST • SEO PAGINATION • RESPONSIVE NAVIGATION
    ACCESSIBLE HERO SLIDER • SAFE EXTERNAL LINKS
    ========================================================= */
 
@@ -55,7 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let movies = [];
   let collections = [];
 
-  let currentPage = 1;
+  // SEO pagination: read requested page from URL.
+  let currentPage = getRequestedPage();
+
   let currentMovies = [];
 
   let settings = {};
@@ -63,7 +66,67 @@ document.addEventListener("DOMContentLoaded", () => {
   let watchlist = loadWatchlist();
 
   /* =======================================================
-     3. HERO SLIDER STATE
+     3. SEO PAGINATION — URL HELPERS
+  ======================================================= */
+
+  function getRequestedPage() {
+    try {
+      const params = new URLSearchParams(
+        window.location.search
+      );
+
+      const requestedPage = Number(
+        params.get("page")
+      );
+
+      return (
+        Number.isSafeInteger(requestedPage) &&
+        requestedPage > 0
+      )
+        ? requestedPage
+        : 1;
+
+    } catch {
+      return 1;
+    }
+  }
+
+  function updatePageURL(
+    page,
+    historyMethod = "replaceState"
+  ) {
+    const safePage = Math.max(
+      1,
+      Number(page) || 1
+    );
+
+    const url = new URL(window.location.href);
+
+    if (safePage > 1) {
+      url.searchParams.set(
+        "page",
+        String(safePage)
+      );
+    } else {
+      url.searchParams.delete("page");
+    }
+
+    url.hash = "movies";
+
+    const method =
+      historyMethod === "pushState"
+        ? "pushState"
+        : "replaceState";
+
+    window.history[method](
+      { page: safePage },
+      "",
+      url.pathname + url.search + url.hash
+    );
+  }
+
+  /* =======================================================
+     4. HERO SLIDER STATE
   ======================================================= */
 
   let heroBanners = [];
@@ -89,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     4. SAFE TEXT / HTML
+     5. SAFE TEXT / HTML
   ======================================================= */
 
   function escapeHTML(value) {
@@ -108,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     5. SAFE URL VALIDATION
+     6. SAFE URL VALIDATION
   ======================================================= */
 
   function safeLink(value, fallback = "") {
@@ -182,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     6. SAFE COLOR / SLIDER VALUE VALIDATION
+     7. SAFE COLOR / SLIDER VALUE VALIDATION
   ======================================================= */
 
   function safeColor(value, fallback) {
@@ -210,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     7. CONFIGURABLE LINKS — OPEN IN NEW TAB
+     8. CONFIGURABLE LINKS — OPEN IN NEW TAB
   ======================================================= */
 
   function configureNewTab(anchor) {
@@ -221,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     8. API HELPER
+     9. API HELPER
   ======================================================= */
 
   async function apiRequest(url, options = {}) {
@@ -260,7 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     9. WATCHLIST STORAGE
+     10. WATCHLIST STORAGE
   ======================================================= */
 
   function loadWatchlist() {
@@ -297,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     10. NORMALIZE MOVIE DATA
+     11. NORMALIZE MOVIE DATA
   ======================================================= */
 
   function normalizeMovie(movie) {
@@ -351,7 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     11. NORMALIZE COLLECTION DATA
+     12. NORMALIZE COLLECTION DATA
   ======================================================= */
 
   function normalizeCollection(collection) {
@@ -383,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     12. LINKED TEXT HELPERS
+     13. LINKED TEXT HELPERS
   ======================================================= */
 
   function setLinkedText(element, value, url) {
@@ -433,8 +496,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     element.appendChild(anchor);
   }
-     /* =======================================================
-     13. DYNAMIC LOGO
+
+  /* =======================================================
+     14. DYNAMIC LOGO
   ======================================================= */
 
   function updateLogo(data) {
@@ -483,7 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     14. MULTIPLE HERO BANNER — NORMALIZE
+     15. MULTIPLE HERO BANNER — NORMALIZE
   ======================================================= */
 
   function normalizeHeroBanner(banner, index) {
@@ -529,7 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     15. MULTIPLE HERO BANNER — PARSE SETTINGS
+     16. MULTIPLE HERO BANNER — PARSE SETTINGS
      MAXIMUM 4 ACTIVE BANNERS
   ======================================================= */
 
@@ -560,7 +624,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     16. LINK NAVIGATION HELPER
+     17. LINK NAVIGATION HELPER
      INTERNAL LINKS: SAME TAB
      EXTERNAL LINKS: NEW TAB
   ======================================================= */
@@ -599,7 +663,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     17. MULTIPLE HERO BANNER — BUTTON HTML
+     18. MULTIPLE HERO BANNER — BUTTON HTML
   ======================================================= */
 
   function createHeroButton(
@@ -648,9 +712,8 @@ document.addEventListener("DOMContentLoaded", () => {
       </a>
     `;
   }
-
-  /* =======================================================
-     18. MULTIPLE HERO BANNER — RENDER SLIDE
+     /* =======================================================
+     19. MULTIPLE HERO BANNER — RENDER SLIDE
   ======================================================= */
 
   function renderHeroSlide(banner, index) {
@@ -743,7 +806,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     19. MULTIPLE HERO BANNER — DOTS
+     20. MULTIPLE HERO BANNER — DOTS
   ======================================================= */
 
   function renderHeroDots() {
@@ -769,7 +832,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     20. MULTIPLE HERO BANNER — AUTOPLAY
+     21. MULTIPLE HERO BANNER — AUTOPLAY
      FIXED 2000 MILLISECONDS
   ======================================================= */
 
@@ -798,7 +861,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     21. MULTIPLE HERO BANNER — SLIDE CHANGE
+     22. MULTIPLE HERO BANNER — SLIDE CHANGE
   ======================================================= */
 
   function showHeroSlide(index, resetTimer = true) {
@@ -840,7 +903,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     22. MULTIPLE HERO BANNER — NAVIGATION
+     23. MULTIPLE HERO BANNER — NAVIGATION
   ======================================================= */
 
   function initializeHeroControls() {
@@ -891,7 +954,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     23. HERO SLIDER — PAUSE ON HOVER / FOCUS
+     24. HERO SLIDER — PAUSE ON HOVER / FOCUS
   ======================================================= */
 
   heroSlider?.addEventListener("mouseenter", () => {
@@ -927,7 +990,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     24. HERO SLIDER — BACKGROUND CLICK / KEYBOARD
+     25. HERO SLIDER — BACKGROUND CLICK / KEYBOARD
   ======================================================= */
 
   function openHeroBackgroundLink(slide) {
@@ -991,7 +1054,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     25. MULTIPLE HERO BANNER — RENDER
+     26. MULTIPLE HERO BANNER — RENDER
      NO LEGACY STATIC HERO FALLBACK
   ======================================================= */
 
@@ -1035,7 +1098,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     26. DYNAMIC SECTION HEADINGS
+     27. DYNAMIC SECTION HEADINGS
   ======================================================= */
 
   function updateSectionHeadings(data) {
@@ -1120,7 +1183,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     27. DYNAMIC ABOUT SECTION
+     28. DYNAMIC ABOUT SECTION
   ======================================================= */
 
   function updateAbout(data) {
@@ -1176,8 +1239,9 @@ document.addEventListener("DOMContentLoaded", () => {
       title.replaceChildren(...nodes);
     }
   }
-     /* =======================================================
-     28. ABOUT SECTION — DESCRIPTION AND BUTTON
+
+  /* =======================================================
+     29. ABOUT SECTION — DESCRIPTION AND BUTTON
   ======================================================= */
 
   function updateAboutExtras(data) {
@@ -1220,7 +1284,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     29. DYNAMIC FOOTER
+     30. DYNAMIC FOOTER
   ======================================================= */
 
   function updateFooter(data) {
@@ -1287,7 +1351,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     30. LOAD SETTINGS FROM D1
+     31. LOAD SETTINGS FROM D1
   ======================================================= */
 
   async function loadSettings() {
@@ -1326,7 +1390,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     31. FILTER OPTION HELPERS
+     32. FILTER OPTION HELPERS
   ======================================================= */
 
   function populateSelect(
@@ -1399,7 +1463,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     32. COLLECTION RENDERING
+     33. COLLECTION RENDERING
   ======================================================= */
 
   function renderCollections() {
@@ -1425,6 +1489,7 @@ document.addEventListener("DOMContentLoaded", () => {
               src="${escapeHTML(image)}"
               alt=""
               loading="lazy"
+              decoding="async"
               width="42"
               height="42"
             >
@@ -1463,7 +1528,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     33. LOAD COLLECTIONS FROM D1
+     34. LOAD COLLECTIONS FROM D1
   ======================================================= */
 
   async function loadCollections() {
@@ -1510,7 +1575,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     34. POSTER FALLBACK
+     35. POSTER FALLBACK
   ======================================================= */
 
   function fallbackPoster(title) {
@@ -1555,28 +1620,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     35. MOVIE CARD
+     36. MOVIE CARD — SEO FRIENDLY HTML LINKS
+     CRAWLABLE MOVIE LINKS + ACCESSIBILITY
   ======================================================= */
 
   function movieCard(movie) {
     const active = isInWatchlist(movie.id);
 
+    const movieURL =
+      `movie.html?id=${encodeURIComponent(movie.id)}`;
+
+    const safeMovieURL = escapeHTML(movieURL);
+
     return `
       <article
         class="movie-card"
         data-movie-id="${Number(movie.id)}"
-        tabindex="0"
-        role="link"
-        aria-label="View ${escapeHTML(movie.title)}"
+        aria-label="Movie: ${escapeHTML(movie.title)}"
       >
         <div class="movie-poster">
 
-          <img
-            src="${escapeHTML(posterURL(movie))}"
-            alt="${escapeHTML(movie.title)} poster"
-            loading="lazy"
-            data-poster-fallback="${Number(movie.id)}"
+          <a
+            class="movie-card-link"
+            href="${safeMovieURL}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View ${escapeHTML(movie.title)} details"
           >
+            <img
+              src="${escapeHTML(posterURL(movie))}"
+              alt="${escapeHTML(movie.title)} poster"
+              loading="lazy"
+              decoding="async"
+              data-poster-fallback="${Number(movie.id)}"
+            >
+          </a>
 
           <span class="movie-rating">
             ★ ${escapeHTML(movie.rating.toFixed(1))}
@@ -1597,7 +1675,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div class="movie-info">
 
-          <h3>${escapeHTML(movie.title)}</h3>
+          <h3>
+            <a
+              class="movie-card-title-link"
+              href="${safeMovieURL}"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View ${escapeHTML(movie.title)}"
+              style="color:inherit;text-decoration:none;"
+            >
+              ${escapeHTML(movie.title)}
+            </a>
+          </h3>
 
           <div class="movie-meta">
             <span>${escapeHTML(movie.year)}</span>
@@ -1614,7 +1703,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     36. MOVIE POSTER ERROR HANDLING
+     37. MOVIE POSTER ERROR HANDLING
   ======================================================= */
 
   function handlePosterErrors(container) {
@@ -1636,9 +1725,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { once: true });
       });
   }
-
-  /* =======================================================
-     37. SEARCH + FILTER + SORT
+     /* =======================================================
+     38. SEARCH + FILTER + SORT
   ======================================================= */
 
   function getFilteredMovies() {
@@ -1732,7 +1820,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     38. PAGINATION
+     39. SEO FRIENDLY PAGINATION
+     REAL HTML LINKS + URL PAGE PARAMETERS
   ======================================================= */
 
   function renderPagination(totalPages) {
@@ -1740,48 +1829,90 @@ document.addEventListener("DOMContentLoaded", () => {
 
     pagination.replaceChildren();
 
+    pagination.setAttribute(
+      "aria-label",
+      "Movie pages"
+    );
+
     if (totalPages <= 1) return;
 
-    function addButton(
+    function createPageURL(page) {
+      const url = new URL(window.location.href);
+
+      if (page > 1) {
+        url.searchParams.set("page", String(page));
+      } else {
+        url.searchParams.delete("page");
+      }
+
+      url.hash = "movies";
+
+      return url.pathname + url.search + url.hash;
+    }
+
+    function addLink(
       label,
       page,
       active = false,
       disabled = false
     ) {
-      const button = document.createElement("button");
+      const link = document.createElement("a");
 
-      button.type = "button";
-      button.textContent = label;
-      button.disabled = disabled;
+      link.textContent = label;
+      link.className = "pagination-link";
+
+      link.href = createPageURL(page);
+
+      link.dataset.page = String(page);
 
       if (active) {
-        button.classList.add("active");
-        button.setAttribute("aria-current", "page");
+        link.classList.add("active");
+
+        link.setAttribute(
+          "aria-current",
+          "page"
+        );
       }
 
-      button.addEventListener("click", () => {
-        if (
-          page === currentPage ||
-          page < 1 ||
-          page > totalPages
-        ) {
-          return;
-        }
+      if (disabled) {
+        link.classList.add("disabled");
 
-        currentPage = page;
+        link.setAttribute(
+          "aria-disabled",
+          "true"
+        );
 
-        renderMovies();
+        link.removeAttribute("href");
+      }
 
-        $("movies")?.scrollIntoView({
-          behavior: prefersReducedMotion ? "auto" : "smooth",
-          block: "start"
-        });
-      });
+      // Keep pagination visually consistent
+      // even if the original CSS targets buttons.
+      link.style.display = "inline-flex";
+      link.style.alignItems = "center";
+      link.style.justifyContent = "center";
+      link.style.minWidth = "40px";
+      link.style.minHeight = "40px";
+      link.style.padding = "0 12px";
+      link.style.margin = "4px";
+      link.style.border = "1px solid rgba(214,179,106,.25)";
+      link.style.borderRadius = "8px";
+      link.style.background = active
+        ? "#D6B36A"
+        : "#111722";
+      link.style.color = active
+        ? "#080A0F"
+        : "#FFFFFF";
+      link.style.textDecoration = "none";
+      link.style.fontWeight = "600";
+      link.style.cursor = disabled
+        ? "not-allowed"
+        : "pointer";
+      link.style.opacity = disabled ? ".45" : "1";
 
-      pagination.appendChild(button);
+      pagination.appendChild(link);
     }
 
-    addButton(
+    addLink(
       "‹",
       currentPage - 1,
       false,
@@ -1812,7 +1943,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pagination.appendChild(dots);
       }
 
-      addButton(
+      addLink(
         String(page),
         page,
         page === currentPage
@@ -1821,7 +1952,7 @@ document.addEventListener("DOMContentLoaded", () => {
       previous = page;
     });
 
-    addButton(
+    addLink(
       "›",
       currentPage + 1,
       false,
@@ -1830,7 +1961,62 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     39. MAIN MOVIE RENDER
+     40. PAGINATION CLICK HANDLING
+     UPDATE URL WITHOUT FULL PAGE RELOAD
+  ======================================================= */
+
+  pagination?.addEventListener("click", event => {
+    const link = event.target.closest(
+      "a[data-page]"
+    );
+
+    if (!link) return;
+
+    if (
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    if (link.getAttribute("aria-disabled") === "true") {
+      event.preventDefault();
+      return;
+    }
+
+    const page = Number(link.dataset.page);
+
+    if (
+      !Number.isSafeInteger(page) ||
+      page < 1
+    ) {
+      event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+
+    if (page === currentPage) return;
+
+    currentPage = page;
+
+    updatePageURL(
+      currentPage,
+      "pushState"
+    );
+
+    renderMovies();
+
+    $("movies")?.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start"
+    });
+  });
+
+  /* =======================================================
+     41. MAIN MOVIE RENDER
   ======================================================= */
 
   function renderMovies() {
@@ -1843,6 +2029,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (currentPage > totalPages) {
       currentPage = Math.max(1, totalPages);
+    }
+
+    if (currentPage < 1) {
+      currentPage = 1;
+    }
+
+    // Correct invalid page URLs.
+    if (getRequestedPage() !== currentPage) {
+      updatePageURL(
+        currentPage,
+        "replaceState"
+      );
     }
 
     const start = (currentPage - 1) * PAGE_SIZE;
@@ -1880,8 +2078,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     movieGrid.setAttribute("aria-busy", "false");
   }
-     /* =======================================================
-     40. WATCHLIST RENDER
+
+  /* =======================================================
+     42. WATCHLIST RENDER
   ======================================================= */
 
   function renderWatchlist() {
@@ -1907,7 +2106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     41. WATCHLIST TOGGLE
+     43. WATCHLIST TOGGLE
   ======================================================= */
 
   function toggleWatchlist(id) {
@@ -1935,7 +2134,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     42. LOAD MOVIES FROM D1
+     44. LOAD MOVIES FROM D1
   ======================================================= */
 
   async function loadMovies() {
@@ -1966,7 +2165,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       populateFilters();
 
-      currentPage = 1;
+      // Preserve the requested page from the URL.
+      currentPage = getRequestedPage();
 
       renderMovies();
       renderWatchlist();
@@ -2025,7 +2225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     43. RESET FILTERS
+     45. RESET FILTERS
   ======================================================= */
 
   function resetFilters() {
@@ -2041,15 +2241,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentPage = 1;
 
+    updatePageURL(
+      1,
+      "replaceState"
+    );
+
     renderMovies();
   }
 
   /* =======================================================
-     44. SEARCH EVENTS
+     46. SEARCH EVENTS
   ======================================================= */
 
   searchInput?.addEventListener("input", () => {
     currentPage = 1;
+
+    updatePageURL(
+      1,
+      "replaceState"
+    );
+
     renderMovies();
   });
 
@@ -2060,13 +2271,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentPage = 1;
 
+    updatePageURL(
+      1,
+      "replaceState"
+    );
+
     renderMovies();
 
     searchInput?.focus();
   });
 
   /* =======================================================
-     45. FILTER EVENTS
+     47. FILTER EVENTS
   ======================================================= */
 
   [
@@ -2078,6 +2294,12 @@ document.addEventListener("DOMContentLoaded", () => {
   ].filter(Boolean).forEach(element => {
     element.addEventListener("change", () => {
       currentPage = 1;
+
+      updatePageURL(
+        1,
+        "replaceState"
+      );
+
       renderMovies();
     });
   });
@@ -2103,7 +2325,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   /* =======================================================
-     46. COLLECTION CLICK
+     48. COLLECTION CLICK
   ======================================================= */
 
   collectionGrid?.addEventListener("click", event => {
@@ -2134,6 +2356,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentPage = 1;
 
+    updatePageURL(
+      1,
+      "replaceState"
+    );
+
     renderMovies();
 
     $("movies")?.scrollIntoView({
@@ -2143,7 +2370,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     47. MOVIE CARD + WATCHLIST CLICK HANDLING
+     49. MOVIE CARD + WATCHLIST CLICK HANDLING
   ======================================================= */
 
   document.addEventListener("click", event => {
@@ -2165,6 +2392,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!card) return;
 
+    // Real movie links are handled by the browser.
+    // Do not intercept anchor clicks.
     if (
       event.target.closest(
         "a, button, input, select, textarea"
@@ -2185,7 +2414,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     48. KEYBOARD ACCESSIBILITY — MOVIE CARDS
+     50. KEYBOARD ACCESSIBILITY — MOVIE CARDS
   ======================================================= */
 
   document.addEventListener("keydown", event => {
@@ -2222,7 +2451,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     49. MOBILE NAVIGATION
+     51. BROWSER BACK / FORWARD — PAGINATION
+  ======================================================= */
+
+  window.addEventListener("popstate", () => {
+    currentPage = getRequestedPage();
+
+    renderMovies();
+  });
+
+  /* =======================================================
+     52. MOBILE NAVIGATION
   ======================================================= */
 
   function closeMobileMenu() {
@@ -2263,7 +2502,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     50. SEARCH ICON
+     53. SEARCH ICON
   ======================================================= */
 
   $("searchToggle")?.addEventListener("click", () => {
@@ -2276,7 +2515,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =======================================================
-     51. CURRENT YEAR
+     54. CURRENT YEAR
   ======================================================= */
 
   const currentYearElement = $("currentYear");
@@ -2287,7 +2526,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     52. INITIALIZE APPLICATION
+     55. INITIALIZE APPLICATION
   ======================================================= */
 
   loadSettings();
